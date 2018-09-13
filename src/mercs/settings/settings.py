@@ -1,7 +1,5 @@
-import json
-
 from ..utils.utils import *
-from ..queries.queries import check_given_query_codes, generate_default_query_code, compile_queries
+#from ..queries.queries import check_given_query_codes, generate_default_query_code, compile_queries
 
 
 # Main methods
@@ -133,3 +131,25 @@ def compile_param_map(prefix=None, delimiter='_', **kwargs):
                  if k.startswith(prefix)}
 
     return param_map
+
+
+def generate_default_query_code(nb_atts):
+    """
+    Generate default query codes array.
+
+    This means a q_codes, containing a single q_code array, which means:
+        1.  len(q_codes) = 1
+        2.  len(q_codes[0]) = nb_atts
+
+    The default query thus assumes all attributes known,
+    except the last one, which serves as target.
+
+    :param nb_atts:     Number of attributes in the dataset.
+    :return:
+    """
+    assert isinstance(nb_atts, int)
+
+    q = [0] * nb_atts
+    q[-1] = 1
+    q_codes = [q]
+    return q_codes

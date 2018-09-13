@@ -1,8 +1,7 @@
 import json
 import os
+import numpy as np
 from scipy import special
-from ..utils.utils import *
-
 
 # 1. Query Compilation
 def compile_queries(q_keyword='basic', q_param=1, **kwargs):
@@ -451,6 +450,30 @@ def generate_ms_steps(code, param):
     ms_steps = [ms_sizes[i] - ms_sizes[i - 1] for i in range(1, len(ms_sizes)) if (ms_sizes[i] - ms_sizes[i - 1] > 0)]
 
     return ms_steps
+
+
+def code_to_query(code, atts=None):
+    """
+    Change the code-array to an actual query, which are three arrays.
+
+    :param code:                Array that contains:
+                                     0 for desc attribute
+                                     1 for target attribute
+                                    -1 for missing attribute
+    :param atts:                Array that contains the attributes (indices)
+    :return: Three arrays.      One for desc atts indices, one for targets,
+                                one for missing
+
+    TODO(elia): The coding strategy is still hardcoded here. Fix this.
+    """
+
+    if atts is None: atts = list(range(len(code)))
+    assert len(code) == len(atts)
+
+    desc = [x for i, x in enumerate(atts) if code[i] == 0]
+    targ = [x for i, x in enumerate(atts) if code[i] == 1]
+    miss = [x for i, x in enumerate(atts) if code[i] == -1]
+    return desc, targ, miss
 
 
 # 4. Access to demos

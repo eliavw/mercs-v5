@@ -1,10 +1,19 @@
 # Python scripts to handle some example data
 import os
+import sys
 from os.path import dirname
 import pandas as pd
 
+# Custom import
+main_directory = os.path.dirname(os.getcwd())
+for dname in {'src'}:
+    sys.path.append(os.path.join(main_directory, dname))
+from src.mercs.utils.debug import debug_print
+
+VERBOSITY = 1
+
 # Actual method
-def load_example_dataset(dataset_name, specifier=None):
+def load_example_dataset(dataset_name, specifier=None, extension=None):
     """
     Load example dataset (.data_csv) with given name.
 
@@ -14,12 +23,19 @@ def load_example_dataset(dataset_name, specifier=None):
     """
     current_dir = dirname(__file__)
     data_dir = os.path.join(current_dir, 'data_csv')
+
+    extension = '.csv' if extension is None else '.' + extension
+
     appendix = '' if specifier is None else '_' + specifier
 
-    df = pd.read_csv(os.path.join(data_dir, dataset_name + appendix + '.data_csv'))
+    fname = os.path.join(data_dir, dataset_name + appendix + extension)
+
+    msg = "load_example_dataset is loading fname: {}".format(fname)
+    debug_print(msg, level=1, V=VERBOSITY)
+
+    df = pd.read_csv(fname)
     assert isinstance(df, pd.DataFrame)
     return df
-
 
 # Custom shortcuts
 def load_fertility():
