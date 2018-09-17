@@ -7,6 +7,7 @@ import numpy as np
 import os
 from os.path import dirname
 import sys
+import sklearn
 from sklearn.metrics import f1_score, accuracy_score, classification_report
 import pandas as pd
 
