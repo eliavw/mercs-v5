@@ -4,10 +4,10 @@ import sys
 from os.path import dirname
 import pandas as pd
 
-# Custom import
-main_directory = os.path.dirname(os.getcwd())
+# Custom import (Add src to the path)
+root_directory = dirname(dirname(dirname(__file__)))
 for dname in {'src'}:
-    sys.path.append(os.path.join(main_directory, dname))
+    sys.path.append(os.path.join(root_directory, dname))
 from src.mercs.utils.debug import debug_print
 
 VERBOSITY = 1
@@ -21,8 +21,8 @@ def load_example_dataset(dataset_name, specifier=None, extension=None):
     :param specifier:       {'Test', 'Train}
     :return:                Pandas Dataframe with the dataset
     """
-    current_dir = dirname(__file__)
-    data_dir = os.path.join(current_dir, 'data_csv')
+    root_dir = dirname(dirname(dirname(__file__)))
+    data_dir = os.path.join(root_dir, 'resc', 'data')
 
     extension = '.csv' if extension is None else '.' + extension
 
