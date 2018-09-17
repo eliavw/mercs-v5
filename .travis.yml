@@ -9,6 +9,7 @@ install:
 
 script:
 - pytest src/tests/integration -v
+- pytest src/tests/unit -v
 
 notifications:
   email:

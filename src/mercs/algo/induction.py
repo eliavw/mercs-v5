@@ -26,9 +26,10 @@ def induce_model(settings, is_nominal, m_targ):
     :param m_targ:
     :return:
     """
-    if __only_nominal_targ(is_nominal, m_targ):
+
+    if _only_nominal_targ(is_nominal, m_targ):
         model = induce_clf(settings)
-    elif __only_numeric_targ(is_nominal, m_targ):
+    elif _only_numeric_targ(is_nominal, m_targ):
         model = induce_rgr(settings)
     else:
         msg = "Model with mixed targets {}".format(m_targ)
@@ -39,17 +40,18 @@ def induce_model(settings, is_nominal, m_targ):
 
 def induce_clf(s):
     """
-    Induce a single classifier
+    Induce a single classifier.
+
+    Filters the parameters
+    Initializes the actual model
     """
 
-    trees = kw_ind_trees()
-    forests = kw_ind_forests()
     type = s['type']
     params = {k:v for k,v in s.items() if not k in {'type', 'flatten'}}
 
-    if type in trees:
+    if type in kw_ind_trees():
         clf = DecisionTreeClassifier(**params)
-    elif type in forests:
+    elif type in kw_ind_forests():
         clf = RandomForestClassifier(**params)
     else:
         msg = "Did nog recognize classifier type: {}".format(type)
@@ -63,14 +65,12 @@ def induce_rgr(s):
     Induce a single classifier
     """
 
-    trees = kw_ind_trees()
-    forests = kw_ind_forests()
     type = s['type']
     params = {k:v for k, v in s.items() if not {'type', 'flatten'}}
 
-    if type in trees:
+    if type in kw_ind_trees():
         rgr = DecisionTreeRegressor(**params)
-    elif type in forests:
+    elif type in kw_ind_forests():
         rgr = RandomForestRegressor(**params)
     else:
         msg = "Did nog recognize regressor type: {}".format(type)
@@ -80,7 +80,7 @@ def induce_rgr(s):
 
 
 # Helpers
-def __only_nominal_targ(is_nominal, m_targ):
+def _only_nominal_targ(is_nominal, m_targ):
     """
     Check whether given set of targ only contains nominal attributes.
 
@@ -91,7 +91,7 @@ def __only_nominal_targ(is_nominal, m_targ):
     return np.sum(is_nominal[m_targ]) == len(m_targ)
 
 
-def __only_numeric_targ(is_nominal, m_targ):
+def _only_numeric_targ(is_nominal, m_targ):
     """
     Check whether given set of targ only contains numeric attributes.
 
