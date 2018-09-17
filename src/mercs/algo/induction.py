@@ -7,6 +7,18 @@ from sklearn.ensemble import *
 
 # Algorithms
 def base_ind_algo(metadata, settings, m_targ):
+    """
+    Initialize (dont train yet!) a model.
+
+    Basically, this means that you decide which model you are going
+    to train. E.g., DT, RF etc.
+
+    :param metadata:
+    :param settings:
+    :param m_targ:
+    :return:
+    """
+
     assert isinstance(m_targ, (np.ndarray, list))
 
     nb_mod = len(m_targ)
@@ -66,7 +78,10 @@ def induce_clf(s):
 
 def induce_rgr(s):
     """
-    Induce a single classifier
+    Induce a single regressor.
+
+    Filters the parameters
+    Initializes the actual model
     """
 
     type = s['type']

@@ -1,19 +1,25 @@
 import numpy as np
-from ..utils.utils import collect_classlabels
+import pandas as pd
 
 
 # Imputation
 def perform_imputation(test_data_df, query_code, imputator):
     """
-    Creates the test data_csv for a given queries.
+    Creates the test data for a given query.
 
-    This means that it sets the unknown attributes first to NaN and then imputes them.
+    This means that it sets the unknown attributes first to NaN and afterwards
+    imputes them.
 
-    :param test_data_df:
-    :param query_code:
-    :param imputator:
+    :param test_data_df:    DataFrame that contains the test portion of the
+                            dataset. With all attributes.
+    :param query_code:      Code that conveys the functions of all the
+                            attributes
+    :param imputator:       The thing used to impute, sklearn standard.
     :return:
     """
+    assert isinstance(test_data_df, pd.DataFrame)
+    assert isinstance(query_code, np.ndarray)
+    assert len(test_data_df.columns.values)==len(query_code)
 
     query_data_df = test_data_df.copy()
 
@@ -25,7 +31,7 @@ def perform_imputation(test_data_df, query_code, imputator):
     return query_data
 
 
-## Merging outcomes
+# Merging outcomes
 def merge_proba(res_proba,
                 mod_proba,
                 t_idx_res,
@@ -48,7 +54,7 @@ def merge_proba(res_proba,
     :return:
     """
 
-    mask = get_mask(res_lab, mod_lab, t_idx_res, t_idx_mod)
+    mask = _get_mask(res_lab, mod_lab, t_idx_res, t_idx_mod)
 
     if nb_target == 1:
         if type(mod_proba) is list:
@@ -91,7 +97,7 @@ def merge_pred(res_pred, mod_pred, t_idx_res, t_idx_mod, nb_targ):
         return res_pred
 
 
-## Converting to values
+# Converting to actual output values
 def predict_values_from_proba(res_proba, res_lab):
     """
     Convert probabilities of outcomes to actual labels
@@ -138,7 +144,7 @@ def predict_values_from_numer(res_numer, counts):
     return predictions
 
 
-# Helpers
+# Utilities
 def init_predictions(nb_rows, nb_columns):
     """
     Initialize an empty array to contain our results.
@@ -160,8 +166,8 @@ def update_X(X, Y, act_att_idx):
         X[:, v] = Y[:, i]
     return X
 
-
-def get_mask(res_lab, mod_lab, t_idx_res, t_idx_mod):
+# Internal methods
+def _get_mask(res_lab, mod_lab, t_idx_res, t_idx_mod):
     """
     Check which labels in mod_lab also occur in res_lab.
 

@@ -54,4 +54,4 @@ def test_induce_model():
     except TypeError:
         pass
 
-
+    return
