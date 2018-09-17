@@ -11,10 +11,9 @@ from sklearn.metrics import f1_score
 
 # Custom import (Add src to the path)
 root_directory = dirname(dirname(dirname(dirname(__file__))))
-
-msg = "os.listdir: {}".format(os.listdir(root_directory))
 for dname in {'src'}:
     sys.path.insert(0, os.path.join(root_directory, dname))
+
 from mercs.core import MERCS
 from mercs.utils import *
 import datasets as datasets
@@ -51,4 +50,5 @@ def test_basic_classification():
     test_one = 0<=result
     test_two = result <= 1
 
-    return test_one and test_two
+    test_one and test_two
+    return False
