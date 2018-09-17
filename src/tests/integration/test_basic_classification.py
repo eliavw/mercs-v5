@@ -44,10 +44,8 @@ def test_basic_classification():
                            **pred_parameters,
                            qry_code=code)
 
-    result = f1_score(y_true, y_pred, average='macro')
+    obs = f1_score(y_true, y_pred, average='macro')
 
-    assert isinstance(result, (int, float))
-    test_one = 0<=result
-    test_two = result <= 1
-
-    assert (test_one and test_two)
+    assert isinstance(obs, (int, float))
+    assert 0 <= obs
+    assert obs <= 1
