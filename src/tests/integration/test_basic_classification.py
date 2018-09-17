@@ -12,7 +12,7 @@ from sklearn.metrics import f1_score, accuracy_score, classification_report
 # Custom import (Add src to the path)
 root_directory = dirname(dirname(dirname(dirname(__file__))))
 for dname in {'src'}:
-    sys.path.append(os.path.join(root_directory, dname))
+    sys.path.insert(0, os.path.join(root_directory, dname))
 
 msg = "sys.path is {}".format(sys.path)
 print(msg)
