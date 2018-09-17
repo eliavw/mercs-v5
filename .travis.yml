@@ -13,6 +13,6 @@ script:
 notifications:
   email:
     recipients:
-      - elia.vanwolputte@kuleuven.be
+      - elia.vanwolputte@gmail.com
     on_success: never # default: change
     on_failure: always # default: always
