@@ -5,7 +5,7 @@ from ..utils.utils import collect_classlabels
 # Imputation
 def perform_imputation(test_data_df, query_code, imputator):
     """
-    Creates the test data_csv for a given query.
+    Creates the test data_csv for a given queries.
 
     This means that it sets the unknown attributes first to NaN and then imputes them.
 

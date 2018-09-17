@@ -9,7 +9,7 @@ def create_settings():
 
     :return:    Dict of settings
 
-    TODO: Here the key is 'queries' in exp it is 'query'. Make this always right!
+    TODO: Here the key is 'queries' in exp it is 'queries'. Make this always right!
     """
 
     settings={}
@@ -135,13 +135,13 @@ def compile_param_map(prefix=None, delimiter='_', **kwargs):
 
 def generate_default_query_code(nb_atts):
     """
-    Generate default query codes array.
+    Generate default queries codes array.
 
     This means a q_codes, containing a single q_code array, which means:
         1.  len(q_codes) = 1
         2.  len(q_codes[0]) = nb_atts
 
-    The default query thus assumes all attributes known,
+    The default queries thus assumes all attributes known,
     except the last one, which serves as target.
 
     :param nb_atts:     Number of attributes in the dataset.

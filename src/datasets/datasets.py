@@ -1,4 +1,4 @@
-# Python scripts to handle some example data
+# Python scripts to handle some example datasets
 import os
 import sys
 from os.path import dirname

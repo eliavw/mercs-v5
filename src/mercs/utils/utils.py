@@ -6,7 +6,7 @@ import warnings
 # Everything related to codes
 def codes_to_query(codes, atts=None):
     """
-    Change the codes-array to an actual query, which are three arrays.
+    Change the codes-array to an actual queries, which are three arrays.
 
     :param code:                Array that contains: 0-desc/1-target/-1-missing code for each attribute
     :param atts:                Array that contains the attributes (indices)
@@ -30,7 +30,7 @@ def codes_to_query(codes, atts=None):
 
 def code_to_query(code, atts=None):
     """
-    Change the code-array to an actual query, which are three arrays.
+    Change the code-array to an actual queries, which are three arrays.
 
     :param code:                Array that contains:
                                      0 for desc attribute

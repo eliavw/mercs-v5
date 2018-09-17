@@ -3,16 +3,17 @@ import os
 import numpy as np
 from scipy import special
 
+
 # 1. Query Compilation
 def compile_queries(q_keyword='basic', q_param=1, **kwargs):
     """
     Compile attribute sets for induction and inference (or 'queries')
 
-    By query we mean a certain inference task that is required from the model. Such an inference task
+    By queries we mean a certain inference task that is required from the model. Such an inference task
     is defined by an input set of attributes and an output set of attributes, both subsets of the total set of attributes of the dataset.
 
-    :param q_keyword        Defines the query generation method
-    :param q_param          Some methods of query compilation can take an additional parameter.
+    :param q_keyword        Defines the queries generation method
+    :param q_param          Some methods of queries compilation can take an additional parameter.
     :param atts             This is an array that contains all the attributes of the dataset, e.g. [0, 1, 2, 3]
     :param X                Pandas DataFrame on which the model is trained.
     """
@@ -105,7 +106,7 @@ def it_targetsets_query_algo(atts):
     # In total we want to ask no more than: max_nb_ts_sizes*max_nb_queries
     max_nb_ts_sizes = 20    # Amount of different targetset sizes to check
     max_nb_queries = 20     # Amount of queries per targetset size
-    ratio_t_to_tot = 0.4    # Percentage of nb_atts to predict in one query
+    ratio_t_to_tot = 0.4    # Percentage of nb_atts to predict in one queries
     max_ts_size = nb_atts * ratio_t_to_tot  # Largest targetset allowed
 
     # linspace + unique takes care of never taking too much different sizes
@@ -151,7 +152,7 @@ def it_missing_query_algo(atts):
     nb_atts = len(atts)
 
     # In total we want to ask no more than: max_nb_ms_size*max_nb_queries
-    max_nb_queries = 5  # Amount of missingsets we generate PER size. Each different missingset results in a different query, hence the name.
+    max_nb_queries = 5  # Amount of missingsets we generate PER size. Each different missingset results in a different queries, hence the name.
 
     max_nb_ms_sizes = 20  # Amount of different missingset sizes we want to check
     ratio_m_to_tot = 0.4
@@ -220,7 +221,7 @@ def it_missing_2_query_algo(atts, q_param):
     """
     We randomly select some attributes which will be targets.
 
-    Each target is predicted in one query, all the rest is descriptive. Then we gradually leave out descriptive attributes.
+    Each target is predicted in one queries, all the rest is descriptive. Then we gradually leave out descriptive attributes.
     """
 
     nb_atts = len(atts)
@@ -237,14 +238,14 @@ def it_missing_2_query_algo(atts, q_param):
 
     for atts_shuffle in shuffled_atts:
 
-        # Getting the query, and saving it
-        desc, targ, miss = code_to_query(code, atts_shuffle)  # Generate the actual query (3 arrays)
+        # Getting the queries, and saving it
+        desc, targ, miss = code_to_query(code, atts_shuffle)  # Generate the actual queries (3 arrays)
         query_desc_sets.append(desc), query_targ_sets.append(targ), query_miss_sets.append(miss)
 
         for step in ms_steps:
             code = desc_to_miss(code, step)  # Update code
 
-            # Getting the query, and saving it
+            # Getting the queries, and saving it
             desc, targ, miss = code_to_query(code, atts_shuffle)
             query_desc_sets.append(desc), query_targ_sets.append(targ), query_miss_sets.append(miss)
 
@@ -316,9 +317,9 @@ def save_queries(q_dict, filename=None):
 
 def check_given_query_codes(nb_atts, **kwargs):
     """
-    Generate query codes for prediction.
+    Generate queries codes for prediction.
 
-    Based on optional keyword arguments, generate query codes for prediction.
+    Based on optional keyword arguments, generate queries codes for prediction.
     Needs the amount of attributes to run checks.
 
     What this does is that it ensures the correct format to do prediction,
@@ -345,7 +346,7 @@ def check_given_query_codes(nb_atts, **kwargs):
 
             return q_codes
         else:
-            raise ValueError("Could not generate query codes."
+            raise ValueError("Could not generate queries codes."
                              "Please provide one of the following:"
                              "- query_code"
                              "- query_codes"
@@ -356,13 +357,13 @@ def check_given_query_codes(nb_atts, **kwargs):
 # 3. Helper functions
 def generate_default_query_code(nb_atts):
     """
-    Generate default query codes array.
+    Generate default queries codes array.
 
     This means a q_codes, containing a single q_code array, which means:
         1.  len(q_codes) = 1
         2.  len(q_codes[0]) = nb_atts
 
-    The default query thus assumes all attributes known,
+    The default queries thus assumes all attributes known,
     except the last one, which serves as target.
 
     :param nb_atts:     Number of attributes in the dataset.
@@ -383,7 +384,7 @@ def generate_query_code(nb_atts,
     """
     Generate an array of the same length as the original attribute array.
 
-    The query code means the following:
+    The queries code means the following:
         0:  Descriptive attribute
         1:  Target attribute
         -1: Missing attribute
@@ -454,7 +455,7 @@ def generate_ms_steps(code, param):
 
 def code_to_query(code, atts=None):
     """
-    Change the code-array to an actual query, which are three arrays.
+    Change the code-array to an actual queries, which are three arrays.
 
     :param code:                Array that contains:
                                      0 for desc attribute

@@ -46,7 +46,7 @@ def kw_sel_type():
 def kw_qry_codes():
     keywords = {'query_code':   {'q_code',
                                  'qry_code',
-                                 'query',
+                                 'queries',
                                  'query_code'},
 
                 'query_codes':  {'q_codes',

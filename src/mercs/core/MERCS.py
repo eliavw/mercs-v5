@@ -180,7 +180,7 @@ class MERCS(object):
 
         # 2. Inference
         for q_idx in range(nb_queries):
-            # Generate X data_csv for query with index q_idx
+            # Generate X data_csv for queries with index q_idx
             X_query = perform_imputation(X,
                                          self.s['queries']['codes'][q_idx],
                                          self.imputator)
@@ -231,7 +231,7 @@ class MERCS(object):
             self.s['selection'] = new_settings
         elif mode in {'prediction', 'pred'}:
             self.s['prediction'] = new_settings
-        elif mode in {'queries', 'query', 'q', 'qry'}:
+        elif mode in {'queries', 'queries', 'q', 'qry'}:
             self.s['queries'] = new_settings
         elif mode in {'metadata', 'md'}:
             self.s['metadata'] = new_settings
@@ -281,7 +281,7 @@ class MERCS(object):
                                                                  prefix='pred',
                                                                  delimiter=delimiter,
                                                                  **kwargs)
-        elif mode in {'queries','query', 'q', 'qry'}:
+        elif mode in {'queries','queries', 'q', 'qry'}:
             nb_atts = self.s['metadata'].get('nb_atts', 0)
             if nb_atts > 1:
                 self.s['queries'] = update_query_settings(self.s['queries'],
@@ -396,15 +396,15 @@ class MERCS(object):
     # 3. Prediction = Prepare Inference
     def query_to_model(self, m_list, m_codes, settings, metadata, **kwargs):
         """
-        Convert a given query to a model that answers exactly that query.
+        Convert a given queries to a model that answers exactly that queries.
 
-            1. Convert the query to a Model Activation Strategy (MAS) and a Attribute Activation Strategy (AAS)
+            1. Convert the queries to a Model Activation Strategy (MAS) and a Attribute Activation Strategy (AAS)
             2. Convert the MAS, AAS to a model
 
         :return:
 
         TODO(elia): Optimize this. Both the prediction functions and the model builder to many things the same time, e.g.:
-                1. Converting query codes and model codes
+                1. Converting queries codes and model codes
                 2. Nb_atts, Nb_queries, etc. This is all in the metadata!
         """
 
@@ -505,7 +505,7 @@ class MERCS(object):
         :param m_codes:         Characteristic code of the models
         :param mas:             Model Activation Strategy
         :param aas:             Attribute Activation Strategy
-        :param q_codes:         Characteristic code of the query this model was built to address
+        :param q_codes:         Characteristic code of the queries this model was built to address
         :param metadata:        Metadata of the composing models
         :return:
         """

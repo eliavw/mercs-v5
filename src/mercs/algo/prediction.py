@@ -15,7 +15,7 @@ def mi_pred_algo(m_codes, q_codes):
         aas[q_idx][q_desc[q_idx]] = 0
 
         # Model activation
-        relevant_models = np.where(m_codes[:, q_targ[q_idx]] == 1)[0] # Models sharing target with query
+        relevant_models = np.where(m_codes[:, q_targ[q_idx]] == 1)[0] # Models sharing target with queries
         mas[q_idx][relevant_models] = 1
 
         # Att. activation
@@ -42,7 +42,7 @@ def ma_pred_algo(m_codes, q_codes, settings):
         # Prelims
         aas[q_idx][q_desc[q_idx]] = 0
 
-        relevant_models = np.where(m_codes[:, q_targ[q_idx]] == 1)[0]  # Models that share a target with the query.
+        relevant_models = np.where(m_codes[:, q_targ[q_idx]] == 1)[0]  # Models that share a target with the queries.
         mas[q_idx][relevant_models] = 1
 
         avl_mods = mas[q_idx] > 0
@@ -85,10 +85,10 @@ def mafi_pred_algo(m_codes, q_codes, settings):
         # Prelims
         aas[q_idx][q_desc[q_idx]] = 0
 
-        relevant_models = np.where(m_codes[:, q_targ[q_idx]] == 1)[0]  # Models that share a target with the query.
+        relevant_models = np.where(m_codes[:, q_targ[q_idx]] == 1)[0]  # Models that share a target with the queries.
         mas[q_idx][relevant_models] = 1
 
-        avl_mods = mas[q_idx] > 0  # Avl. models share a target with query
+        avl_mods = mas[q_idx] > 0  # Avl. models share a target with queries
         avl_atts = aas[q_idx] > -1
 
         # Att. activation
@@ -314,7 +314,7 @@ def prune_strat(m_codes, q_code, mas, aas):
     Prune the last step of the activation strategies.
 
     :param m_codes:         model codes
-    :param q_code:          code of the query
+    :param q_code:          code of the queries
     :param mas:             Model Activation Strategy
     :param aas:             Attribute Activation Strategy
     :return:
@@ -337,7 +337,7 @@ def full_prune_strat(m_codes, q_code, mas, aas):
     Prune the last step of the activation strategies.
 
     :param m_codes:         model codes
-    :param q_code:          code of the query
+    :param q_code:          code of the queries
     :param mas:             Model Activation Strategy
     :param aas:             Attribute Activation Strategy
     :return:
