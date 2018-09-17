@@ -15,9 +15,6 @@ root_directory = dirname(dirname(dirname(dirname(__file__))))
 msg = "os.listdir: {}".format(os.listdir(root_directory))
 for dname in {'src'}:
     sys.path.insert(0, os.path.join(root_directory, dname))
-
-msg = "sys.path is {}".format(sys.path)
-print(msg)
 from mercs.core import MERCS
 from mercs.utils import *
 import datasets as datasets

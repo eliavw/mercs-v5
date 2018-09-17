@@ -8,7 +8,7 @@ import pandas as pd
 root_directory = dirname(dirname(dirname(__file__)))
 for dname in {'src'}:
     sys.path.append(os.path.join(root_directory, dname))
-from src.mercs.utils.debug import debug_print
+from mercs.utils.debug import debug_print
 
 VERBOSITY = 1
 
