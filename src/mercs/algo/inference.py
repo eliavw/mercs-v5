@@ -18,7 +18,7 @@ def perform_imputation(test_data_df, query_code, imputator):
     :return:
     """
     assert isinstance(test_data_df, pd.DataFrame)
-    assert isinstance(query_code, np.ndarray)
+    assert isinstance(query_code, (np.ndarray, list))
     assert len(test_data_df.columns.values)==len(query_code)
 
     query_data_df = test_data_df.copy()
