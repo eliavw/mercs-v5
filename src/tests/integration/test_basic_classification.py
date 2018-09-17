@@ -7,14 +7,15 @@ import numpy as np
 import os
 from os.path import dirname
 import sys
-import sklearn
 from sklearn.metrics import f1_score, accuracy_score, classification_report
-import pandas as pd
 
 # Custom import (Add src to the path)
 root_directory = dirname(dirname(dirname(dirname(__file__))))
 for dname in {'src'}:
     sys.path.append(os.path.join(root_directory, dname))
+
+msg = "sys.path is {}".format(sys.path)
+print(msg)
 from src.mercs.core import MERCS
 from src.mercs.utils import *
 import src.datasets as datasets
