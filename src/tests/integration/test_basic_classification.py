@@ -50,5 +50,4 @@ def test_basic_classification():
     test_one = 0<=result
     test_two = result <= 1
 
-    test_one and test_two
-    return False
+    assert (test_one and test_two)
