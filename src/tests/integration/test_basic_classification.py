@@ -1,5 +1,5 @@
 """
-Test of basic classification task.
+Integration Test of basic classification task.
 """
 
 # Standard imports
