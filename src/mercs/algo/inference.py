@@ -13,7 +13,7 @@ def perform_imputation(test_data_df, query_code, imputator):
     :param test_data_df:    DataFrame that contains the test portion of the
                             dataset. With all attributes.
     :param query_code:      Code that conveys the functions of all the
-                            attributes
+                            attributes.
     :param imputator:       The thing used to impute, sklearn standard.
     :return:
     """

@@ -46,9 +46,12 @@ def code_to_query(code, atts=None):
     if atts is None: atts = list(range(len(code)))
     assert len(code) == len(atts)
 
-    desc = [x for i, x in enumerate(atts) if code[i] == 0]
-    targ = [x for i, x in enumerate(atts) if code[i] == 1]
-    miss = [x for i, x in enumerate(atts) if code[i] == -1]
+    desc = [x for i, x in enumerate(atts)
+            if code[i] == encode_attribute(x,[x],[])]
+    targ = [x for i, x in enumerate(atts)
+            if code[i] == encode_attribute(x,[],[x])]
+    miss = [x for i, x in enumerate(atts)
+            if code[i] == encode_attribute(x, [], [])]
     return desc, targ, miss
 
 
