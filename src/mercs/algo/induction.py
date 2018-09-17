@@ -7,7 +7,11 @@ from sklearn.ensemble import *
 
 # Algorithms
 def base_ind_algo(metadata, settings, m_targ):
+    assert isinstance(m_targ, (np.ndarray, list))
+
     nb_mod = len(m_targ)
+    assert nb_mod > 0
+
     is_nominal = metadata['is_nominal']
 
     m_list = [induce_model(settings, is_nominal, m_targ[i])
