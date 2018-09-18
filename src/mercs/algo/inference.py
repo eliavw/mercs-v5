@@ -51,13 +51,14 @@ def merge_proba(proba_res,
     :param proba_res:           Datastructure to contain the result (proba)
     :param proba_mod:           Datastructure to contain the result
                                 of the current model (proba)
+    :param lab_res:             Classlabels of the result
+    :param lab_mod:             Classlabels of the model
     :param t_idx_res:           Index of current target attr in result
     :param t_idx_mod:           Index of current target attr in  current model
     :param nb_targ:             Number of targets of the model
     :return:
-
-    TODO: Fix the hotfix
     """
+    # TODO: Fix the hotfix
 
     mask = _get_mask(lab_res, lab_mod, t_idx_res, t_idx_mod)
 
@@ -116,14 +117,12 @@ def predict_values_from_proba(proba_res, lab_res):
     :param lab_res:     Classlabels of all the targets of the result.
     :return:
     """
-    assert len(proba_res) == len(lab_res)
-
     nb_samples = proba_res[0].shape[0]
-    nb_targets = len(proba_res)
+    nb_attribs = len(proba_res)
+    predictions = init_predictions(nb_samples, nb_attribs)
 
-    predictions = init_predictions(nb_samples, nb_targets)
-
-    for i in range(nb_targets):
+    assert nb_attribs == len(lab_res)
+    for i in range(nb_attribs):
         my_result = lab_res[i].take(np.argmax(proba_res[i], axis=1), axis=0)
         np.rint(my_result)
         predictions[:, i] = my_result
@@ -139,14 +138,12 @@ def predict_values_from_numer(numer_res, counts):
     :param counts:          Amount of predictions that was summed
     :return:
     """
-    assert len(numer_res) == len(counts)
-
     nb_samples = numer_res[0].shape[0]
-    nb_targets = len(numer_res)
+    nb_attribs = len(numer_res)
+    predictions = init_predictions(nb_samples, nb_attribs)
 
-    predictions = init_predictions(nb_samples, nb_targets)
-
-    for i in range(nb_targets):
+    assert nb_attribs == len(counts)
+    for i in range(nb_attribs):
         my_result = numer_res[i] / counts[i]
         predictions[:, [i]] = my_result
 
@@ -154,6 +151,25 @@ def predict_values_from_numer(numer_res, counts):
 
 
 # Utilities
+def update_X(X, Y, act_att_idx):
+    """
+    Replace values in X with new values given by Y, in the correct places.
+
+    The array act_att_idx tells us what is contained in the Y-array. When
+    we enumerate act_att_idx, the index gives us the corresponding column in Y,
+    whereas the value tells us the corresponding column in X.
+
+    :param X:
+    :param Y:
+    :param act_att_idx:
+    :return:
+    """
+
+    for y_idx, attr_idx in enumerate(act_att_idx):
+        X[:, attr_idx] = Y[:, y_idx]
+    return X
+
+
 def init_predictions(nb_rows, nb_cols, type=np.float64):
     """
     Initialize an empty array to contain our results.
@@ -171,30 +187,11 @@ def init_predictions(nb_rows, nb_cols, type=np.float64):
     return np.zeros((nb_rows, nb_cols), dtype=type)
 
 
-def update_X(X, Y, act_att_idx):
-    """
-    Replace values in X with new values given by Y, in the correct places.
-
-    The array act_att_idx tells us what is contained in the Y-array. When
-    we enumerate act_att_idx, the index gives us the corresponding column in Y,
-    whereas the value tells us the corresponding column in X.
-
-    :param X:
-    :param Y:
-    :param act_att_idx:
-    :return:
-    """
-
-
-    for i, v in enumerate(act_att_idx):
-        X[:, v] = Y[:, i]
-    return X
-
-
 # Internal methods
 def _get_mask(lab_res, lab_mod, t_idx_res, t_idx_mod):
     """
-    Check which labels in lab_mod also occur in lab_res.
+    Check which classlabels predicted by the model also occur in the
+    classlabels in the result
 
     This is easily achieved with the np.isin which yields a boolean mask.
 

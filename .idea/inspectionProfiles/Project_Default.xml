@@ -15,6 +15,8 @@
         <list>
           <option value="src.tests.unit.test_algo_induction.*" />
           <option value="src.tests.integration.test_algo_inference.*" />
+          <option value="src.tests.unit.test_algo_inference.mercs" />
+          <option value="src.tests.unit.test_algo_inference.init_predictions" />
         </list>
       </option>
     </inspection_tool>

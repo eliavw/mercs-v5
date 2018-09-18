@@ -171,11 +171,12 @@ def collect_classlabels(m, nb_targ, m_idx=0):
     :param nb_targ:     Number of target attributes
     :return:
     """
+    # TODO: Fix the hotfix
 
     if hasattr(m, 'classes_'):
         if nb_targ == 1:
             # Single-target model
-            if type(m.classes_) is list:  # Hotfix. TODO(elia): DO THIS MORE NICELY
+            if isinstance(m.classes_, list): # Hotfix.
                 # This occurs when we ask classes_ of a model we built ourselves.
                 m_classlabels = m.classes_
             else:

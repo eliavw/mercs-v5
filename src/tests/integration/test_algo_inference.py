@@ -2,7 +2,6 @@
 Integration tests of test_algo_inference
 """
 
-
 # Standard imports
 import os
 import numpy as np

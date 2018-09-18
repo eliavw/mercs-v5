@@ -49,7 +49,7 @@ class PolyModel(object):
         return
 
     # Helpers
-    def get_mod_desc_targ(self, act_mod_idx):
+    def _get_mod_desc_targ(self, act_mod_idx):
         """
         Trivial helper for common combo
 
@@ -62,7 +62,7 @@ class PolyModel(object):
         mod_targ = self.m_targ[act_mod_idx]
         return mod, mod_desc, mod_targ
 
-    def init_res_nominal(self, nb_samples):
+    def _init_res_nominal(self, nb_samples):
         """
         Initialize datastructure for probabilities of nominal outcomes
 
@@ -83,7 +83,7 @@ class PolyModel(object):
 
         return res_nominal
 
-    def init_res_numeric(self, nb_samples):
+    def _init_res_numeric(self, nb_samples):
         """
         Initialize datastructure for numeric predictions
 
@@ -157,7 +157,7 @@ class EnsembleModel(PolyModel):
         assert len(self.targ_att_nominal) > 0  # Otherwise nothing to predict
 
         # Init datastructure
-        res_prob = self.init_res_nominal(X.shape[0])
+        res_proba = self._init_res_nominal(X.shape[0])
 
         # Get active attributes
         res_atts = self.targ_att_nominal    # Only nominal targets
@@ -168,8 +168,9 @@ class EnsembleModel(PolyModel):
 
         # Do actual prediction
         for m_idx in act_mod_idx:
-            mod, mod_desc, mod_targ = self.get_mod_desc_targ(m_idx)
+            mod, mod_desc, mod_targ = self._get_mod_desc_targ(m_idx)
 
+            # Filter the nominal targets
             mod_targ_nominal = [self.is_attr_nominal[v] for v in mod_targ]
             mod_targ = [v for i, v in enumerate(mod_targ) if mod_targ_nominal[i]]
             nb_targ = len(mod_targ)
@@ -185,9 +186,9 @@ class EnsembleModel(PolyModel):
                 t_idx_res = res_atts.index(t)  # Index of current target attr in result
                 t_idx_mod = mod_targ.index(t)  # Index of current target attr in  current model
 
-                res_prob = merge_proba(res_prob, mod_prob, res_labs, mod_labs, t_idx_res, t_idx_mod, nb_targ=nb_targ)
+                res_proba = merge_proba(res_proba, mod_prob, res_labs, mod_labs, t_idx_res, t_idx_mod, nb_targ=nb_targ)
 
-        return res_prob
+        return res_proba
 
     def predict_numer(self, X):
         """
@@ -200,7 +201,7 @@ class EnsembleModel(PolyModel):
         assert len(self.targ_att_numeric) > 0    # Otherwise nothing to predict
 
         # Init datastruct
-        res_numeric = self.init_res_numeric(X.shape[0])
+        res_numeric = self._init_res_numeric(X.shape[0])
         counts = [0] * len(res_numeric)                # Count amount of predictions for a single target
 
         # Get active attributes
@@ -211,7 +212,7 @@ class EnsembleModel(PolyModel):
 
         # Do actual prediction
         for m_idx in act_mod_idx:
-            mod, mod_desc, mod_targ = self.get_mod_desc_targ(m_idx)
+            mod, mod_desc, mod_targ = self._get_mod_desc_targ(m_idx)
             nb_targ = len(mod_targ)
 
             mod_pred = mod.predict(X[:, mod_desc])  # Individual prediction
@@ -284,7 +285,7 @@ class ChainedModel(PolyModel):
             assert len(act_mod_idx) == 1
 
             # Get model, m_desc, m_targ
-            mod, mod_desc, mod_targ = self.get_mod_desc_targ(act_mod_idx[0])
+            mod, mod_desc, mod_targ = self._get_mod_desc_targ(act_mod_idx[0])
 
             # Prediction
             mod_pred = mod.predict(X[:, mod_desc])
@@ -305,7 +306,7 @@ class ChainedModel(PolyModel):
         # Init datastruct
         res_atts = self.targ_att_nominal
         res_labs = self.classes_
-        res_prob = self.init_res_nominal(X.shape[0])
+        res_prob = self._init_res_nominal(X.shape[0])
 
         step = 1
         while step <= self.max_step:
@@ -314,7 +315,7 @@ class ChainedModel(PolyModel):
             assert len(act_mod_idx) == 1
 
             # Get model, m_desc, m_targ
-            mod, mod_desc, mod_targ = self.get_mod_desc_targ(act_mod_idx[0])
+            mod, mod_desc, mod_targ = self._get_mod_desc_targ(act_mod_idx[0])
             nb_targ = len(mod_targ)
 
             # Prediction
@@ -332,7 +333,12 @@ class ChainedModel(PolyModel):
                     t_idx_res = res_atts.index(t)  # Index of current target attr in result
                     t_idx_mod = mod_targ.index(t)  # Index of current target attr in  current model
 
-                    res_prob = merge_proba(res_prob, mod_prob, res_labs, mod_labs, t_idx_res, t_idx_mod,
+                    res_prob = merge_proba(res_prob,
+                                           mod_prob,
+                                           res_labs,
+                                           mod_labs,
+                                           t_idx_res,
+                                           t_idx_mod,
                                            nb_targ=nb_targ)
 
             # Update X
@@ -343,7 +349,6 @@ class ChainedModel(PolyModel):
             step += 1
 
         return res_prob
-
 
     # CHANGE
     def get_act_mod_att(self, step):
