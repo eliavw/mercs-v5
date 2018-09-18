@@ -110,13 +110,21 @@ def merge_pred(pred_res, pred_mod, t_idx_res, t_idx_mod, nb_targ):
 # Converting to actual output values
 def predict_values_from_proba(proba_res, lab_res):
     """
-    Convert probabilities of outcomes to actual labels
+    Convert probabilities of outcomes to actual labels.
 
-    :param proba_res:   Probabilities of all the classes of all the targets of
-                        the result.
-    :param lab_res:     Classlabels of all the targets of the result.
-    :return:
+    Parameters
+    ----------
+    proba_res: list of np.ndarray, shape (targets, (samples, classlabels))
+        Probabilities of all the classes of all the targets of
+        the result.
+
+    lab_res: list of np.ndarray, shape (targets, (classlabels,))
+        Classlabels of all the targets of the result.
+
+    Returns
+    -------
     """
+
     nb_samples = proba_res[0].shape[0]
     nb_attribs = len(proba_res)
     predictions = init_predictions(nb_samples, nb_attribs)
