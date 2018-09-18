@@ -10,6 +10,13 @@
         </value>
       </option>
     </inspection_tool>
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="E402" />
+        </list>
+      </option>
+    </inspection_tool>
     <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
       <option name="ignoredErrors">
         <list>
@@ -25,6 +32,7 @@
           <option value="src.tests.integration.test_algo_inference.*" />
           <option value="src.tests.unit.test_algo_inference.mercs" />
           <option value="src.tests.unit.test_algo_inference.init_predictions" />
+          <option value="bool.*" />
         </list>
       </option>
     </inspection_tool>

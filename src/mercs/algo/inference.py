@@ -164,6 +164,8 @@ def update_X(X, Y, act_att_idx):
     :param act_att_idx:     Attributes contained in Y
     :return:
     """
+    assert len(X.shape) == len(Y.shape) == 2
+    assert X.shape[0] == Y.shape[0]
     assert X.shape[1] >= Y.shape[1]
     assert Y.shape[1] == len(act_att_idx)
     assert X.shape[1] >= np.max(act_att_idx)
