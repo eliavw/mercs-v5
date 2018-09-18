@@ -83,26 +83,45 @@ def merge_numer(pred_res, pred_mod, t_idx_res, t_idx_mod, nb_targ):
 
     Parameters
     ----------
-    pred_res
-    pred_mod: {list, np.ndarray}, shape (nb_samples, nb_targ)
-        Predictions
-    t_idx_res
-    t_idx_mod
-    nb_targ
+    pred_res: np.ndarray, shape (nb_samples, nb_targ_total)
+        Predictions of a higher-order model. This method is quite oblivious
+        to this array. The only thing that matters is that we add the data
+        from the single model to the correct entries (correct columns) in
+        this bigger array
+    pred_mod: {list, np.ndarray}, shape (nb_samples, nb_targ_mod)
+        Predictions of a single model
+    t_idx_res: int
+        Index of the column that corresponds to the target attribute t in
+        the array pred_res
+    t_idx_mod: int
+        Index of the column that corresponds to the target attribute t in
+        the array pred_mod
+    nb_targ:
+        Number of targets in pred_mod. This matters because
+        sklearn outputs array of shape:
+            (nb_samples, )              in the single target case
+                vs.
+            (nb_samples, nb_targets)    in the multi-target case
+
+        ...which really sucks but we fix it here.
 
     Returns
     -------
 
     """
+    assert nb_targ >= 1
     # TODO(elia): Own models might also better provide np.ndarray...
 
     if isinstance(pred_mod, list):
+        # Happens when it is a model WE built ourselves
         broadcast = np.squeeze(np.atleast_2d(pred_mod).T)
     elif nb_targ == 1:
         # Single target sklearn output (needs reformatting, yields only np.array)
         broadcast = np.atleast_2d(pred_mod).T
     else:
         broadcast = pred_mod
+
+    assert broadcast.shape[0] == pred_res.shape[0]
 
     pred_res[t_idx_res] += broadcast[:, [t_idx_mod]]
     del broadcast
