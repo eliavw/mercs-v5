@@ -155,15 +155,17 @@ def update_X(X, Y, act_att_idx):
     """
     Replace values in X with new values given by Y, in the correct places.
 
-    The array act_att_idx tells us what is contained in the Y-array. When
-    we enumerate act_att_idx, the index gives us the corresponding column in Y,
-    whereas the value tells us the corresponding column in X.
+    The array act_att_idx tells us what is contained in the Y-array.
+    When we enumerate act_att_idx, the index gives us the corresponding
+    column in Y, whereas the value tells us the corresponding column in X.
 
-    :param X:
-    :param Y:
-    :param act_att_idx:
+    :param X:               Matrix X
+    :param Y:               Matrix Y
+    :param act_att_idx:     Attributes contained in Y
     :return:
     """
+    assert Y.shape[1] <= X.shape[1]
+    assert Y.shape[1] == len(act_att_idx)
 
     for y_idx, attr_idx in enumerate(act_att_idx):
         X[:, attr_idx] = Y[:, y_idx]
