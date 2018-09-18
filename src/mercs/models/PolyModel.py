@@ -223,11 +223,11 @@ class EnsembleModel(PolyModel):
                 t_idx_res = targ_res.index(t)  # Index of target t in result
                 t_idx_mod = targ_mod.index(t)  # Index of target t in  current model
 
-                res_numeric = merge_pred(res_numeric,
-                                         mod_pred,
-                                         t_idx_res,
-                                         t_idx_mod,
-                                         nb_targ)
+                res_numeric = merge_numer(res_numeric,
+                                          mod_pred,
+                                          t_idx_res,
+                                          t_idx_mod,
+                                          nb_targ)
                 counts[t_idx_res] += 1
 
             del mod_pred

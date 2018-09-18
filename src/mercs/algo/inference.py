@@ -77,34 +77,36 @@ def merge_proba(proba_res,
     return proba_res
 
 
-def merge_pred(pred_res, pred_mod, t_idx_res, t_idx_mod, nb_targ):
+def merge_numer(pred_res, pred_mod, t_idx_res, t_idx_mod, nb_targ):
     """
     Merge non-probabilistic predictions.
 
-    :param pred_res:
-    :param pred_mod:
-    :param t_idx_res:
-    :param t_idx_mod:
-    :param nb_targ:
-    :return:
+    Parameters
+    ----------
+    pred_res
+    pred_mod: {list, np.ndarray}, shape (nb_samples, nb_targ)
+        Predictions
+    t_idx_res
+    t_idx_mod
+    nb_targ
+
+    Returns
+    -------
+
     """
+    # TODO(elia): Own models might also better provide np.ndarray...
 
     if isinstance(pred_mod, list):
-        # This means it comes from a model WE made.
-        # TODO(elia): We should probably rely completely on np.array too, since it is better.
-        pred_res[t_idx_res] += pred_mod[t_idx_mod]
-        return pred_res
+        broadcast = np.squeeze(np.atleast_2d(pred_mod).T)
     elif nb_targ == 1:
         # Single target sklearn output (needs reformatting, yields only np.array)
         broadcast = np.atleast_2d(pred_mod).T
-
-        pred_res[t_idx_res] += broadcast[:, [t_idx_mod]]
-        del broadcast
-        return pred_res
     else:
-        # Multi-target sklearn np.array (does not need reformat)
-        pred_res[t_idx_res] += pred_mod[:, [t_idx_mod]]
-        return pred_res
+        broadcast = pred_mod
+
+    pred_res[t_idx_res] += broadcast[:, [t_idx_mod]]
+    del broadcast
+    return pred_res
 
 
 # Converting to actual output values
