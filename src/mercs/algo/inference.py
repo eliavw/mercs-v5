@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from ..utils.utils import encode_attribute
 
 
 # Imputation
@@ -21,10 +22,11 @@ def perform_imputation(test_data_df, query_code, imputator):
     assert isinstance(query_code, (np.ndarray, list))
     assert len(test_data_df.columns.values)==len(query_code)
 
+    missing_attribute_encoding = encode_attribute(0, [1], [2])
     query_data_df = test_data_df.copy()
 
     for i, v in enumerate(query_code):
-        if v == -1:
+        if v == missing_attribute_encoding:
             query_data_df.iloc[:, i] = np.nan
 
     query_data = imputator.transform(query_data_df)
@@ -32,13 +34,13 @@ def perform_imputation(test_data_df, query_code, imputator):
 
 
 # Merging outcomes
-def merge_proba(res_proba,
-                mod_proba,
+def merge_proba(proba_res,
+                proba_mod,
+                lab_res,
+                lab_mod,
                 t_idx_res,
                 t_idx_mod,
-                res_lab,
-                mod_lab,
-                nb_target=1):
+                nb_targ=1):
     """
     Add mod_proba to the correct entry in all_proba.
 
@@ -46,106 +48,106 @@ def merge_proba(res_proba,
 
     Also, take into account that mod_proba possibly relies on other classlabels.
 
-    :param res_proba:          Datastructure to contain the result (proba)
-    :param mod_proba:          Output of the current model (proba)
+    :param proba_res:          Datastructure to contain the result (proba)
+    :param proba_mod:          Output of the current model (proba)
     :param t_idx_res:          Index of current target attr in result
     :param t_idx_mod:          Index of current target attr in  current model
-    :param nb_target:          Number of targets of the model
+    :param nb_targ:          Number of targets of the model
     :return:
     """
 
-    mask = _get_mask(res_lab, mod_lab, t_idx_res, t_idx_mod)
+    mask = _get_mask(lab_res, lab_mod, t_idx_res, t_idx_mod)
 
-    if nb_target == 1:
-        if type(mod_proba) is list:
-            mod_proba = mod_proba[0]                        # Hotfix. TODO: DO THIS MORE NICELY
+    if nb_targ == 1:
+        if type(proba_mod) is list:
+            proba_mod = proba_mod[0]                        # Hotfix. TODO: DO THIS MORE NICELY
 
-        res_proba[t_idx_res][:, mask] += mod_proba          # Single target case
+        proba_res[t_idx_res][:, mask] += proba_mod          # Single target case
     else:
-        res_proba[t_idx_res][:, mask] += mod_proba[t_idx_mod]   # Multiple target case
+        proba_res[t_idx_res][:, mask] += proba_mod[t_idx_mod]   # Multiple target case
 
-    return res_proba
+    return proba_res
 
 
-def merge_pred(res_pred, mod_pred, t_idx_res, t_idx_mod, nb_targ):
+def merge_pred(pred_res, pred_mod, t_idx_res, t_idx_mod, nb_targ):
     """
     Merge non-probabilistic predictions
 
-    :param res_pred:
-    :param mod_pred:
+    :param pred_res:
+    :param pred_mod:
     :param t_idx_res:
     :param t_idx_mod:
     :param nb_targ:
     :return:
     """
 
-    if type(mod_pred) is list:
+    if type(pred_mod) is list:
         # This means it comes from a model WE made.
         # TODO(elia): We should probably rely completely on np.array too, since it is better.
-        res_pred[t_idx_res] += mod_pred[t_idx_mod]
-        return res_pred
+        pred_res[t_idx_res] += pred_mod[t_idx_mod]
+        return pred_res
     elif nb_targ == 1:
         # Single target sklearn output (needs reformatting)
-        broadcast = np.atleast_2d(mod_pred).T
+        broadcast = np.atleast_2d(pred_mod).T
 
-        res_pred[t_idx_res] += broadcast[:,[t_idx_mod]] # Single target sklearn yields only np.array
+        pred_res[t_idx_res] += broadcast[:, [t_idx_mod]] # Single target sklearn yields only np.array
         del broadcast
-        return res_pred
+        return pred_res
     else:
         # Multi-target sklearn np.array (does not need reformat)
-        res_pred[t_idx_res] += mod_pred[:,[t_idx_mod]]
-        return res_pred
+        pred_res[t_idx_res] += pred_mod[:, [t_idx_mod]]
+        return pred_res
 
 
 # Converting to actual output values
-def predict_values_from_proba(res_proba, res_lab):
+def predict_values_from_proba(proba_res, lab_res):
     """
     Convert probabilities of outcomes to actual labels
 
-    :param res_proba:   Probabilities of all the classes of all the targets of
+    :param proba_res:   Probabilities of all the classes of all the targets of
                         the result.
-    :param res_lab:     Classlabels of all the targets of the result.
+    :param lab_res:     Classlabels of all the targets of the result.
     :return:
     """
 
-    assert len(res_proba) == len(res_lab)
-    nb_samples = res_proba[0].shape[0]
-    nb_targets = len(res_proba)
+    assert len(proba_res) == len(lab_res)
+    nb_samples = proba_res[0].shape[0]
+    nb_targets = len(proba_res)
 
     predictions = init_predictions(nb_samples, nb_targets)
 
     for i in range(nb_targets):
-        my_result = res_lab[i].take(np.argmax(res_proba[i], axis=1), axis=0)
+        my_result = lab_res[i].take(np.argmax(proba_res[i], axis=1), axis=0)
         np.rint(my_result)
         predictions[:, i] = my_result
 
     return predictions.astype(int)
 
 
-def predict_values_from_numer(res_numer, counts):
+def predict_values_from_numer(numer_res, counts):
     """
     Average numeric predictions
 
-    :param res_numer:       Sum of numeric predictions
+    :param numer_res:       Sum of numeric predictions
     :param counts:          Amount of predictions that was summed
     :return:
     """
 
-    assert len(res_numer) == len(counts)
-    nb_samples = res_numer[0].shape[0]
-    nb_targets = len(res_numer)
+    assert len(numer_res) == len(counts)
+    nb_samples = numer_res[0].shape[0]
+    nb_targets = len(numer_res)
 
     predictions = init_predictions(nb_samples, nb_targets)
 
     for i in range(nb_targets):
-        my_result = res_numer[i] / counts[i]
+        my_result = numer_res[i] / counts[i]
         predictions[:, [i]] = my_result
 
     return predictions
 
 
 # Utilities
-def init_predictions(nb_rows, nb_columns):
+def init_predictions(nb_rows, nb_cols):
     """
     Initialize an empty array to contain our results.
 
@@ -155,10 +157,10 @@ def init_predictions(nb_rows, nb_columns):
     We want consistency to easily locate eventual bugs.
 
     :param nb_rows:
-    :param nb_columns:
+    :param nb_cols:
     :return:
     """
-    return np.zeros((nb_rows, nb_columns), dtype=np.float64)
+    return np.zeros((nb_rows, nb_cols), dtype=np.float64)
 
 
 def update_X(X, Y, act_att_idx):
@@ -166,20 +168,21 @@ def update_X(X, Y, act_att_idx):
         X[:, v] = Y[:, i]
     return X
 
+
 # Internal methods
-def _get_mask(res_lab, mod_lab, t_idx_res, t_idx_mod):
+def _get_mask(lab_res, lab_mod, t_idx_res, t_idx_mod):
     """
     Check which labels in mod_lab also occur in res_lab.
 
     This is easily achieved with the np.isin which yields a boolean mask.
 
-    :param res_lab:     Classlabels of the result
-    :param mod_lab:     Classlabels of the model
+    :param lab_res:     Classlabels of the result
+    :param lab_mod:     Classlabels of the model
     :param t_idx_res:   Index of the current target in result
     :param t_idx_mod:   Index of the current target in current model
     :return:
     """
 
-    mask = np.isin(res_lab[t_idx_res], mod_lab[t_idx_mod], assume_unique=True)
+    mask = np.isin(lab_res[t_idx_res], lab_mod[t_idx_mod], assume_unique=True)
 
     return mask

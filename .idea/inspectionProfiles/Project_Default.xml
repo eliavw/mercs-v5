@@ -14,6 +14,7 @@
       <option name="ignoredIdentifiers">
         <list>
           <option value="src.tests.unit.test_algo_induction.*" />
+          <option value="src.tests.integration.test_algo_inference.*" />
         </list>
       </option>
     </inspection_tool>

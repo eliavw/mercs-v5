@@ -13,7 +13,8 @@ def codes_to_query(codes, atts=None):
     :return: Three arrays.      One for desc atts indices, one for targets, one for missing
     """
 
-    if atts is None: atts = list(range(len(codes[0])))
+    if atts is None:
+        atts = list(range(len(codes[0])))
     nb_codes = len(codes)
 
     desc, targ, miss = [], [], []
@@ -39,11 +40,10 @@ def code_to_query(code, atts=None):
     :param atts:                Array that contains the attributes (indices)
     :return: Three arrays.      One for desc atts indices, one for targets,
                                 one for missing
-
-    TODO(elia): The coding strategy is still hardcoded here. Fix this.
     """
 
-    if atts is None: atts = list(range(len(code)))
+    if atts is None:
+        atts = list(range(len(code)))
     assert len(code) == len(atts)
 
     desc = [x for i, x in enumerate(atts)

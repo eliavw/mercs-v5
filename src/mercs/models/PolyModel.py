@@ -185,13 +185,7 @@ class EnsembleModel(PolyModel):
                 t_idx_res = res_atts.index(t)  # Index of current target attr in result
                 t_idx_mod = mod_targ.index(t)  # Index of current target attr in  current model
 
-                res_prob = merge_proba(res_prob,
-                                       mod_prob,
-                                       t_idx_res,
-                                       t_idx_mod,
-                                       res_labs,
-                                       mod_labs,
-                                       nb_target=nb_targ)
+                res_prob = merge_proba(res_prob, mod_prob, res_labs, mod_labs, t_idx_res, t_idx_mod, nb_targ=nb_targ)
 
         return res_prob
 
@@ -338,13 +332,8 @@ class ChainedModel(PolyModel):
                     t_idx_res = res_atts.index(t)  # Index of current target attr in result
                     t_idx_mod = mod_targ.index(t)  # Index of current target attr in  current model
 
-                    res_prob = merge_proba(res_prob,
-                                           mod_prob,
-                                           t_idx_res,
-                                           t_idx_mod,
-                                           res_labs,
-                                           mod_labs,
-                                           nb_target=nb_targ)
+                    res_prob = merge_proba(res_prob, mod_prob, res_labs, mod_labs, t_idx_res, t_idx_mod,
+                                           nb_targ=nb_targ)
 
             # Update X
             X = update_X(X, mod_pred, act_att_idx)
