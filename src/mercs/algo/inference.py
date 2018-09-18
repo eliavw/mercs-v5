@@ -77,18 +77,18 @@ def merge_proba(proba_res,
     return proba_res
 
 
-def merge_numer(pred_res, pred_mod, t_idx_res, t_idx_mod, nb_targ):
+def merge_numer(numer_res, numer_mod, t_idx_res, t_idx_mod, nb_targ):
     """
     Merge non-probabilistic predictions.
 
     Parameters
     ----------
-    pred_res: np.ndarray, shape (nb_samples, nb_targ_total)
+    numer_res: np.ndarray, shape (nb_samples, nb_targ_total)
         Predictions of a higher-order model. This method is quite oblivious
         to this array. The only thing that matters is that we add the data
         from the single model to the correct entries (correct columns) in
         this bigger array
-    pred_mod: {list, np.ndarray}, shape (nb_samples, nb_targ_mod)
+    numer_mod: {list, np.ndarray}, shape (nb_samples, nb_targ_mod)
         Predictions of a single model
     t_idx_res: int
         Index of the column that corresponds to the target attribute t in
@@ -109,23 +109,26 @@ def merge_numer(pred_res, pred_mod, t_idx_res, t_idx_mod, nb_targ):
     -------
 
     """
-    assert nb_targ >= 1
     # TODO(elia): Own models might also better provide np.ndarray...
 
-    if isinstance(pred_mod, list):
+    if isinstance(numer_mod, list):
         # Happens when it is a model WE built ourselves
-        broadcast = np.squeeze(np.atleast_2d(pred_mod).T)
-    elif nb_targ == 1:
-        # Single target sklearn output (needs reformatting, yields only np.array)
-        broadcast = np.atleast_2d(pred_mod).T
+        broadcast = np.squeeze(np.atleast_2d(numer_mod).T)
+    elif isinstance(numer_mod, np.ndarray):
+        if len(numer_mod.shape) < 2:
+            # Single target sklearn output (needs reformatting, yields only np.array)
+            broadcast = np.atleast_2d(numer_mod).T
+        else:
+            broadcast = numer_mod
     else:
-        broadcast = pred_mod
+        msg="Got wrong type of inputs. This method needs a list or a numpy array"
+        raise TypeError(msg)
 
-    assert broadcast.shape[0] == pred_res.shape[0]
+    assert broadcast.shape[0] == numer_res.shape[0]
 
-    pred_res[t_idx_res] += broadcast[:, [t_idx_mod]]
+    numer_res[t_idx_res] += broadcast[:, [t_idx_mod]]
     del broadcast
-    return pred_res
+    return numer_res
 
 
 # Converting to actual output values
