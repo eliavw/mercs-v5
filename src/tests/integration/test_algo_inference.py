@@ -11,7 +11,7 @@ from os.path import dirname
 
 
 # Custom imports
-root_directory = dirname(os.getcwd())
+root_directory = dirname(dirname(dirname(dirname(__file__))))
 for dname in {'src'}:
     sys.path.insert(0, os.path.join(root_directory, dname))
 
