@@ -48,15 +48,26 @@ def merge_proba(proba_res,
     This based on the indices passed to this function. Also, take into account
     that proba array of a single model possibly relies on other classlabels.
 
-    :param proba_res:           Datastructure to contain the result (proba)
-    :param proba_mod:           Datastructure to contain the result
-                                of the current model (proba)
-    :param lab_res:             Classlabels of the result
-    :param lab_mod:             Classlabels of the model
-    :param t_idx_res:           Index of current target attr in result
-    :param t_idx_mod:           Index of current target attr in  current model
-    :param nb_targ:             Number of targets of the model
-    :return:
+    Parameters
+    ----------
+    proba_res
+        Contains the result (proba)
+    proba_mod
+        Contains the result of the current model (proba)
+    lab_res
+        Classlabels of the result
+    lab_mod
+        Classlabels of the model
+    t_idx_res
+        Index of current target attr in result
+    t_idx_mod
+        Index of current target attr in  current model
+    nb_targ
+        umber of targets of the model
+
+    Returns
+    -------
+
     """
     # TODO: Fix the hotfix
 
