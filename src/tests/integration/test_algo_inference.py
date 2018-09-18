@@ -38,7 +38,7 @@ def test_perform_imputation():
     assert test.shape == obs.shape
     assert isinstance(obs, np.ndarray)
 
-    boolean_missing = missing_attribute_encoding
+    boolean_missing = encode_attribute(0, [1], [2])
 
     for row in obs[:, boolean_missing].T:
         assert len(np.unique(x)) == 1

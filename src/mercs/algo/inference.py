@@ -42,11 +42,11 @@ def merge_proba(proba_res,
                 t_idx_mod,
                 nb_targ=1):
     """
-    Add mod_proba to the correct entry in all_proba.
+    Add the probabilities from a single model to the array including all.
 
-    This based on the indices passed to this function.
 
-    Also, take into account that mod_proba possibly relies on other classlabels.
+    This based on the indices passed to this function. Also, take into account
+    that proba array of a single model possibly relies on other classlabels.
 
     :param proba_res:          Datastructure to contain the result (proba)
     :param proba_mod:          Output of the current model (proba)
