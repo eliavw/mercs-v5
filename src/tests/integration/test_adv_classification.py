@@ -24,7 +24,8 @@ def setup_classification():
     model = MERCS()
 
     ind_parameters = {'ind_type':           'RF',
-                      'ind_n_estimators':   10}
+                      'ind_n_estimators':   10,
+                      'ind_max_depth':      4}
 
     sel_parameters = {'sel_type':           'Base',
                       'sel_its':            4,
