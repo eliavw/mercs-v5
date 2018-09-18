@@ -30,13 +30,15 @@ def test_perform_imputation():
     imputator = Imputer(missing_values='NaN',
                         strategy='most_frequent',
                         axis=0)
-    obs = imputator.fit(train)
+    imputator.fit(train)
 
     # Actual test
-    assert train.shape == obs.shape
+    obs = perform_imputation(test, query_code, imputator)
+
+    assert test.shape == obs.shape
     assert isinstance(obs, np.ndarray)
 
-    boolean_missing = encode_attribute(0, [1], [2])
+    boolean_missing = missing_attribute_encoding
 
     for row in obs[:, boolean_missing].T:
         assert len(np.unique(x)) == 1
