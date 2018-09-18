@@ -41,4 +41,4 @@ def test_perform_imputation():
     boolean_missing = encode_attribute(0, [1], [2])
 
     for row in obs[:, boolean_missing].T:
-        assert len(np.unique(x)) == 1
+        assert len(np.unique(row)) == 1
