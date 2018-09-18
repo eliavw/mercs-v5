@@ -135,14 +135,14 @@ class EnsembleModel(PolyModel):
             Y_nominal = predict_values_from_proba(res_nominal, self.classes_)
             predictions = self.assemble_predictions(predictions,
                                                     Y_nominal,
-                                                    mode = 'nominal')
+                                                    mode='nominal')
 
         if len(self.targ_att_numeric) > 0:
             res_numer, counts = self.predict_numer(X)
             Y_numer = predict_values_from_numer(res_numer, counts)
             predictions = self.assemble_predictions(predictions,
                                                     Y_numer,
-                                                    mode = 'numeric')
+                                                    mode='numeric')
 
         return predictions
 
@@ -194,34 +194,34 @@ class EnsembleModel(PolyModel):
         """
         Collect all the predictions for the numeric targets.
 
-        So this method ONLY yields results for the numeric targets.
+        This method ONLY yields results for the numeric targets.
         """
 
         # Basic check
         assert len(self.targ_att_numeric) > 0    # Otherwise nothing to predict
 
-        # Init datastruct
+        # Init datastructure
         res_numeric = self._init_res_numeric(X.shape[0])
-        counts = [0] * len(res_numeric)                # Count amount of predictions for a single target
+        counts = [0] * len(res_numeric)         # Count amount of predictions for a single target
 
         # Get active attributes
-        res_targ = self.targ_att_numeric            # Only numeric targets
+        targ_res = self.targ_att_numeric        # Only numeric targets
 
         # Get active models
         act_mod_idx = self.mod_idx_numeric
 
         # Do actual prediction
         for m_idx in act_mod_idx:
-            mod, mod_desc, mod_targ = self._get_mod_desc_targ(m_idx)
-            nb_targ = len(mod_targ)
+            mod, desc_mod, targ_mod = self._get_mod_desc_targ(m_idx)
+            nb_targ = len(targ_mod)
 
-            mod_pred = mod.predict(X[:, mod_desc])  # Individual prediction
+            mod_pred = mod.predict(X[:, desc_mod])  # Individual prediction
 
-            shared_targets = set(mod_targ) & set(res_targ)
+            targ_share = set(targ_mod) & set(targ_res)
 
-            for t in shared_targets:
-                t_idx_res = res_targ.index(t)  # Index of current target attr in result
-                t_idx_mod = mod_targ.index(t)  # Index of current target attr in  current model
+            for t in targ_share:
+                t_idx_res = targ_res.index(t)  # Index of target t in result
+                t_idx_mod = targ_mod.index(t)  # Index of target t in  current model
 
                 res_numeric = merge_pred(res_numeric,
                                          mod_pred,

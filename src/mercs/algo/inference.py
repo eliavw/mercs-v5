@@ -95,10 +95,10 @@ def merge_pred(pred_res, pred_mod, t_idx_res, t_idx_mod, nb_targ):
         pred_res[t_idx_res] += pred_mod[t_idx_mod]
         return pred_res
     elif nb_targ == 1:
-        # Single target sklearn output (needs reformatting)
+        # Single target sklearn output (needs reformatting, yields only np.array)
         broadcast = np.atleast_2d(pred_mod).T
 
-        pred_res[t_idx_res] += broadcast[:, [t_idx_mod]] # Single target sklearn yields only np.array
+        pred_res[t_idx_res] += broadcast[:, [t_idx_mod]]
         del broadcast
         return pred_res
     else:

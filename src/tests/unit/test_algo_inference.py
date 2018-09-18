@@ -10,7 +10,7 @@ root_directory = dirname(dirname(dirname(dirname(__file__))))
 for dname in {'src'}:
     sys.path.insert(0, os.path.join(root_directory, dname))
 
-from mercs.algo.inference import init_predictions, update_X
+from mercs.algo.inference import init_predictions, update_X, predict_values_from_numer
 
 
 def test_init_predictions():
@@ -35,3 +35,21 @@ def test_update_X():
     assert obs.shape == X.shape
     assert test_col_0.all()
     assert test_col_1.all()
+
+
+def test_predict_values_from_numer():
+    # Init
+    nb_atts = 4
+    numer_res = [None] * nb_atts
+
+    for i in range(nb_atts):
+        numer_res[i] = np.random.rand(100, 1)
+
+    counts = np.random.randint(1, 10, size=(nb_atts))
+
+    # Actual Test
+    obs = predict_values_from_numer(numer_res, counts)
+
+    assert obs.shape[0] == numer_res[0].shape[0]
+    assert obs.shape[1] == nb_atts
+    assert isinstance(obs, np.ndarray)
