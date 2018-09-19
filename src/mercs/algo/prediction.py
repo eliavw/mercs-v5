@@ -105,11 +105,16 @@ def mafi_pred_algo(m_codes, q_codes, settings):
                                                         FI,
                                                         thresholds)
 
-            aas[q_idx] = aas_target_t           # This is unchanged.
+
 
             msg="This is mas_target_t: {}".format(mas_target_t)
             debug_print(msg,V=VERBOSITY, warn=True)
+
             mas[q_idx][mas_target_t > 0] = 1    # Each target selects some models
+            aas[q_idx] = aas_target_t  # This is unchanged.
+
+            msg = "This is mas[q_idx]: {}".format(mas[q_idx])
+            debug_print(msg, V=VERBOSITY, warn=True)
 
     return np.array(mas), np.array(aas)
 
