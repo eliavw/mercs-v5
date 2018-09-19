@@ -1,6 +1,10 @@
 from ..utils.utils import codes_to_query, encode_attribute
 import numpy as np
 
+# Debugger verbosity
+from ..utils.debug import debug_print
+VERBOSITY = 1
+
 # Main Functionalities
 def mi_pred_algo(m_codes, q_codes):
     # Preliminaries
@@ -87,15 +91,18 @@ def mafi_pred_algo(m_codes, q_codes, settings):
     for q_idx, q_code in enumerate(q_codes):
 
         for t in q_targ[q_idx]:
-            aas_target_t,  mas_target_t= _mafi_mas_aas(aas[q_idx],
+            aas_target_t,  mas_target_t = _mafi_mas_aas(aas[q_idx],
                                                        mas[q_idx],
                                                        q_desc[q_idx],
-                                                       [t],
+                                                       list(t),
                                                        m_codes,
                                                        FI,
                                                        thresholds)
 
             aas[q_idx] = aas_target_t           # This is unchanged.
+
+            msg="This is mas_target_t: {}".format(mas_target_t)
+            debug_print(msg,V=VERBOSITY, warn=True)
             mas[q_idx][mas_target_t > 0] = 1    # Each target selects some models
 
     return np.array(mas), np.array(aas)
@@ -122,6 +129,9 @@ def _mafi_mas_aas(aas, mas, q_desc, q_targ, m_codes, FI, thresholds):
 
     Returns
     -------
+    aas: np.ndarray, shape (nb_attributes,)
+
+    mas: np.ndarray, shape (nb_models,)
 
     """
     # Prelims
@@ -164,7 +174,7 @@ def _mafi_stopping_condition(mas, m_codes, q_targ):
     ----------
     mas
     m_codes
-    q_targ
+    q_targ: list
 
     Returns
     -------
