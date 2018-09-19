@@ -90,14 +90,20 @@ def mafi_pred_algo(m_codes, q_codes, settings):
     # Building mas & aas codes
     for q_idx, q_code in enumerate(q_codes):
 
+        msg = "This is q_targ[q_idx]: {}".format(q_targ[q_idx])
+        debug_print(msg, V=VERBOSITY, warn=True)
+
         for t in q_targ[q_idx]:
+            msg = "This is t, the target which we consider: {}".format(t)
+            debug_print(msg, V=VERBOSITY, warn=True)
+
             aas_target_t,  mas_target_t = _mafi_mas_aas(aas[q_idx],
-                                                       mas[q_idx],
-                                                       q_desc[q_idx],
-                                                       list(t),
-                                                       m_codes,
-                                                       FI,
-                                                       thresholds)
+                                                        mas[q_idx],
+                                                        q_desc[q_idx],
+                                                        list(t),
+                                                        m_codes,
+                                                        FI,
+                                                        thresholds)
 
             aas[q_idx] = aas_target_t           # This is unchanged.
 
