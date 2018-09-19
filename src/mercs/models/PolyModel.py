@@ -2,12 +2,42 @@ from abc import ABCMeta, abstractmethod
 from ..utils.utils import *
 from ..algo.inference import *
 from ..algo.prediction import recode_strat
+from ..utils.debug import debug_print
 
+# Debugger verbosity
+VERBOSITY = 1
 
 # Classes
 class PolyModel(object):
 
     def __init__(self, m_list, m_desc, m_targ, targ, metadata):
+        """
+        PolyModel is a composite model.
+
+        There are two main ways of composing a PolyModel:
+            a) Ensemble-model:  This is aggregation of component models.
+                                Geometrically speaking, this is 'horizontal'
+                                combination
+            b) Chained-model:   This is sequential combination of component
+                                models.
+                                Geomtetrically speaking, this is
+
+        Parameters
+        ----------
+        m_list
+        m_desc
+        m_targ
+        targ
+        metadata
+        """
+        con = (targ, m_targ, m_desc, m_list)
+        msg = "This PolyModel has\n" \
+              "targ: {}\n" \
+              "m_targ: {}\n" \
+              "m_desc: {}\n" \
+              "m_list: {}\n".format(*con)
+        debug_print(msg, level=1, V=VERBOSITY)
+        
         # Models
         self.m_list = m_list
 
