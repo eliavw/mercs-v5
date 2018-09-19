@@ -26,14 +26,16 @@ def mi_pred_algo(m_codes, q_codes):
 
 def ma_pred_algo(m_codes, q_codes, settings):
     # Preliminaries
+    initial_threshold = settings['param']
+    step_size = settings['its']
+    assert isinstance(initial_threshold, (int, float))
+    assert 0.0 < initial_threshold <= 1.0
+    assert isinstance(step_size, float)
+    assert 0.0 < step_size < 1.0
+
     nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = pred_prelims(m_codes,
                                                                                   q_codes)
     mas, aas = init_mas_aas(nb_models, nb_atts, nb_queries)
-
-    initial_threshold = settings['param']
-    step_size = settings['its']
-    assert isinstance(initial_threshold, (int,float))
-    assert isinstance(step_size, float)
 
     thresholds = np.arange(initial_threshold, -1, -step_size)
 
@@ -68,31 +70,33 @@ def ma_pred_algo(m_codes, q_codes, settings):
 
 def mafi_pred_algo(m_codes, q_codes, settings):
     # Preliminaries
+    initial_threshold = settings['param']
+    step_size = settings['its']
+    assert isinstance(initial_threshold, (int, float))
+    assert 0.0 < initial_threshold <= 1.0
+    assert isinstance(step_size, float)
+    assert 0.0 < step_size < 1.0
+
     nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = pred_prelims(m_codes,
                                                                                   q_codes)
     mas, aas = init_mas_aas(nb_models, nb_atts, nb_queries)
 
-    initial_threshold= settings['param']
-    step_size = settings['its']
-    assert isinstance(initial_threshold, (int,float))
-    assert isinstance(step_size, float)
-
     thresholds = np.arange(initial_threshold, -1, -step_size)
     FI = settings['FI']
 
-    # Building codes
-    for q_idx, q_code in enumerate(q_codes):
+    # Building mas & aas codes
+    for q_idx, q_code in enumerate(q_codes):                            # For every query:
         # Prelims
         aas[q_idx][q_desc[q_idx]] = 0
 
-        relevant_models = np.where(m_codes[:, q_targ[q_idx]] == 1)[0]  # Models that share a target with the queries.
+        relevant_models = np.where(m_codes[:, q_targ[q_idx]] == 1)[0]   # Models that share a target with the queries.
         mas[q_idx][relevant_models] = 1
 
-        avl_mods = mas[q_idx] > 0  # Avl. models share a target with queries
+        avl_mods = mas[q_idx] > 0                                       # Avl. models share a target with queries
         avl_atts = aas[q_idx] > -1
 
         # Att. activation
-        aas[q_idx][q_targ[q_idx]] = 1  # Does not depend on model activation strategy
+        aas[q_idx][q_targ[q_idx]] = 1                                   # Does not depend on model activation strategy
 
         # Model activation
         mod_appr_scores = [np.dot(avl_atts, FI[m_ind])
@@ -101,9 +105,10 @@ def mafi_pred_algo(m_codes, q_codes, settings):
 
         for thr in thresholds:
             mas[q_idx] = [1 if (mod_appr_scores[m_ind] > thr) else 0
-                                    for m_ind in range(nb_models)]  # All the models that are appropriate enough
+                          for m_ind in range(nb_models)]                # All the models that are appropriate enough
 
-            if np.sum(mas[q_idx]) >= 1: break  # We demand at least one model
+            if np.sum(mas[q_idx]) >= 1:
+                break                                                   # We demand at least one model
 
     return np.array(mas), np.array(aas)
 
@@ -119,7 +124,9 @@ def it_pred_algo(m_codes, q_codes, settings):
     step_size = settings['param']
     max_layers = settings['its']
     assert isinstance(max_layers, int)
+    assert 0 < max_layers
     assert isinstance(step_size, float)
+    assert 0.0 < step_size < 1.0
 
     FI = settings['FI']
 
@@ -208,10 +215,11 @@ def rw_pred_algo(m_codes, q_codes, settings):
 def generate_chain(m_codes, q_desc, q_targ, settings):
     # Choose chain length
     assert isinstance(settings['its'], int)
-    FI = settings['FI']
     max_size = settings['its'] + 1
     chain_size = np.random.randint(1, max_size)
     steps = np.arange(chain_size, 0, -1, dtype=int)
+    
+    FI = settings['FI']
 
     # Initializations
     nb_models = len(m_codes)
@@ -294,18 +302,34 @@ def pred_prelims(m_codes, q_codes):
 
 def init_mas_aas(nb_models, nb_atts, nb_queries):
     """
-    Initialization of the prediction strategies.
 
-    Shared between different prediction strategies.
 
-    :param nb_models:
-    :param nb_atts:
-    :param nb_queries:
-    :return:
+    Parameters
+    ----------
+    nb_models: int
+        Total number of models in the MERCS model
+    nb_atts: int
+        Total number of attributes in the MERCS model
+    nb_queries: int
+        Total number of queries that needs to be answered.
+
+    Returns
+    -------
+    mas: [np.ndarray], shape (nb_queries, (nb_models,))
+        E.g.:
+            [array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+             array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])]
+    aas: [np.ndarray], shape (nb_queries, (nb_atts,))
+        E.g.:
+            [array([-1, -1, -1]),
+             array([-1, -1, -1])]
     """
+    assert isinstance(nb_models, int)
+    assert isinstance(nb_atts, int)
+    assert isinstance(nb_queries, int)
 
-    mas = [np.zeros((nb_models), dtype=np.int) for j in range(nb_queries)]
-    aas = [np.full((nb_atts), -1, dtype=np.int) for j in range(nb_queries)]
+    mas = [np.full(nb_models, 0, dtype=np.int) for j in range(nb_queries)]
+    aas = [np.full(nb_atts, -1, dtype=np.int) for j in range(nb_queries)]
     return mas, aas
 
 
