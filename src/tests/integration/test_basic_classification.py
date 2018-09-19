@@ -18,9 +18,6 @@ from mercs.core import MERCS
 from mercs.utils import *
 import datasets as datasets
 
-import warnings
-warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
-
 
 def setup_classification():
     train, test = datasets.load_nursery()

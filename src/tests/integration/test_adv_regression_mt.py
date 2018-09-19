@@ -11,9 +11,7 @@ from sklearn.metrics import (mean_absolute_error,
                              mean_squared_error,
                              mean_squared_log_error)
 
-import warnings
-warning_to_surpress = "UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 in labels with no predicted samples."
-warnings.filterwarnings("ignore", message=warning_to_surpress)
+
 
 # Custom import (Add src to the path)
 root_directory = dirname(dirname(dirname(dirname(__file__))))
