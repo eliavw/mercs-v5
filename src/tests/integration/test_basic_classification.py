@@ -18,6 +18,10 @@ from mercs.core import MERCS
 from mercs.utils import *
 import datasets as datasets
 
+import warnings
+warning_to_surpress = "UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 in labels with no predicted samples."
+warnings.filterwarnings("ignore", message=warning_to_surpress)
+
 
 def setup_classification():
     train, test = datasets.load_nursery()
