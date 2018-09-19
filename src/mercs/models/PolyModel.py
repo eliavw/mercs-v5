@@ -37,7 +37,7 @@ class PolyModel(object):
               "m_targ: {}\n" \
               "m_desc: {}\n" \
               "m_list: {}\n".format(*con)
-        debug_print(msg, level=1, V=VERBOSITY, warn=True)
+        debug_print(msg, level=2, V=VERBOSITY, warn=True)
 
         # Models
         self.m_list = m_list
@@ -45,6 +45,16 @@ class PolyModel(object):
         # Attributes
         assert len(self.m_list) == len(m_desc)
         assert len(self.m_list) == len(m_targ)
+
+        if not set(targ) <= set(np.concatenate(m_targ)):
+            con = (targ, m_targ, m_desc, m_list)
+            msg = "This assertions will FAIL!\n" \
+                  "This PolyModel has\n" \
+                  "targ: {}\n" \
+                  "m_targ: {}\n" \
+                  "m_desc: {}\n" \
+                  "m_list: {}\n".format(*con)
+            debug_print(msg, level=1, V=VERBOSITY, warn=True)
         assert set(targ) <= set(np.concatenate(m_targ))  # targ is subset of all possible targets?
         self.m_desc = m_desc
         self.m_targ = m_targ
