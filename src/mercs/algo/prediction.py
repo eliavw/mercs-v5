@@ -1,6 +1,5 @@
-from ..utils.utils import *
+from ..utils.utils import codes_to_query, encode_attribute
 import numpy as np
-
 
 # Main Functionalities
 def mi_pred_algo(m_codes, q_codes):
@@ -85,7 +84,7 @@ def mafi_pred_algo(m_codes, q_codes, settings):
     FI = settings['FI']
 
     # Building mas & aas codes
-    for q_idx, q_code in enumerate(q_codes): 
+    for q_idx, q_code in enumerate(q_codes):
 
         aas[q_idx], mas[q_idx] = _mafi_mas_aas(aas[q_idx],
                                                mas[q_idx],
@@ -98,21 +97,21 @@ def mafi_pred_algo(m_codes, q_codes, settings):
     return np.array(mas), np.array(aas)
 
 
-def _mafi_mas_aas(q_aas, q_mas, q_desc, q_targ, m_codes, FI, thresholds):
+def _mafi_mas_aas(aas, mas, q_desc, q_targ, m_codes, FI, thresholds):
     """
 
 
     Parameters
     ----------
-    q_aas:
+    aas: np.ndarray, shape (nb_attributes,)
         Single aas, initialized
-    q_mas
+    mas: np.ndarray, shape (nb_models,)
         Single mas, initialized
-    q_desc
+    q_desc: list, shape (nb_desc_atts_query)
         Descriptive attributes of query under consideration
-    q_targ
+    q_targ: list, shape (nb_desc_atts_query)
         Target attributes of query under consideration
-    m_codes
+    m_codes: np.ndarray, shape (nb_models, nb_attributes)
         Codes of all the models
     FI
         FI of all the models
@@ -122,31 +121,57 @@ def _mafi_mas_aas(q_aas, q_mas, q_desc, q_targ, m_codes, FI, thresholds):
 
     """
     # Prelims
-    nb_models = q_mas.shape[0]
-    q_aas[q_desc] = 0
+    nb_models = mas.shape[0]
+    aas[q_desc] = 0
 
-    relevant_models = np.where(m_codes[:, q_targ] == 1)[0]  # Models that share a target with the queries.
-    q_mas[relevant_models] = 1
+    relevant_models = np.where(m_codes[:, q_targ] == 1)[0]  # Models that share at least a single target with the query
+    mas[relevant_models] = 1
 
-    avl_mods = q_mas > 0  # Avl. models share a target with queries
-    avl_atts = q_aas > -1
+    avl_mods = mas > 0                                      # Available models share a target with queries
+    avl_atts = aas > -1
 
     # Att. activation
-    q_aas[q_targ] = 1  # Does not depend on model activation strategy
+    aas[q_targ] = 1                                         # Does not depend on model activation strategy
 
     # Model activation
     mod_appr_scores = [np.dot(avl_atts, FI[m_ind])
                        if (avl_mods[m_ind] == 1) else -1
-                       for m_ind in range(nb_models)]
+                       for m_ind in range(nb_models)]       # Only available models get considered here
 
     for thr in thresholds:
-        q_mas = [1 if (mod_appr_scores[m_ind] > thr) else 0
-                 for m_ind in range(nb_models)]  # All the models that are appropriate enough
+        mas = [1 if (mod_appr_scores[m_ind] > thr) else 0
+               for m_ind in range(nb_models)]               # Binary selection of all appropriate enough models
 
-        if np.sum(q_mas) >= 1:
-            break  # We demand at least one model
+        if _mafi_stopping_condition(mas, m_codes, q_targ):
+            break
 
-    return q_aas, q_mas
+    return aas, mas
+
+
+def _mafi_stopping_condition(mas, m_codes, q_targ):
+    """
+
+    First, we generate q_targ_attributes_in_selected_models,
+    which is a subset of m_codes. Containing only those models who are
+    activated, and only the q_targ attributes. The idea is that every column
+    should at least have a target-code!
+
+    Parameters
+    ----------
+    mas
+    m_codes
+    q_targ
+
+    Returns
+    -------
+
+    """
+    q_targ_attributes_in_selected_models = m_codes[mas == 1, :][:, q_targ]
+
+    target_encoding = encode_attribute(1,[0],[1])
+    check = np.where(q_targ_attributes_in_selected_models == target_encoding)
+    q_targ_ok = np.unique(check[1])
+    return len(q_targ_ok) == len(q_targ)
 
 
 def it_pred_algo(m_codes, q_codes, settings):
@@ -338,7 +363,7 @@ def pred_prelims(m_codes, q_codes):
 
 def init_mas_aas(nb_models, nb_atts, nb_queries):
     """
-
+    Initialize the mas and aas arrays.
 
     Parameters
     ----------
