@@ -226,8 +226,7 @@ class EnsembleModel(PolyModel):
                 res_numeric = merge_numer(res_numeric,
                                           mod_pred,
                                           t_idx_res,
-                                          t_idx_mod,
-                                          nb_targ)
+                                          t_idx_mod)
                 counts[t_idx_res] += 1
 
             del mod_pred

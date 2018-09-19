@@ -3,8 +3,9 @@ import pandas as pd
 from ..utils.utils import encode_attribute
 from ..utils.debug import debug_print
 
-# Debug purposes
-VERBOSITY = 0
+# Debugger verbosity
+VERBOSITY = 1
+
 
 # Imputation
 def perform_imputation(test_data_df, query_code, imputator):
@@ -14,13 +15,20 @@ def perform_imputation(test_data_df, query_code, imputator):
     This means that it sets the unknown attributes first to NaN and afterwards
     imputes them.
 
-    :param test_data_df:    DataFrame that contains the test portion of the
-                            dataset. With all attributes.
-    :param query_code:      Code that conveys the functions of all the
-                            attributes.
-    :param imputator:       The thing used to impute, sklearn standard.
-    :return:
+    Parameters
+    ----------
+    test_data_df: DataFrame, shape (nb_samples, nb_attributes)
+        Contains the test portion of the dataset. With all attributes.
+    query_code: list, shape (nb_attributes, )
+        Code that conveys the functions of all the attributes.
+    imputator: sklearn.preprocessing.imputation.Imputer
+        The thing used to impute, sklearn standard.
+
+    Returns
+    -------
+
     """
+
     assert isinstance(test_data_df, pd.DataFrame)
     assert isinstance(query_code, (np.ndarray, list))
     assert len(test_data_df.columns.values) == len(query_code)
@@ -91,7 +99,7 @@ def merge_proba(proba_res,
     return proba_res
 
 
-def merge_numer(numer_res, numer_mod, t_idx_res, t_idx_mod, nb_targ):
+def merge_numer(numer_res, numer_mod, t_idx_res, t_idx_mod):
     """
     Merge non-probabilistic predictions.
 
@@ -103,33 +111,27 @@ def merge_numer(numer_res, numer_mod, t_idx_res, t_idx_mod, nb_targ):
         from the single model to the correct entries (correct columns) in
         this bigger array.
     numer_mod: {list, np.ndarray}, shape (nb_samples, nb_targ_mod)
-        Predictions of a single model
+        Predictions of a single model.
+        This is a list if it comes from a model we made, and an array if
+        it comes directly from sklearn.
     t_idx_res: int
         Index of the column that corresponds to the target attribute t in
         the array pred_res
     t_idx_mod: int
         Index of the column that corresponds to the target attribute t in
         the array pred_mod
-    nb_targ:
-        Number of targets in pred_mod. This matters because
-        sklearn outputs array of shape:
-            (nb_samples, )              in the single target case
-                vs.
-            (nb_samples, nb_targets)    in the multi-target case
-
-        ...which really sucks but we fix it here.
 
     Returns
     -------
 
     """
     # TODO(elia): Own models might also better provide np.ndarray...
-    msg = "Type of numer_res: {} \n" \
+
+    con_1 = (type(numer_res), type(numer_res[0]), numer_res[0].shape)
+    msg_1 = "Type of numer_res: {} \n" \
           "And type of numer_res[0]: {}\n" \
-          "And shape of numer_res[0]: {}\n".format(type(numer_res),
-                                                   type(numer_res[0]),
-                                                   numer_res[0].shape)
-    debug_print(msg, level=1, V=VERBOSITY)
+          "And shape of numer_res[0]: {}\n".format(*con_1)
+    debug_print(msg_1, level=1, V=VERBOSITY)
 
     if isinstance(numer_mod, list):
         # Happens when it is a model WE built ourselves
@@ -141,11 +143,12 @@ def merge_numer(numer_res, numer_mod, t_idx_res, t_idx_mod, nb_targ):
         else:
             broadcast = numer_mod
     else:
-        msg = "Got wrong type of inputs. This method needs a list or a numpy array"
+        msg = "numer_mod has wrong type. This method needs a list or a np.ndarray"
         raise TypeError(msg)
 
     assert len(numer_res) > 0
     assert broadcast.shape[0] == numer_res[0].shape[0]
+    assert numer_res[t_idx_res].shape == broadcast[:, [t_idx_mod]].shape
 
     numer_res[t_idx_res] += broadcast[:, [t_idx_mod]]
     del broadcast

@@ -133,7 +133,7 @@ def test_IT_classification():
         assert 0 <= o
     return
 
-# TODO: RW does not do mt.
+# TODO: RW does not do muli-target.
 """
 def test_RW_classification():
     train, test, code, model, y_true = setup_classification()

@@ -10,7 +10,10 @@ root_directory = dirname(dirname(dirname(dirname(__file__))))
 for dname in {'src'}:
     sys.path.insert(0, os.path.join(root_directory, dname))
 
-from mercs.algo.inference import init_predictions, update_X, predict_values_from_numer, predict_values_from_proba
+from mercs.algo.inference import (init_predictions,
+                                  update_X,
+                                  predict_values_from_numer,
+                                  predict_values_from_proba)
 
 
 def test_init_predictions():
@@ -54,6 +57,7 @@ def test_predict_values_from_numer():
     assert obs.shape[1] == nb_atts
     assert isinstance(obs, np.ndarray)
 
+
 def test_predict_values_from_proba():
     # Init
     nb_atts = 5
@@ -74,3 +78,5 @@ def test_predict_values_from_proba():
 
     for a in range(nb_atts):
         assert np.array_equal(np.unique(obs[:, a]), np.unique(lab_res[a]))
+
+
