@@ -100,7 +100,7 @@ def mafi_pred_algo(m_codes, q_codes, settings):
             aas_target_t,  mas_target_t = _mafi_mas_aas(aas[q_idx],
                                                         mas[q_idx],
                                                         q_desc[q_idx],
-                                                        list(t),
+                                                        [8],
                                                         m_codes,
                                                         FI,
                                                         thresholds)
