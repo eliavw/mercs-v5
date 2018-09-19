@@ -161,6 +161,7 @@ def _mafi_mas_aas(aas, mas, q_desc, q_targ, m_codes, FI, thresholds):
     for thr in thresholds:
         mas = [1 if (mod_appr_scores[m_ind] > thr) else 0
                for m_ind in range(nb_models)]               # Binary selection of all appropriate enough models
+        mas = np.array(mas)
 
         if _mafi_stopping_condition(mas, m_codes, q_targ):
             break
