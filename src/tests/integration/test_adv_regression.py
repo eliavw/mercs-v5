@@ -35,7 +35,7 @@ def setup_classification():
 
     model.fit(train, **ind_parameters, **sel_parameters)
 
-    code = [0, 0, 0, 0, 0, 0, 0, 0, 1]
+    code = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
 
     target_boolean = np.array(code) == encode_attribute(2, [1], [2])
     y_true = test[test.columns.values[target_boolean]].values
