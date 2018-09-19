@@ -18,6 +18,10 @@ from mercs.core import MERCS
 from mercs.utils.utils import encode_attribute
 import datasets as datasets
 
+import warnings
+from sklearn.exceptions import UndefinedMetricWarning
+warnings.filterwarnings(action='ignore', category=UndefinedMetricWarning)
+
 
 def setup_classification():
     train, test = datasets.load_nursery()

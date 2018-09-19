@@ -20,6 +20,10 @@ from mercs.utils.utils import encode_attribute
 import datasets as ds
 from sklearn.preprocessing import Imputer
 
+import warnings
+from sklearn.exceptions import UndefinedMetricWarning
+warnings.filterwarnings(action='ignore', category=UndefinedMetricWarning)
+
 
 def test_perform_imputation():
     # Prelims
