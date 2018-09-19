@@ -1,7 +1,10 @@
 import numpy as np
 import pandas as pd
 from ..utils.utils import encode_attribute
+from ..utils.debug import debug_print
 
+# Debug purposes
+VERBOSITY = 0
 
 # Imputation
 def perform_imputation(test_data_df, query_code, imputator):
@@ -94,11 +97,11 @@ def merge_numer(numer_res, numer_mod, t_idx_res, t_idx_mod, nb_targ):
 
     Parameters
     ----------
-    numer_res: np.ndarray, shape (nb_samples, nb_targ_total)
+    numer_res: [np.ndarray], shape (nb_targ_total, (nb_samples, 1))
         Predictions of a higher-order model. This method is quite oblivious
         to this array. The only thing that matters is that we add the data
         from the single model to the correct entries (correct columns) in
-        this bigger array
+        this bigger array.
     numer_mod: {list, np.ndarray}, shape (nb_samples, nb_targ_mod)
         Predictions of a single model
     t_idx_res: int
@@ -121,21 +124,28 @@ def merge_numer(numer_res, numer_mod, t_idx_res, t_idx_mod, nb_targ):
 
     """
     # TODO(elia): Own models might also better provide np.ndarray...
+    msg = "Type of numer_res: {} \n" \
+          "And type of numer_res[0]: {}\n" \
+          "And shape of numer_res[0]: {}\n".format(type(numer_res),
+                                                   type(numer_res[0]),
+                                                   numer_res[0].shape)
+    debug_print(msg, level=1, V=VERBOSITY)
 
     if isinstance(numer_mod, list):
         # Happens when it is a model WE built ourselves
         broadcast = np.squeeze(np.atleast_2d(numer_mod).T)
     elif isinstance(numer_mod, np.ndarray):
         if len(numer_mod.shape) < 2:
-            # Single target sklearn output (needs reformatting, yields only np.array)
+            # Single target sklearn output (needs reformatting, yields shape(x,))
             broadcast = np.atleast_2d(numer_mod).T
         else:
             broadcast = numer_mod
     else:
-        msg="Got wrong type of inputs. This method needs a list or a numpy array"
+        msg = "Got wrong type of inputs. This method needs a list or a numpy array"
         raise TypeError(msg)
 
-    assert broadcast.shape[0] == numer_res.shape[0]
+    assert len(numer_res) > 0
+    assert broadcast.shape[0] == numer_res[0].shape[0]
 
     numer_res[t_idx_res] += broadcast[:, [t_idx_mod]]
     del broadcast

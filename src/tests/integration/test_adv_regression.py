@@ -7,7 +7,9 @@ import numpy as np
 import os
 from os.path import dirname
 import sys
-from sklearn.metrics import f1_score
+from sklearn.metrics import (mean_absolute_error,
+                             mean_squared_error,
+                             mean_squared_log_error)
 
 # Custom import (Add src to the path)
 root_directory = dirname(dirname(dirname(dirname(__file__))))
@@ -20,7 +22,7 @@ import datasets as datasets
 
 
 def setup_classification():
-    train, test = datasets.load_nursery()
+    train, test = datasets.load_slump()
     model = MERCS()
 
     ind_parameters = {'ind_type':           'RF',
@@ -33,7 +35,7 @@ def setup_classification():
 
     model.fit(train, **ind_parameters, **sel_parameters)
 
-    code = [-1, -1, -1, 0, 0, 0, 0, 0, 1]
+    code = [0, 0, 0, 0, 0, 0, 0, 0, 1]
 
     target_boolean = np.array(code) == encode_attribute(2, [1], [2])
     y_true = test[test.columns.values[target_boolean]].values
@@ -51,10 +53,16 @@ def test_MI_classification():
                            **pred_parameters,
                            qry_code=code)
 
-    obs = f1_score(y_true, y_pred, average='macro')
+    obs_1 = mean_absolute_error(y_true, y_pred)
+    obs_2 = mean_squared_error(y_true, y_pred)
+    obs_3 = mean_squared_log_error(y_true, y_pred)
 
-    assert isinstance(obs, (int, float))
-    assert 0 <= obs <= 1
+    obs = [obs_1, obs_2, obs_3]
+
+    for o in obs:
+        assert isinstance(o, (int, float))
+        assert 0 <= o
+
     return
 
 
@@ -69,10 +77,15 @@ def test_MA_classification():
                            **pred_parameters,
                            qry_code=code)
 
-    obs = f1_score(y_true, y_pred, average='macro')
+    obs_1 = mean_absolute_error(y_true, y_pred)
+    obs_2 = mean_squared_error(y_true, y_pred)
+    obs_3 = mean_squared_log_error(y_true, y_pred)
 
-    assert isinstance(obs, (int, float))
-    assert 0 <= obs <= 1
+    obs = [obs_1, obs_2, obs_3]
+
+    for o in obs:
+        assert isinstance(o, (int, float))
+        assert 0 <= o
     return
 
 
@@ -87,12 +100,16 @@ def test_MAFI_classification():
                            **pred_parameters,
                            qry_code=code)
 
-    obs = f1_score(y_true, y_pred, average='macro')
+    obs_1 = mean_absolute_error(y_true, y_pred)
+    obs_2 = mean_squared_error(y_true, y_pred)
+    obs_3 = mean_squared_log_error(y_true, y_pred)
 
-    assert isinstance(obs, (int, float))
-    assert 0 <= obs <= 1
+    obs = [obs_1, obs_2, obs_3]
+
+    for o in obs:
+        assert isinstance(o, (int, float))
+        assert 0 <= o
     return
-
 
 def test_IT_classification():
     train, test, code, model, y_true = setup_classification()
@@ -105,10 +122,15 @@ def test_IT_classification():
                            **pred_parameters,
                            qry_code=code)
 
-    obs = f1_score(y_true, y_pred, average='macro')
+    obs_1 = mean_absolute_error(y_true, y_pred)
+    obs_2 = mean_squared_error(y_true, y_pred)
+    obs_3 = mean_squared_log_error(y_true, y_pred)
 
-    assert isinstance(obs, (int, float))
-    assert 0 <= obs <= 1
+    obs = [obs_1, obs_2, obs_3]
+
+    for o in obs:
+        assert isinstance(o, (int, float))
+        assert 0 <= o
     return
 
 
@@ -123,8 +145,13 @@ def test_RW_classification():
                            **pred_parameters,
                            qry_code=code)
 
-    obs = f1_score(y_true, y_pred, average='macro')
+    obs_1 = mean_absolute_error(y_true, y_pred)
+    obs_2 = mean_squared_error(y_true, y_pred)
+    obs_3 = mean_squared_log_error(y_true, y_pred)
 
-    assert isinstance(obs, (int, float))
-    assert 0 <= obs <= 1
+    obs = [obs_1, obs_2, obs_3]
+
+    for o in obs:
+        assert isinstance(o, (int, float))
+        assert 0 <= o
     return
