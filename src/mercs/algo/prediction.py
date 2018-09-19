@@ -86,13 +86,17 @@ def mafi_pred_algo(m_codes, q_codes, settings):
     # Building mas & aas codes
     for q_idx, q_code in enumerate(q_codes):
 
-        aas[q_idx], mas[q_idx] = _mafi_mas_aas(aas[q_idx],
-                                               mas[q_idx],
-                                               q_desc[q_idx],
-                                               q_targ[q_idx],
-                                               m_codes,
-                                               FI,
-                                               thresholds)
+        for t in q_targ[q_idx]:
+            aas_target_t,  mas_target_t= _mafi_mas_aas(aas[q_idx],
+                                                       mas[q_idx],
+                                                       q_desc[q_idx],
+                                                       t,
+                                                       m_codes,
+                                                       FI,
+                                                       thresholds)
+
+            aas[q_idx] = aas_target_t           # This is unchanged.
+            mas[q_idx][mas_target_t > 0] = 1    # Each target selects some models
 
     return np.array(mas), np.array(aas)
 
