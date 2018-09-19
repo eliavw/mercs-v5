@@ -1,5 +1,7 @@
+import warnings
 
-def debug_print(msg, level=1, V=0, **kwargs):
+
+def debug_print(msg, level=1, V=0, warn=False, **kwargs):
 
     """
     def get_var_name(var):
@@ -15,5 +17,8 @@ def debug_print(msg, level=1, V=0, **kwargs):
     """
 
     if V >= level:
-        print(msg+"\n")
+        if warn:
+            warnings.warn(msg+"\n")
+        else:
+            print(msg+"\n")
     return

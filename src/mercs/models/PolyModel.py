@@ -7,6 +7,7 @@ from ..utils.debug import debug_print
 # Debugger verbosity
 VERBOSITY = 1
 
+
 # Classes
 class PolyModel(object):
 
@@ -36,8 +37,8 @@ class PolyModel(object):
               "m_targ: {}\n" \
               "m_desc: {}\n" \
               "m_list: {}\n".format(*con)
-        debug_print(msg, level=1, V=VERBOSITY)
-        
+        debug_print(msg, level=1, V=VERBOSITY, warn=True)
+
         # Models
         self.m_list = m_list
 
