@@ -57,7 +57,10 @@ def ma_pred_algo(m_codes, q_codes, settings):
         aas[q_idx][q_targ[q_idx]] = 1  # Does not depend on model activation strategy
 
         # Model activation
-        mod_appr_scores = [np.sum(avl_atts.take(m_desc[m_ind])) / len(m_desc[m_ind])
+        def appr_score(avl_atts, mod_desc):
+            return np.sum(avl_atts.take(mod_desc)) / len(mod_desc)
+
+        mod_appr_scores = [appr_score(avl_atts, m_desc[m_ind])
                            if (avl_mods[m_ind] == 1) else -1
                            for m_ind in range(nb_models)]
 
@@ -160,8 +163,7 @@ def _mafi_mas_aas(aas, mas, q_desc, q_targ, m_codes, FI, thresholds):
 
     # Model activation
     def appr_score(avl_atts, mod_FI):
-        np.dot(avl_atts, mod_FI)
-        return appr_score
+        return np.dot(avl_atts, mod_FI)
 
     mod_appr_scores = [appr_score(avl_atts, FI[m_ind])
                        if (avl_mods[m_ind] == 1) else -1
