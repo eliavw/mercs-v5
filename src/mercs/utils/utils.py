@@ -261,19 +261,28 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
               "Type old_labels is: {}\n".format(old_labels, type(old_labels))
         debug_print(msg, V=VERBOSITY, warn=True)
 
-        assert isinstance(old_labels, list)
-        assert isinstance(new_labels, list)
+        assert isinstance(old_labels, (list, np.ndarray))
+        assert isinstance(new_labels, (list, np.ndarray))
 
-        if old_labels == [0]:
-            # If the default value of [0] is still there, update current
-            clf_labels[t] = new_labels
-        elif old_labels == ['numeric']:
-            # If MERCS thought attribute t was numeric, the new model must agree!
-            assert new_labels == ['numeric']
-        else:
+        if isinstance(old_labels, list):
+            if old_labels == [0]:
+                # If the default value of [0] is still there, update current
+                clf_labels[t] = new_labels
+            elif old_labels == ['numeric']:
+                # If MERCS thought attribute t was numeric, the new model must agree!
+                assert new_labels == ['numeric']
+            else:
+                msg = "type(old_labels) is list, but not the default value nor the default value for a numeric attribute.\n" \
+                      "These are the only two allowed cases for an entry in clf_labels to be a list and not np.ndarray," \
+                      "so something is wrong."
+                raise TypeError(msg)
+        elif isinstance(old_labels, np.ndarray):
             # Join current m_classlabels with those already present
             classlabels_list = [old_labels, new_labels]
             clf_labels[t] = join_classlabels(classlabels_list)
+        else:
+            msg = "old_labels (=clf_labels[t]) can only be a list or np.ndarray"
+            raise TypeError(msg)
 
     return clf_labels
 
