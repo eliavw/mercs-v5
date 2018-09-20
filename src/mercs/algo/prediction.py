@@ -192,6 +192,7 @@ def _mafi_stopping_condition(mas, m_codes, q_targ):
     -------
 
     """
+    #test
     q_targ_attributes_in_selected_models = m_codes[mas == 1, :][:, q_targ]
 
     target_encoding = encode_attribute(1,[0],[1])
