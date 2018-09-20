@@ -15,7 +15,7 @@ for dname in {'src'}:
     sys.path.insert(0, os.path.join(root_directory, dname))
 
 from mercs.core import MERCS
-from mercs.utils.utils import encode_attribute
+from mercs.utils import *
 import datasets as datasets
 
 import warnings
@@ -37,9 +37,9 @@ def setup_classification():
 
     model.fit(train, **ind_parameters, **sel_parameters)
 
-    code = [0, 0, 0, 0, 0, 0, 0, 1, 1]
+    code = [-1, -1, -1, 0, 0, 0, 0, 0, 1]
 
-    target_boolean = np.array(code) == encode_attribute(2, [1], [2])
+    target_boolean = np.array(code) == 1
     y_true = test[test.columns.values[target_boolean]].values
     return train, test, code, model, y_true
 
@@ -55,16 +55,10 @@ def test_MI_classification():
                            **pred_parameters,
                            qry_code=code)
 
-    nb_targets = y_true.shape[1]
+    obs = f1_score(y_true, y_pred, average='macro')
 
-    for t_idx in range(nb_targets):
-        single_y_true = y_true[:][t_idx]
-        single_y_pred = y_pred[:][t_idx]
-        obs = f1_score(single_y_true, single_y_pred, average='macro')
-
-        assert isinstance(obs, (int, float))
-        assert 0 <= obs <= 1
-    return
+    assert isinstance(obs, (int, float))
+    assert 0 <= obs <= 1
 
 
 def test_MA_classification():
@@ -82,7 +76,6 @@ def test_MA_classification():
 
     assert isinstance(obs, (int, float))
     assert 0 <= obs <= 1
-    return
 
 
 def test_MAFI_classification():
@@ -100,7 +93,6 @@ def test_MAFI_classification():
 
     assert isinstance(obs, (int, float))
     assert 0 <= obs <= 1
-    return
 
 
 def test_IT_classification():
@@ -118,7 +110,6 @@ def test_IT_classification():
 
     assert isinstance(obs, (int, float))
     assert 0 <= obs <= 1
-    return
 
 
 def test_RW_classification():
@@ -136,4 +127,3 @@ def test_RW_classification():
 
     assert isinstance(obs, (int, float))
     assert 0 <= obs <= 1
-    return
