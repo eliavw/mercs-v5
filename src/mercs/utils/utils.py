@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
-import warnings
+
+# Debugger verbosity
+from ..utils.debug import debug_print
+VERBOSITY = 1
 
 
 # Everything related to codes
@@ -247,8 +250,16 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
 
     for t_idx, t in enumerate(m_targ):
 
+        msg = "New_labels are: {}".format(new_labels)
+        msg = "Type new_labels is: {}".format(type(new_labels))
+        debug_print(msg, V=VERBOSITY, warn=True)
+
         old_labels = clf_labels[t]          # Classlabels already present in MERCS
         new_labels = m_classlabels[t_idx]   # Classlabels present in the model
+
+        msg = "New_labels are: {}\n" \
+              "Type new_labels is: {}\n".format(new_labels, type(new_labels))
+        debug_print(msg, V=VERBOSITY, warn=True)
 
         assert isinstance(old_labels, list)
         assert isinstance(new_labels, list)

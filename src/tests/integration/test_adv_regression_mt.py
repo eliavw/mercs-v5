@@ -12,7 +12,6 @@ from sklearn.metrics import (mean_absolute_error,
                              mean_squared_log_error)
 
 
-
 # Custom import (Add src to the path)
 root_directory = dirname(dirname(dirname(dirname(__file__))))
 for dname in {'src'}:
