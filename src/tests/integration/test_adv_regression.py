@@ -22,7 +22,7 @@ from mercs.utils.utils import encode_attribute
 import datasets as datasets
 
 
-def setup_classification():
+def setup_regression():
     train, test = datasets.load_slump()
     model = MERCS()
 
@@ -43,8 +43,8 @@ def setup_classification():
     return train, test, code, model, y_true
 
 
-def test_MI_classification():
-    train, test, code, model, y_true = setup_classification()
+def test_MI_regression():
+    train, test, code, model, y_true = setup_regression()
 
     pred_parameters = {'pred_type':     'MI',
                        'pred_param':    0.95,
@@ -67,8 +67,8 @@ def test_MI_classification():
     return
 
 
-def test_MA_classification():
-    train, test, code, model, y_true = setup_classification()
+def test_MA_regression():
+    train, test, code, model, y_true = setup_regression()
 
     pred_parameters = {'pred_type':     'MA',
                        'pred_param':    0.95,
@@ -90,8 +90,8 @@ def test_MA_classification():
     return
 
 
-def test_MAFI_classification():
-    train, test, code, model, y_true = setup_classification()
+def test_MAFI_regression():
+    train, test, code, model, y_true = setup_regression()
 
     pred_parameters = {'pred_type':     'MAFI',
                        'pred_param':    0.95,
@@ -112,8 +112,9 @@ def test_MAFI_classification():
         assert 0 <= o
     return
 
-def test_IT_classification():
-    train, test, code, model, y_true = setup_classification()
+
+def test_IT_regression():
+    train, test, code, model, y_true = setup_regression()
 
     pred_parameters = {'pred_type':     'IT',
                        'pred_param':    0.1,
@@ -135,8 +136,8 @@ def test_IT_classification():
     return
 
 
-def test_RW_classification():
-    train, test, code, model, y_true = setup_classification()
+def test_RW_regression():
+    train, test, code, model, y_true = setup_regression()
 
     pred_parameters = {'pred_type':     'RW',
                        'pred_param':    2,

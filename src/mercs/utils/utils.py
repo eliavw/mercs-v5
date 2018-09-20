@@ -257,6 +257,10 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
               "Type new_labels is: {}\n".format(new_labels, type(new_labels))
         debug_print(msg, V=VERBOSITY, warn=True)
 
+        msg = "Old_labels are: {}\n" \
+              "Type old_labels is: {}\n".format(old_labels, type(old_labels))
+        debug_print(msg, V=VERBOSITY, warn=True)
+
         assert isinstance(old_labels, list)
         assert isinstance(new_labels, list)
 
