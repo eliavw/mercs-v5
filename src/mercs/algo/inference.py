@@ -45,16 +45,9 @@ def perform_imputation(test_data_df, query_code, imputator):
 
 
 # Merging outcomes
-def merge_proba(proba_res,
-                proba_mod,
-                lab_res,
-                lab_mod,
-                t_idx_res,
-                t_idx_mod,
-                nb_targ=1):
+def merge_proba(proba_res, proba_mod, lab_res, lab_mod, t_idx_res, t_idx_mod):
     """
-    Merge the probabilities from a single model with another array containing
-    all probabilities.
+    Merge probabilistic outcomes from a single model with the current result.
 
     This based on the indices passed to this function. Also, take into account
     that proba array of a single model possibly relies on other classlabels.
@@ -73,13 +66,27 @@ def merge_proba(proba_res,
         Index of current target attr in result
     t_idx_mod
         Index of current target attr in  current model
-    nb_targ
-        umber of targets of the model
 
     Returns
     -------
 
+    Legacy
+    -------
+    Legacy version, keeping it here for the unlikely case something's off.
+    # Single target case
+    if nb_targ == 1:
+        # This means it comes from a model WE made.
+        if isinstance(proba_mod, list):
+            proba_mod = proba_mod[0]
+
+        proba_res[t_idx_res][:, mask] += proba_mod
+
+    # Multi-target case
+    else:
+        proba_res[t_idx_res][:, mask] += proba_mod[t_idx_mod]
+
     """
+
     assert isinstance(proba_res, list)
     assert isinstance(proba_mod, (list, np.ndarray))
 
@@ -89,23 +96,9 @@ def merge_proba(proba_res,
         # This means a single-target sklearn output
         proba_mod = [proba_mod]
 
+    assert isinstance(proba_mod[t_idx_mod], np.ndarray)
+    #assert proba_res[t_idx_res][:, mask].shape == proba_mod[t_idx_mod].shape
     proba_res[t_idx_res][:, mask] += proba_mod[t_idx_mod]
-
-
-    """
-    # Single target case
-    if nb_targ == 1:
-        # This means it comes from a model WE made.
-        if isinstance(proba_mod, list):
-            proba_mod = proba_mod[0]                                
-
-        proba_res[t_idx_res][:, mask] += proba_mod
-
-    # Multi-target case
-    else:
-        proba_res[t_idx_res][:, mask] += proba_mod[t_idx_mod]
-        
-    """
 
     return proba_res
 
