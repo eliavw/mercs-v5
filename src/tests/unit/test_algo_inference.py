@@ -13,7 +13,8 @@ for dname in {'src'}:
 from mercs.algo.inference import (init_predictions,
                                   update_X,
                                   predict_values_from_numer,
-                                  predict_values_from_proba)
+                                  predict_values_from_proba,
+                                  merge_numer)
 
 
 def test_init_predictions():
@@ -78,5 +79,45 @@ def test_predict_values_from_proba():
 
     for a in range(nb_atts):
         assert np.array_equal(np.unique(obs[:, a]), np.unique(lab_res[a]))
+
+    return
+
+
+def test_merge_numer():
+    # Prelims
+    nb_samples = 100
+    nb_targ_res = 6
+    numer_res = [None] * nb_targ_res
+
+    for i in range(nb_targ_res):
+        numer_res[i] = np.random.rand(nb_samples, 1)
+
+    # Multi-target sklearn output
+    nb_targ_mod_a = 3
+    numer_mod_a = np.random.rand(nb_samples, nb_targ_mod_a)
+
+    # Single-target sklearn output
+    nb_targ_mod_b = 1
+    numer_mod_b = np.random.rand(nb_samples, nb_targ_mod_b)
+    numer_mod_b = np.squeeze(numer_mod_b)
+
+    # Our own output format
+    nb_targ_mod_c = 2
+    numer_mod_c = [None] * nb_targ_mod_c
+    for i in range(nb_targ_mod_c):
+        numer_mod_c[i] = np.random.rand(100, 1)
+
+    t_idx_res = 2
+    t_idx_mod = 0
+
+    for numer_mod in [numer_mod_a, numer_mod_b, numer_mod_c]:
+        obs = merge_numer(numer_res, numer_mod, t_idx_res, t_idx_mod)
+
+        assert isinstance(obs, list)
+        assert len(obs) == nb_targ_res
+
+    return
+
+
 
 
