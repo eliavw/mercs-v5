@@ -153,7 +153,7 @@ def collect_and_verify_clf_classlabels(m_list, m_codes):
     _, m_targ, _ = codes_to_query(m_codes)
 
     nb_atts =  len(m_codes[0])
-    clf_labels = [[0]] * nb_atts # Fill with dummy classes
+    clf_labels = [['default']] * nb_atts # Fill with dummy classes
 
     for m_idx, m in enumerate(m_list):
         # Collect the classlabels of one model
@@ -265,7 +265,7 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
         assert isinstance(new_labels, (list, np.ndarray))
 
         if isinstance(old_labels, list):
-            if old_labels == [0]:
+            if old_labels == ['default']:
                 # If the default value of [0] is still there, update current
                 clf_labels[t] = new_labels
             elif old_labels == ['numeric']:
