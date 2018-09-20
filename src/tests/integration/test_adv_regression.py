@@ -22,7 +22,7 @@ from mercs.utils.utils import encode_attribute
 import datasets as datasets
 
 import warnings
-warnings.filterwarnings(action='error', category=FutureWarning)
+warnings.filterwarnings('error', category=FutureWarning)
 
 
 def setup_classification():
