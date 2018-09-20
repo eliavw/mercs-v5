@@ -4,7 +4,7 @@ from ..utils.utils import encode_attribute
 from ..utils.debug import debug_print
 
 # Debugger verbosity
-VERBOSITY = 1
+VERBOSITY = 0
 
 
 # Imputation

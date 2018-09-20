@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 
-# Debugger verbosity
+# Debugger
 from ..utils.debug import debug_print
-VERBOSITY = 1
+VERBOSITY = 0
 
 
 # Everything related to codes
