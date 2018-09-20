@@ -49,14 +49,14 @@ def ma_pred_algo(m_codes, q_codes, settings):
             msg = "This is t, the target which we consider: {}".format(t)
             debug_print(msg, V=VERBOSITY, warn=True)
 
-            aas_target_t,  mas_target_t = _mafi_mas_aas(aas[q_idx],
-                                                        mas[q_idx],
-                                                        q_desc[q_idx],
-                                                        [t],
-                                                        m_codes,
-                                                        m_desc,
-                                                        thresholds)
-        
+            aas_target_t,  mas_target_t = _ma_mas_aas(aas[q_idx],
+                                                      mas[q_idx],
+                                                      q_desc[q_idx],
+                                                      [t],
+                                                      m_codes,
+                                                      m_desc,
+                                                      thresholds)
+
             msg="This is mas_target_t: {}".format(mas_target_t)
             debug_print(msg,V=VERBOSITY, warn=True)
 
