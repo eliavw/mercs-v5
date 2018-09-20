@@ -44,34 +44,62 @@ def ma_pred_algo(m_codes, q_codes, settings):
 
     # Building codes
     for q_idx, q_code in enumerate(q_codes):
-        # Prelims
-        aas[q_idx][q_desc[q_idx]] = 0
 
-        relevant_models = np.where(m_codes[:, q_targ[q_idx]] == 1)[0]  # Models that share a target with the queries.
-        mas[q_idx][relevant_models] = 1
+        for t in q_targ[q_idx]:
+            msg = "This is t, the target which we consider: {}".format(t)
+            debug_print(msg, V=VERBOSITY, warn=True)
 
-        avl_mods = mas[q_idx] > 0
-        avl_atts = aas[q_idx] > -1
+            aas_target_t,  mas_target_t = _mafi_mas_aas(aas[q_idx],
+                                                        mas[q_idx],
+                                                        q_desc[q_idx],
+                                                        [t],
+                                                        m_codes,
+                                                        m_desc,
+                                                        thresholds)
+        
+            msg="This is mas_target_t: {}".format(mas_target_t)
+            debug_print(msg,V=VERBOSITY, warn=True)
 
-        # Att. activation
-        aas[q_idx][q_targ[q_idx]] = 1  # Does not depend on model activation strategy
+            mas[q_idx][mas_target_t > 0] = 1    # Each target selects some models
+            aas[q_idx] = aas_target_t           # This is unchanged.
 
-        # Model activation
-        def appr_score(avl_atts, mod_desc):
-            return np.sum(avl_atts.take(mod_desc)) / len(mod_desc)
-
-        mod_appr_scores = [appr_score(avl_atts, m_desc[m_ind])
-                           if (avl_mods[m_ind] == 1) else -1
-                           for m_ind in range(nb_models)]
-
-        for thr in thresholds:
-            mas[q_idx] = [1 if (mod_appr_scores[m_ind] > thr) else 0
-                                    for m_ind in range(nb_models)]  # All the models that are appropriate enough
-
-            if np.sum(mas[q_idx]) >= 1:
-                break  # We demand at least one model
+            msg = "This is mas[q_idx]: {}".format(mas[q_idx])
+            debug_print(msg, V=VERBOSITY, warn=True)
 
     return np.array(mas), np.array(aas)
+
+
+def _ma_mas_aas(aas, mas, q_desc, q_targ, m_codes, m_desc, thresholds):
+    # Prelims
+    nb_models = mas.shape[0]
+    aas[q_desc] = 0
+
+    relevant_models = np.where(m_codes[:, q_targ] == 1)[0]  # Models that share at least a single target with the query
+    mas[relevant_models] = 1
+
+    avl_mods = mas > 0                                      # Available models share a target with queries
+    avl_atts = aas > -1
+
+    # Att. activation
+    aas[q_targ] = 1                                         # Does not depend on model activation strategy
+
+    # Model activation
+    def appr_score(avl_atts, mod_desc):
+        return np.sum(avl_atts.take(mod_desc)) / len(mod_desc)
+
+    mod_appr_scores = [appr_score(avl_atts, m_desc[m_idx])
+                       if (avl_mods[m_idx] == 1) else -1
+                       for m_idx in range(nb_models)]
+
+    for thr in thresholds:
+        mas = [1 if (mod_appr_scores[m_ind] > thr) else 0
+               for m_ind in range(nb_models)]               # Binary selection of all appropriate enough models
+        mas = np.array(mas)
+
+        if _mafi_stopping_condition(mas, m_codes, q_targ):
+            break
+
+    return aas, mas
 
 
 def mafi_pred_algo(m_codes, q_codes, settings):
