@@ -284,8 +284,6 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
             msg = "old_labels (=clf_labels[t]) can only be a list or np.ndarray"
             raise TypeError(msg)
 
-    raise TypeError
-
     return clf_labels
 
 
