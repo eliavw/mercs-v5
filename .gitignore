@@ -209,6 +209,9 @@ venv.bak/
 **/__pycache__
 */__pycache__
 
+### ###  Pycharm ### ###
+.idea/*
+
 
 ### ### data folder ### ### #
 #data/
