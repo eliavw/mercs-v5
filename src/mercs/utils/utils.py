@@ -250,10 +250,6 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
 
     for t_idx, t in enumerate(m_targ):
 
-        msg = "New_labels are: {}".format(new_labels)
-        msg = "Type new_labels is: {}".format(type(new_labels))
-        debug_print(msg, V=VERBOSITY, warn=True)
-
         old_labels = clf_labels[t]          # Classlabels already present in MERCS
         new_labels = m_classlabels[t_idx]   # Classlabels present in the model
 
