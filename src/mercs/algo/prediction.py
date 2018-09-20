@@ -159,7 +159,11 @@ def _mafi_mas_aas(aas, mas, q_desc, q_targ, m_codes, FI, thresholds):
     aas[q_targ] = 1                                         # Does not depend on model activation strategy
 
     # Model activation
-    mod_appr_scores = [np.dot(avl_atts, FI[m_ind])
+    def appr_score(avl_atts, mod_FI):
+        np.dot(avl_atts, mod_FI)
+        return appr_score
+
+    mod_appr_scores = [appr_score(avl_atts, FI[m_ind])
                        if (avl_mods[m_ind] == 1) else -1
                        for m_ind in range(nb_models)]       # Only available models get considered here
 
