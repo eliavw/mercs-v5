@@ -23,6 +23,7 @@ from sklearn.exceptions import UndefinedMetricWarning
 warnings.filterwarnings(action='ignore', category=UndefinedMetricWarning)
 
 
+
 def setup_classification():
     train, test = datasets.load_nursery()
     model = MERCS()
