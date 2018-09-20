@@ -191,6 +191,7 @@ def _mafi_mas_aas(aas, mas, q_desc, q_targ, m_codes, FI, thresholds):
 
     # Model activation
     def appr_score(avl_atts, mod_FI):
+        assert avl_atts.shape == mod_FI.shape
         return np.dot(avl_atts, mod_FI)
 
     mod_appr_scores = [appr_score(avl_atts, FI[m_ind])
