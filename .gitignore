@@ -211,6 +211,8 @@ venv.bak/
 
 ### ###  Pycharm ### ###
 .idea/*
+.idea
+.idea/
 
 
 ### ### data folder ### ### #
