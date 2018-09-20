@@ -227,26 +227,41 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
 
     Update (in case of default value) or expand the present clf_labels.
 
-    Clf_labels thus is own to the MERCS system, and not to the individual
+    Clf_labels relates the MERCS system, and not to the individual
     classifiers.
 
-    :param clf_labels:
-    :param m_classlabels:
-    :param m_targ:
-    :return:
-    TODO(elia): Very general problem. We need to deal with numeric attributes in a nicer way.
+    Parameters
+    ----------
+    clf_labels: list, shape (nb_atts, (nb_classlabels_att,))
+        List of all classlabels known to the MERCS system
+    m_classlabels: list, shape (nb_targ_atts_mod, (nb_classlabels_att,))
+        List of all the classlabels known to the individual model
+    m_targ
+        List of all targets of the individual model
+
+    Returns
+    -------
+
     """
+    # TODO: Deal with numeric in a smoother way
 
     for t_idx, t in enumerate(m_targ):
-        if np.array_equal(clf_labels[t], [0]):
-            # If the default value of [0] is still there, update current
-            clf_labels[t] = m_classlabels[t_idx]
 
-        elif np.array_equal(clf_labels[t], ['numeric']):
-            assert np.array_equal(m_classlabels[t_idx], ['numeric'])
+        old_labels = clf_labels[t]          # Classlabels already present in MERCS
+        new_labels = m_classlabels[t_idx]   # Classlabels present in the model
+
+        assert isinstance(old_labels, list)
+        assert isinstance(new_labels, list)
+
+        if old_labels == [0]:
+            # If the default value of [0] is still there, update current
+            clf_labels[t] = new_labels
+        elif old_labels == ['numeric']:
+            # If MERCS thought attribute t was numeric, the new model must agree!
+            assert new_labels == ['numeric']
         else:
             # Join current m_classlabels with those already present
-            classlabels_list = [clf_labels[t], m_classlabels[t_idx]]
+            classlabels_list = [old_labels, new_labels]
             clf_labels[t] = join_classlabels(classlabels_list)
 
     return clf_labels
