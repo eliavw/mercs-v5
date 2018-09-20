@@ -141,7 +141,7 @@ def get_metadata_df(df):
 
 
 ## Classlabels
-def collect_and_verify_clf_classlabels(m_list, m_codes, is_nominal = None):
+def collect_and_verify_clf_classlabels(m_list, m_codes):
     """
     Collect the labels of the classifier.
 
@@ -158,7 +158,7 @@ def collect_and_verify_clf_classlabels(m_list, m_codes, is_nominal = None):
     for m_idx, m in enumerate(m_list):
         # Collect the classlabels of one model
         nb_targ = len(m_targ[m_idx])
-        m_classlabels = collect_classlabels(m, nb_targ, m_idx=m_idx)
+        m_classlabels = collect_classlabels(m, nb_targ)
 
         # Verify all the classlabels
         clf_labels = update_clf_labels(clf_labels, m_classlabels, m_targ[m_idx])
@@ -166,7 +166,7 @@ def collect_and_verify_clf_classlabels(m_list, m_codes, is_nominal = None):
     return clf_labels
 
 
-def collect_classlabels(m, nb_targ, m_idx=0):
+def collect_classlabels(m, nb_targ):
     """
     Collect all the classlabels of a given model m.
 
