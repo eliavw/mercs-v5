@@ -61,9 +61,9 @@ def merge_proba(proba_res,
 
     Parameters
     ----------
-    proba_res
+    proba_res: list, shape (nb_targets, (nb_samples, nb_labels))
         Contains the result (proba)
-    proba_mod
+    proba_mod: {list, np.ndarray}, shape
         Contains the result of the current model (proba)
     lab_res
         Classlabels of the result
@@ -80,21 +80,32 @@ def merge_proba(proba_res,
     -------
 
     """
-    # TODO: Fix the hotfix
+    assert isinstance(proba_res, list)
+    assert isinstance(proba_mod, (list, np.ndarray))
 
     mask = _get_mask(lab_res, lab_mod, t_idx_res, t_idx_mod)
 
+    if isinstance(proba_mod, np.ndarray):
+        # This means a single-target sklearn output
+        proba_mod = [proba_mod]
+
+    proba_res[t_idx_res][:, mask] += proba_mod[t_idx_mod]
+
+
+    """
     # Single target case
     if nb_targ == 1:
         # This means it comes from a model WE made.
         if isinstance(proba_mod, list):
-            proba_mod = proba_mod[0]                                # Hotfix.
+            proba_mod = proba_mod[0]                                
 
         proba_res[t_idx_res][:, mask] += proba_mod
 
     # Multi-target case
     else:
         proba_res[t_idx_res][:, mask] += proba_mod[t_idx_mod]
+        
+    """
 
     return proba_res
 
