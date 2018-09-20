@@ -96,7 +96,7 @@ def _ma_mas_aas(aas, mas, q_desc, q_targ, m_codes, m_desc, thresholds):
                for m_ind in range(nb_models)]               # Binary selection of all appropriate enough models
         mas = np.array(mas)
 
-        if _mafi_stopping_condition(mas, m_codes, q_targ):
+        if _ma_mafi_stopping_condition(mas, m_codes, q_targ):
             break
 
     return aas, mas
@@ -203,13 +203,13 @@ def _mafi_mas_aas(aas, mas, q_desc, q_targ, m_codes, FI, thresholds):
                for m_ind in range(nb_models)]               # Binary selection of all appropriate enough models
         mas = np.array(mas)
 
-        if _mafi_stopping_condition(mas, m_codes, q_targ):
+        if _ma_mafi_stopping_condition(mas, m_codes, q_targ):
             break
 
     return aas, mas
 
 
-def _mafi_stopping_condition(mas, m_codes, q_targ):
+def _ma_mafi_stopping_condition(mas, m_codes, q_targ):
     """
 
     First, we generate q_targ_attributes_in_selected_models,
