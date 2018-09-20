@@ -281,7 +281,12 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
             classlabels_list = [old_labels, new_labels]
             clf_labels[t] = join_classlabels(classlabels_list)
         else:
-            msg = "old_labels (=clf_labels[t]) can only be a list or np.ndarray"
+            msg = """
+            old_labels (=clf_labels[t]) can only be a list or np.ndarray.\n
+            A list can only occur in two case: \n
+            \t 1) Default entry: [0] \n
+            \t 2) Numeric dummy entry: ['numeric]\n\n
+            """
             raise TypeError(msg)
 
     return clf_labels
