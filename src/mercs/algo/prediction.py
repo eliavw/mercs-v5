@@ -100,7 +100,7 @@ def mafi_pred_algo(m_codes, q_codes, settings):
             aas_target_t,  mas_target_t = _mafi_mas_aas(aas[q_idx],
                                                         mas[q_idx],
                                                         q_desc[q_idx],
-                                                        [8],
+                                                        [t],
                                                         m_codes,
                                                         FI,
                                                         thresholds)
@@ -192,7 +192,6 @@ def _mafi_stopping_condition(mas, m_codes, q_targ):
     -------
 
     """
-    #test
     q_targ_attributes_in_selected_models = m_codes[mas == 1, :][:, q_targ]
 
     target_encoding = encode_attribute(1,[0],[1])
