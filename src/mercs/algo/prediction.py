@@ -3,7 +3,7 @@ import numpy as np
 
 # Debugger verbosity
 from ..utils.debug import debug_print
-VERBOSITY = 1
+VERBOSITY = 0
 
 # Main Functionalities
 def mi_pred_algo(m_codes, q_codes):
