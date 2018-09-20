@@ -97,7 +97,7 @@ def merge_proba(proba_res, proba_mod, lab_res, lab_mod, t_idx_res, t_idx_mod):
         proba_mod = [proba_mod]
 
     assert isinstance(proba_mod[t_idx_mod], np.ndarray)
-    #assert proba_res[t_idx_res][:, mask].shape == proba_mod[t_idx_mod].shape
+    assert proba_res[t_idx_res][:, mask].shape == proba_mod[t_idx_mod].shape
     proba_res[t_idx_res][:, mask] += proba_mod[t_idx_mod]
 
     return proba_res
