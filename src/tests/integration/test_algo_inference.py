@@ -1,27 +1,21 @@
-"""
-Integration tests of test_algo_inference
-"""
-
-# Standard imports
 import os
 import numpy as np
 import sys
-from os.path import dirname
+import warnings
 
+from os.path import dirname
+from sklearn.exceptions import UndefinedMetricWarning
+from sklearn.preprocessing import Imputer
 
 # Custom imports
 root_directory = dirname(dirname(dirname(dirname(__file__))))
 for dname in {'src'}:
     sys.path.insert(0, os.path.join(root_directory, dname))
 
-from mercs.algo.inference import *
-from mercs.utils.utils import encode_attribute
-
 import datasets as ds
-from sklearn.preprocessing import Imputer
+from mercs.algo.inference import perform_imputation
+from mercs.utils.encoding import encode_attribute
 
-import warnings
-from sklearn.exceptions import UndefinedMetricWarning
 warnings.filterwarnings(action='ignore', category=UndefinedMetricWarning)
 
 

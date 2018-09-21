@@ -1,16 +1,13 @@
-"""
-Integration Test of basic classification task.
-"""
-
-# Standard imports
 import numpy as np
 import os
-from os.path import dirname
 import sys
-from sklearn.metrics import (mean_absolute_error,
-                             mean_squared_error,
-                             mean_squared_log_error)
+import warnings
 
+from os.path import dirname
+from sklearn.exceptions import UndefinedMetricWarning
+from sklearn.metrics import f1_score
+
+warnings.filterwarnings(action='ignore', category=UndefinedMetricWarning)
 
 # Custom import (Add src to the path)
 root_directory = dirname(dirname(dirname(dirname(__file__))))
@@ -20,7 +17,6 @@ for dname in {'src'}:
 from mercs.core import MERCS
 from mercs.utils.utils import encode_attribute
 import datasets as datasets
-
 
 def setup_regression():
     train, test = datasets.load_slump()

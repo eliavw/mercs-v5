@@ -1,13 +1,13 @@
-"""
-Integration Test of basic classification task.
-"""
-
-# Standard imports
 import numpy as np
 import os
-from os.path import dirname
 import sys
+import warnings
+
+from os.path import dirname
+from sklearn.exceptions import UndefinedMetricWarning
 from sklearn.metrics import f1_score
+
+warnings.filterwarnings(action='ignore', category=UndefinedMetricWarning)
 
 # Custom import (Add src to the path)
 root_directory = dirname(dirname(dirname(dirname(__file__))))
@@ -15,12 +15,8 @@ for dname in {'src'}:
     sys.path.insert(0, os.path.join(root_directory, dname))
 
 from mercs.core import MERCS
-from mercs.utils import *
+from mercs.utils.utils import encode_attribute
 import datasets as datasets
-
-import warnings
-from sklearn.exceptions import UndefinedMetricWarning
-warnings.filterwarnings(action='ignore', category=UndefinedMetricWarning)
 
 
 def setup_classification():
@@ -39,7 +35,7 @@ def setup_classification():
 
     code = [-1, -1, -1, 0, 0, 0, 0, 0, 1]
 
-    target_boolean = np.array(code) == 1
+    target_boolean = np.array(code) == encode_attribute(2, [1], [2])
     y_true = test[test.columns.values[target_boolean]].values
     return train, test, code, model, y_true
 
