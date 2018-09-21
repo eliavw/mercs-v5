@@ -210,32 +210,10 @@ def collect_classlabels(m, nb_targ):
 
     else:
         # If no classlabels are present, we assume a fully numerical model
-        #warnings.warn("Model (ID: {}) has no classes_ attribute. Assuming only numerical targets".format(m_idx))
         m_classlabels  = [['numeric']] * nb_targ
         #TODO(elia): This needs to be done nicer.
 
     return m_classlabels
-
-
-def fill_in_or_check_clf_labels(clf_labels, m_classlabels, m_targ):
-    """
-    Update (in case of default value) or check the consistency of the
-    given classlabels of the model and its target attributes.
-
-    :param clf_labels:
-    :param m_classlabels:
-    :param m_targ:
-    :return:
-    """
-
-    for t_idx, t in enumerate(m_targ):
-        if np.array_equal(clf_labels[t], [0]):
-            # If the default value of [0] is still there
-            clf_labels[t] = m_classlabels[t_idx]
-        else:
-            # Do a check whether what is provided is consistent
-            assert np.array_equal(clf_labels[t], m_classlabels[t_idx])
-    return clf_labels
 
 
 def update_clf_labels(clf_labels, m_classlabels, m_targ):
