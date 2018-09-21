@@ -389,7 +389,7 @@ class MERCS(object):
 
             X_Y = df.iloc[:, m_atts].dropna().values
             X = X_Y[:, :len(m_desc[i])]
-            Y = X_Y[:, len(m_targ[i]):]
+            Y = X_Y[:, len(m_desc[i]):]
 
             msg="""
             X.shape: {}\n

@@ -74,13 +74,11 @@ class PolyModel(object):
         self.targ_lab = [self.attr_lab[t] for t in self.targ]   # Get targ attr labels
         assert len(self.targ_lab) == len(self.targ)
 
-        # TODO: This seems to me also to be a mistake!
-        """
+        # TODO(elia): This needs to be done better. ALL the classes count!
         self.classes_ = [v for i, v in enumerate(self.targ_lab)
                          if self.is_targ_nominal[i]]
         assert np.sum(self.is_targ_nominal) == len(self.classes_)
-        """
-        self.classes_ = self.targ_lab
+        #self.classes_ = self.targ_lab
 
         # Active models (nominal/numeric)
         self.mod_idx_nominal = [i for i, v in enumerate(self.m_targ)
@@ -251,7 +249,12 @@ class EnsembleModel(PolyModel):
                 t_idx_res = res_atts.index(t)  # Index of current target attr in result
                 t_idx_mod = mod_targ.index(t)  # Index of current target attr in  current model
 
-                res_proba = merge_proba(res_proba, mod_prob, res_labs, mod_labs, t_idx_res, t_idx_mod)
+                res_proba = merge_proba(res_proba,
+                                        mod_prob,
+                                        res_labs,
+                                        mod_labs,
+                                        t_idx_res,
+                                        t_idx_mod)
 
         return res_proba
 
@@ -380,7 +383,6 @@ class ChainedModel(PolyModel):
 
             # Get model, m_desc, m_targ
             mod, mod_desc, mod_targ = self._get_mod_desc_targ(act_mod_idx[0])
-            nb_targ = len(mod_targ)
 
             # Prediction
             mod_pred = mod.predict(X[:, mod_desc])
