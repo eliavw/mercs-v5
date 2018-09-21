@@ -25,15 +25,15 @@ def base_selection_algo(metadata, settings, target_atts_list = None):
     nb_partitions = settings['its']
 
     # If not specified, all attributes can appear as targets
-    if (target_atts_list is None):
+    if target_atts_list is None:
         target_atts_list = list(range(nb_atts))
     # Otherwise, use only indicated attributes
 
     nb_target_atts = len(target_atts_list)
 
-    if ((param > 0) & (param < 1)):
+    if (param > 0) & (param < 1):
         nb_out_atts = int(np.ceil(param * nb_atts))
-    elif ((param>=1)&(param<nb_atts)):
+    elif (param >= 1) & (param < nb_atts):
         nb_out_atts = int(param)
     else:
         print("Impossible number of output attributes per model required. Re-adjusted to one model per attribute.")
@@ -243,23 +243,4 @@ def random_selection_algo(metadata, settings, target_atts_list = None):
     return codes
 
 
-# Helpers
-def flatten_model(mdemodel_codes, mdemodel):
-        """
-        Flatten an ensemble model.
 
-        This means instead of giving ensembles to MERCS as its component models,
-        MERCS gets a collection of decision tree classifiers as its component model.
-        """
-
-        assert len(mdemodel[0]) > 1  # Check if ensemble in the first place.
-
-        new_mdemodel = []
-        new_mdemodel_codes = mdemodel_codes[0:1]
-        for i, m in enumerate(mdemodel):
-            new_mdemodel.extend(m)
-            codes = np.tile(mdemodel_codes[i], (len(m), 1))
-            new_mdemodel_codes = np.concatenate((new_mdemodel_codes, codes))
-
-        new_mdemodel_codes = new_mdemodel_codes[1:]  # First line was filled in as an initialization and has to be gone.
-        return new_mdemodel_codes, new_mdemodel

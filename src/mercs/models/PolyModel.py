@@ -218,7 +218,7 @@ class EnsembleModel(PolyModel):
             mod_targ = [v for i, v in enumerate(mod_targ) if mod_targ_nominal[i]]
             nb_targ = len(mod_targ)
 
-            mod_labs = collect_classlabels(mod, nb_targ)  # Collect labels of this model
+            mod_labs = collect_classlabels(mod)  # Collect labels of this model
             mod_labs = [v for i, v in enumerate(mod_labs) if mod_targ_nominal[i]]
 
             mod_prob = mod.predict_proba(X[:, mod_desc])  # Individual prediction

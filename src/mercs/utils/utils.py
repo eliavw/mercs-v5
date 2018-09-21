@@ -185,7 +185,7 @@ def collect_and_verify_clf_classlabels(m_list, m_codes):
     for m_idx, m in enumerate(m_list):
         # Collect the classlabels of one model
         nb_targ = len(m_targ[m_idx])
-        m_classlabels = collect_classlabels(m, nb_targ)
+        m_classlabels = collect_classlabels(m)
 
         # Verify all the classlabels
         clf_labels = update_clf_labels(clf_labels, m_classlabels, m_targ[m_idx])
@@ -203,10 +203,11 @@ def initialize_classlabels(nb_atts, mode='default'):
         msg = "Did not recognize mode: {}. Assuming 'default'".format(mode)
         warnings.warn(msg)
         classlabels = initialize_classlabels(nb_atts, mode='default')
+
     return classlabels
 
 
-def collect_classlabels(m, nb_targ):
+def collect_classlabels(m):
     """
     Collect all the classlabels of a given model m.
 
@@ -214,8 +215,6 @@ def collect_classlabels(m, nb_targ):
     ----------
     m: {sklearn, composite model}
         The model under consideration
-    nb_targ:
-        Amount of targets of this model
 
     Returns
     -------
@@ -261,8 +260,8 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
 
     for t_idx, t in enumerate(m_targ):
 
-        old_labels = clf_labels[t]          # Classlabels already present in MERCS
-        new_labels = m_classlabels[t_idx]   # Classlabels present in the model
+        old_labels = clf_labels[t]          # Classlabels known to MERCS
+        new_labels = m_classlabels[t_idx]   # Classlabels known the model m
 
         msg = "New_labels are: {}\n" \
               "Type new_labels is: {}\n".format(new_labels, type(new_labels))

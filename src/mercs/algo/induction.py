@@ -8,18 +8,31 @@ from sklearn.ensemble import *
 # Algorithms
 def base_ind_algo(metadata, settings, m_targ):
     """
-    Initialize (dont train yet!) a model.
+    Initialize a model.
 
-    Basically, this means that you decide which model you are going
-    to train. E.g., DT, RF etc.
+    This only means initialization, not training.
+    So the only thing that happens is deciding which model is going to be
+    trained in a next step. E.g.; DT, RF, etc.
 
-    :param metadata:
-    :param settings:
-    :param m_targ:
-    :return:
+    Here, we mainly verify whether the targets are grouped correctly,
+    i.e., are they nominal/numeric etc.
+
+    Parameters
+    ----------
+    metadata: dict
+        Metadata dictionary of the MERCS model
+    settings: dict
+        Settings dictionary of the MERCS model
+    m_targ: list, shape (nb_targ,)
+        List of the indices of the attributes that will be targets of the model
+        that will be trained afterwards.
+
+    Returns
+    -------
+
     """
 
-    assert isinstance(m_targ, (np.ndarray, list))
+    assert isinstance(m_targ, list)
 
     nb_mod = len(m_targ)
     assert nb_mod > 0
@@ -118,5 +131,6 @@ def _only_numeric_targ(is_nominal, m_targ):
     :param m_targ:      [[idx of targ atts model 0], [idx of targ atts model 1]]
     :return:
     """
+
     return np.sum(is_nominal[m_targ]) == 0
  
