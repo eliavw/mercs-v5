@@ -4,7 +4,7 @@ import warnings
 from .encoding import codes_to_query
 
 from .debug import debug_print
-VERBOSITY = 1
+VERBOSITY = 0
 
 
 def collect_and_verify_clf_classlabels(m_list, m_codes):

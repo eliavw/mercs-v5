@@ -13,7 +13,7 @@ from ..utils.keywords import *
 from ..utils.metadata import get_metadata_df
 
 from ..utils.debug import debug_print
-VERBOSITY = 1
+VERBOSITY = 0
 
 
 class MERCS(object):
@@ -379,29 +379,30 @@ class MERCS(object):
         nb_models = len(m_list)
 
         # Fit all the component models
-        for i in range(nb_models):
-            assert isinstance(m_desc[i], list)
-            assert isinstance(m_targ[i], list)
+        for m_idx in range(nb_models):
+            assert isinstance(m_desc[m_idx], list)
+            assert isinstance(m_targ[m_idx], list)
 
-            m_atts = m_desc[i] + m_targ[i]
-
-            assert len(m_atts) == len(m_desc[i])+len(m_targ[i])
+            m_atts = m_desc[m_idx] + m_targ[m_idx]
+            assert len(m_atts) == len(m_desc[m_idx]) + len(m_targ[m_idx])
 
             X_Y = df.iloc[:, m_atts].dropna().values
-            X = X_Y[:, :len(m_desc[i])]
-            Y = X_Y[:, len(m_desc[i]):]
+            X = X_Y[:, :len(m_desc[m_idx])]
+            Y = X_Y[:, len(m_desc[m_idx]):]
 
             msg="""
             X.shape: {}\n
             Y.shape: {}\n
             """.format(X.shape, Y.shape)
             debug_print(msg, V=VERBOSITY, warn=True)
+            assert X.shape[1] == len(m_desc[m_idx])
+            assert Y.shape[1] == len(m_targ[m_idx])
 
             # Convert (m X 1)-dim arrays to (m, )-dim arrays
             if 1 in list(X.shape): X = X.ravel()
             if 1 in list(Y.shape): Y = Y.ravel()
 
-            m_list[i].fit(X, Y)
+            m_list[m_idx].fit(X, Y)
             del X, Y, X_Y
 
         flatten = self.s['induction'].get('flatten', False)

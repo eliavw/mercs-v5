@@ -5,7 +5,7 @@ from ..algo.prediction import recode_strat
 from ..utils.classlabels import collect_classlabels
 
 from ..utils.debug import debug_print
-VERBOSITY = 1
+VERBOSITY = 0
 
 
 # Classes
@@ -74,7 +74,7 @@ class PolyModel(object):
         self.targ_lab = [self.attr_lab[t] for t in self.targ]   # Get targ attr labels
         assert len(self.targ_lab) == len(self.targ)
 
-        # TODO(elia): This needs to be done better. ALL the classes count!
+        # TODO(elia): This needs to be done better. ALL the classes count! (also numeric ones)
         self.classes_ = [v for i, v in enumerate(self.targ_lab)
                          if self.is_targ_nominal[i]]
         assert np.sum(self.is_targ_nominal) == len(self.classes_)
