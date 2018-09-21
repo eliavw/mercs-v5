@@ -15,7 +15,7 @@ for dname in {'src'}:
     sys.path.insert(0, os.path.join(root_directory, dname))
 
 from mercs.core import MERCS
-from mercs.utils.utils import encode_attribute
+from mercs.utils.encoding import encode_attribute
 import datasets as datasets
 
 
