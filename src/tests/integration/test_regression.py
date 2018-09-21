@@ -5,7 +5,9 @@ import warnings
 
 from os.path import dirname
 from sklearn.exceptions import UndefinedMetricWarning
-from sklearn.metrics import f1_score
+from sklearn.metrics import (mean_absolute_error,
+                             mean_squared_error,
+                             mean_squared_log_error)
 
 warnings.filterwarnings(action='ignore', category=UndefinedMetricWarning)
 
