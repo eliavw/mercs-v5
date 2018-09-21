@@ -113,16 +113,36 @@ def get_metadata_df(df):
     """
     Get some useful statistics from a Pandas DataFrame.
 
-    :param df:  Input DataFrame
-    :return:    Dict with metadata
-    #TODO(elia) is_nominal should become is_type
+    We extract:
+        1) nb_samples
+            The total number of rows in the DataFrame.
+        2) nb_atts
+            The total number of columns in the DataFrame.
+        3) is_nominal
+            Type of the attribute (numeric/nominal)
+        4) nb_uvalues
+            Number of unique values in case of a nominal attribute.
+
+    N.b.:   For an attribute to be considered nominal,
+            it should at least be an integer.
+
+
+    Parameters
+    ----------
+    df: pd.DataFrame
+        Data is given in the form of a pandas DataFrame
+
+    Returns
+    -------
+
     """
+    # TODO(elia) is_nominal should become is_type
 
     nb_tuples = df.shape[0]
     nb_atts = df.shape[1]
 
     # Initialize arrays (-1/False are no arbitrary choices!)
-    nb_uvalues = np.full(nb_atts, -1)
+    nb_uvalues = df.nunique().values
     is_nominal = np.full(nb_atts, 0)
     tr_nominal = 20 # Our threshold of nb classes to call a column 'nominal'
 
