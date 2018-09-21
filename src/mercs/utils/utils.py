@@ -210,9 +210,16 @@ def collect_classlabels(m, nb_targ):
     """
     Collect all the classlabels of a given model m.
 
-    :param m:           Model
-    :param nb_targ:     Number of target attributes
-    :return:
+    Parameters
+    ----------
+    m: {sklearn, composite model}
+        The model under consideration
+    nb_targ:
+        Amount of targets of this model
+
+    Returns
+    -------
+
     """
 
     if hasattr(m, 'classes_'):
@@ -224,7 +231,7 @@ def collect_classlabels(m, nb_targ):
             m_classlabels = m.classes_
     else:
         # If no classlabels are present, we assume a fully numerical model
-        m_classlabels = initialize_classlabels(nb_targ, mode='numeric')
+        m_classlabels = initialize_classlabels(m.n_outputs_, mode='numeric')
 
     return m_classlabels
 
@@ -233,15 +240,8 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
     """
     Update the classlabels.
 
-    Given an array of clf_labels, for each attribute known to the system,
-    add the information on classlabels provided by a single model to it.
-    This information is contained in m_classlabels, which are the classlabels
-    known by the current model, on the targets as specified in m_targ.
-
-    Update (in case of default value) or expand the present clf_labels.
-
-    Clf_labels relates the MERCS system, and not to the individual
-    classifiers.
+    Update the classlabels known to the MERCS system, based on
+    potentially new information on classlabels from a new component model.
 
     Parameters
     ----------
@@ -250,7 +250,8 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
     m_classlabels: list, shape (nb_targ_atts_mod, (nb_classlabels_att,))
         List of all the classlabels known to the individual model
     m_targ
-        List of all targets of the individual model
+        List of all targets of the individual model. These are essential to
+        identify about which attributes m_classlabels is providing information!
 
     Returns
     -------
@@ -318,7 +319,7 @@ def join_classlabels(classlabels_list):
     return result
 
 
-## Feature Importance
+# Feature Importance
 def collect_FI(m_list, m_codes):
     """
     Collect the feature importance of the models.

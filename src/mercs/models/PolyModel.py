@@ -87,6 +87,8 @@ class PolyModel(object):
         # TODO(elia): Improve
         self.atts = list(range(len(self.is_attr_nominal))) # Just make a list [0, ..., nb_atts-1]
 
+        self.n_outputs_ = len(targ)
+
         return
 
     # Helpers
