@@ -1,10 +1,10 @@
-from abc import ABCMeta, abstractmethod
-from ..utils.utils import *
+import warnings
+
 from ..algo.inference import *
 from ..algo.prediction import recode_strat
-from ..utils.debug import debug_print
+from ..utils.classlabels import collect_classlabels
 
-# Debugger verbosity
+from ..utils.debug import debug_print
 VERBOSITY = 1
 
 
@@ -21,7 +21,7 @@ class PolyModel(object):
                                 combination
             b) Chained-model:   This is sequential combination of component
                                 models.
-                                Geomtetrically speaking, this is
+                                Geometrically speaking, this is
 
         Parameters
         ----------

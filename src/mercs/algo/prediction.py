@@ -1,4 +1,4 @@
-from ..utils.utils import codes_to_query, encode_attribute
+from src.mercs import codes_to_query, encode_attribute
 import numpy as np
 
 # Debugger verbosity

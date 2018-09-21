@@ -1,4 +1,6 @@
-from ..utils.utils import *
+from ..utils.encoding import codes_to_query
+from ..utils.classlabels import collect_and_verify_clf_classlabels
+from ..utils.metadata import collect_FI
 
 
 # Main methods

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from ..utils.utils import encode_attribute
+from src.mercs.utils.encoding import encode_attribute
 from ..utils.debug import debug_print
 
 # Debugger verbosity
