@@ -3,7 +3,7 @@ import pandas as pd
 
 # Debugger
 from ..utils.debug import debug_print
-VERBOSITY = 0
+VERBOSITY = 1
 
 
 # Everything related to codes
@@ -147,10 +147,9 @@ def get_metadata_df(df):
     tr_nominal = 20 # Our threshold of nb classes to call a column 'nominal'
 
     # Fill when necessary
-    for i, col in enumerate(df.columns):
+    for col_idx, col in enumerate(df.columns):
         if pd.api.types.is_integer_dtype(df[col]):
-            nb_uvalues[i] = df[col].nunique()
-            is_nominal[i] = 1 if nb_uvalues[i] < tr_nominal else 0
+            is_nominal[col_idx] = 1 if nb_uvalues[col_idx] < tr_nominal else 0
 
     metadata = {'is_nominal':   is_nominal,
                 'nb_atts':      nb_atts,

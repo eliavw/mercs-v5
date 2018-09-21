@@ -1,5 +1,4 @@
 from ..utils.utils import *
-#from ..queries.queries import check_given_query_codes, generate_default_query_code, compile_queries
 
 
 # Main methods
@@ -44,8 +43,21 @@ def update_meta_data(s, m_list, m_codes):
     Update the metadata of this MERCS object.
 
     This concerns info about the models themselves.
-    This can only be done after selection and training took place.
-    :return:
+    N.b.:   This can only be done AFTER selection and training took place,
+            because things like the classlabels are required.
+
+    Parameters
+    ----------
+    s: dict
+        Settings dictionary
+    m_list: list
+        List containing all the component models
+    m_codes
+        List containing the codes of the component models
+
+    Returns
+    -------
+
     """
 
     s['clf_labels'] = collect_and_verify_clf_classlabels(m_list, m_codes)

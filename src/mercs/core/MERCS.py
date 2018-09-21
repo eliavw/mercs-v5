@@ -14,6 +14,7 @@ from ..settings import *
 from ..utils.utils import *
 from ..utils.keywords import *
 
+VERBOSITY=1
 
 class MERCS(object):
     """
@@ -66,6 +67,12 @@ class MERCS(object):
         # 0. Prelims
         tick = default_timer()
         self.s['metadata'] = get_metadata_df(X)
+
+        msg="""
+        metadata of our model is: {}
+        """.format(self.s['metadata'])
+        debug_print(msg,V=VERBOSITY)
+
         self.update_settings(mode='fit', **kwargs)
         self.fit_imputator(X)
 
