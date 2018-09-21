@@ -365,7 +365,7 @@ class MERCS(object):
         return m_codes
 
     # 2. Perform Induction
-    def perform_induction(self, X, m_codes, settings, metadata):
+    def perform_induction(self, df, m_codes, settings, metadata):
         """
         Actual induction of the mde model.
 
@@ -374,25 +374,27 @@ class MERCS(object):
 
         m_desc, m_targ, _ = codes_to_query(m_codes)
         nb_models = len(m_targ)
-        train_data = X.values
 
         # Build m_list (unfitted)
         m_list = base_ind_algo(metadata, settings, m_targ)
 
         # Fit all the component models
         for i in range(nb_models):
+            assert isinstance(m_desc[i], list)
+            assert isinstance(m_targ[i], list)
 
-            X = train_data[:, m_desc[i]]
-            Y = train_data[:, m_targ[i]]
+            m_atts = m_desc[i] + m_targ[i]
 
-            # Convert (m X 1)-dim arrays to (m, )-dim vectors
+            X_Y = df.iloc[:, m_atts].dropna().values
+            X = X_Y[:, :len(m_desc[i])]
+            Y = X_Y[:, len(m_targ[i]):]
+
+            # Convert (m X 1)-dim arrays to (m, )-dim arrays
             if 1 in list(X.shape): X = X.ravel()
             if 1 in list(Y.shape): Y = Y.ravel()
 
             m_list[i].fit(X, Y)
-            del X, Y
-
-        del train_data
+            del X, Y, X_Y
 
         flatten = self.s['induction'].get('flatten', False)
         if flatten:
