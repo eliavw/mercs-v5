@@ -30,7 +30,6 @@ def collect_and_verify_clf_classlabels(m_list, m_codes):
 
     for m_idx, m in enumerate(m_list):
         # Collect the classlabels of one model
-        nb_targ = len(m_targ[m_idx])
         m_classlabels = collect_classlabels(m)
 
         # Verify all the classlabels
@@ -107,10 +106,10 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
         assert isinstance(new_labels, (list, np.ndarray))
 
         if isinstance(old_labels, list):
-            if old_labels == ['default']:
-                # If the default value of [0] is still there, update current
+            if old_labels == initialize_classlabels(1, mode='default')[0]:
+                # If the default value is there
                 clf_labels[t] = new_labels
-            elif old_labels == ['numeric']:
+            elif old_labels == initialize_classlabels(1, mode='numeric')[0]:
                 # If MERCS thought attribute t was numeric, the new model must agree!
                 assert new_labels == ['numeric']
             else:

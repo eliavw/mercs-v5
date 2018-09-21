@@ -74,6 +74,7 @@ class PolyModel(object):
         self.targ_lab = [self.attr_lab[t] for t in self.targ]   # Get targ attr labels
         assert len(self.targ_lab) == len(self.targ)
 
+        # TODO: This seems to me also to be a mistake!
         self.classes_ = [v for i, v in enumerate(self.targ_lab)
                          if self.is_targ_nominal[i]]
         assert np.sum(self.is_targ_nominal) == len(self.classes_)
@@ -213,16 +214,21 @@ class EnsembleModel(PolyModel):
         for m_idx in act_mod_idx:
             mod, mod_desc, mod_targ = self._get_mod_desc_targ(m_idx)
 
+            print("Model under consideration")
+            print(mod, mod_desc, mod_targ)
+
             # Filter the nominal targets
             mod_targ_nominal = [self.is_attr_nominal[v] for v in mod_targ]
             mod_targ = [v for i, v in enumerate(mod_targ) if mod_targ_nominal[i]]
 
             mod_labs = collect_classlabels(mod)  # Collect labels of this model
+
             msg="""
             mod_labs as collected by collect_classlabels: {}\n
             mod_targ_nominal: {} \n
             """.format(mod_labs, mod_targ_nominal)
             debug_print(msg, V=VERBOSITY, warn=True)
+
             mod_labs = [v for i, v in enumerate(mod_labs) if mod_targ_nominal[i]]
 
             mod_prob = mod.predict_proba(X[:, mod_desc])  # Individual prediction

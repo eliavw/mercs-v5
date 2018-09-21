@@ -385,6 +385,8 @@ class MERCS(object):
 
             m_atts = m_desc[i] + m_targ[i]
 
+            assert len(m_atts) == len(m_desc[i])+len(m_targ[i])
+
             X_Y = df.iloc[:, m_atts].dropna().values
             X = X_Y[:, :len(m_desc[i])]
             Y = X_Y[:, len(m_targ[i]):]
