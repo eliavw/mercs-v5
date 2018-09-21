@@ -1,8 +1,10 @@
 import numpy as np
 import pandas as pd
+import warnings
 
 # Debugger
 from ..utils.debug import debug_print
+
 VERBOSITY = 1
 
 
@@ -107,8 +109,7 @@ def encode_attribute(att, desc, targ):
     return code_int
 
 
-# Related to settings['metadata']
-## Actual metadata
+# Actual metadata
 def get_metadata_df(df):
     """
     Get some useful statistics from a Pandas DataFrame.
@@ -159,20 +160,27 @@ def get_metadata_df(df):
     return metadata
 
 
-## Classlabels
+# Classlabels
 def collect_and_verify_clf_classlabels(m_list, m_codes):
     """
-    Collect the labels of the classifier.
+    Collect all the classlabels
 
-    :param m_codes:
-    :param m_list:
-    :return:
+    Parameters
+    ----------
+    m_list: list, shape (nb_models)
+        List of all the component models
+    m_codes:
+        List of all the codes of the MERCS model
+
+    Returns
+    -------
+
     """
 
     _, m_targ, _ = codes_to_query(m_codes)
 
-    nb_atts =  len(m_codes[0])
-    clf_labels = [['default']] * nb_atts # Fill with dummy classes
+    nb_atts = len(m_codes[0])
+    clf_labels = initialize_classlabels(nb_atts)
 
     for m_idx, m in enumerate(m_list):
         # Collect the classlabels of one model
@@ -185,6 +193,19 @@ def collect_and_verify_clf_classlabels(m_list, m_codes):
     return clf_labels
 
 
+def initialize_classlabels(nb_atts, mode='default'):
+
+    if mode in {'default'}:
+        classlabels = [['default'] for i in range(nb_atts)]
+    elif mode in {'numeric'}:
+        classlabels = [['numeric'] for i in range(nb_atts)]
+    else:
+        msg = "Did not recognize mode: {}. Assuming 'default'".format(mode)
+        warnings.warn(msg)
+        classlabels = initialize_classlabels(nb_atts, mode='default')
+    return classlabels
+
+
 def collect_classlabels(m, nb_targ):
     """
     Collect all the classlabels of a given model m.
@@ -193,25 +214,17 @@ def collect_classlabels(m, nb_targ):
     :param nb_targ:     Number of target attributes
     :return:
     """
-    # TODO: Fix the hotfix
 
     if hasattr(m, 'classes_'):
-        if nb_targ == 1:
-            # Single-target model
-            if isinstance(m.classes_, list): # Hotfix.
-                # This occurs when we ask classes_ of a model we built ourselves.
-                m_classlabels = m.classes_
-            else:
-                m_classlabels = [m.classes_]
-
+        if isinstance(m.classes_, np.ndarray):
+            # Single-target sklearn output
+            m_classlabels = [m.classes_]
         else:
-            # Multi-target model
-            m_classlabels = [m.classes_[j] for j in range(nb_targ)]
-
+            assert isinstance(m.classes_, list)
+            m_classlabels = m.classes_
     else:
         # If no classlabels are present, we assume a fully numerical model
-        m_classlabels  = [['numeric']] * nb_targ
-        #TODO(elia): This needs to be done nicer.
+        m_classlabels = initialize_classlabels(nb_targ, mode='numeric')
 
     return m_classlabels
 
