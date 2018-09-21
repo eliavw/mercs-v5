@@ -13,7 +13,7 @@ from ..utils.keywords import *
 from ..utils.metadata import get_metadata_df
 
 from ..utils.debug import debug_print
-VERBOSITY = 0
+VERBOSITY = 1
 
 
 class MERCS(object):
@@ -390,6 +390,12 @@ class MERCS(object):
             X_Y = df.iloc[:, m_atts].dropna().values
             X = X_Y[:, :len(m_desc[i])]
             Y = X_Y[:, len(m_targ[i]):]
+
+            msg="""
+            X.shape: {}\n
+            Y.shape: {}\n
+            """.format(X.shape, Y.shape)
+            debug_print(msg, V=VERBOSITY, warn=True)
 
             # Convert (m X 1)-dim arrays to (m, )-dim arrays
             if 1 in list(X.shape): X = X.ravel()

@@ -75,9 +75,12 @@ class PolyModel(object):
         assert len(self.targ_lab) == len(self.targ)
 
         # TODO: This seems to me also to be a mistake!
+        """
         self.classes_ = [v for i, v in enumerate(self.targ_lab)
                          if self.is_targ_nominal[i]]
         assert np.sum(self.is_targ_nominal) == len(self.classes_)
+        """
+        self.classes_ = self.targ_lab
 
         # Active models (nominal/numeric)
         self.mod_idx_nominal = [i for i, v in enumerate(self.m_targ)
@@ -226,7 +229,16 @@ class EnsembleModel(PolyModel):
             msg="""
             mod_labs as collected by collect_classlabels: {}\n
             mod_targ_nominal: {} \n
-            """.format(mod_labs, mod_targ_nominal)
+            mod: {} \n \n
+            mod_targ: {} \n
+            mod_desc: {} \n
+            m_idx: {} \n
+            """.format(mod_labs,
+                       mod_targ_nominal,
+                       mod,
+                       mod_targ,
+                       mod_desc,
+                       m_idx)
             debug_print(msg, V=VERBOSITY, warn=True)
 
             mod_labs = [v for i, v in enumerate(mod_labs) if mod_targ_nominal[i]]

@@ -4,7 +4,7 @@ import warnings
 from .encoding import codes_to_query
 
 from .debug import debug_print
-VERBOSITY = 0
+VERBOSITY = 1
 
 
 def collect_and_verify_clf_classlabels(m_list, m_codes):
@@ -92,7 +92,7 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
     for t_idx, t in enumerate(m_targ):
 
         old_labels = clf_labels[t]          # Classlabels known to MERCS
-        new_labels = m_classlabels[t_idx]   # Classlabels known the model m
+        new_labels = m_classlabels[t_idx]   # Classlabels known to the model m
 
         msg = "New_labels are: {}\n" \
               "Type new_labels is: {}\n".format(new_labels, type(new_labels))
