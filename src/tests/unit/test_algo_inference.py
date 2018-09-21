@@ -14,7 +14,8 @@ from mercs.algo.inference import (init_predictions,
                                   update_X,
                                   predict_values_from_numer,
                                   predict_values_from_proba,
-                                  merge_numer)
+                                  merge_numer,
+                                  merge_proba)
 
 
 def test_init_predictions():
@@ -115,6 +116,67 @@ def test_merge_numer():
 
         assert isinstance(obs, list)
         assert len(obs) == nb_targ_res
+
+    return
+
+
+def test_merge_proba():
+    # Prelims
+    nb_samples = 100
+    nb_targ_res = 6
+    nb_classes = 3
+    proba_res = [None] * nb_targ_res
+    lab_res = [None] * nb_targ_res
+
+    for i in range(nb_targ_res):
+        proba_res[i] = np.random.rand(nb_samples, nb_classes)
+
+    for i in range(nb_targ_res):
+        lab_res[i] = np.random.choice(10, size=nb_classes, replace=False)
+
+    # list (our own output or multi-target sklearn)
+    mutual_targets_a = [0, 2, 4]
+    nb_targ_mod_a = 3
+    assert len(mutual_targets_a) == nb_targ_mod_a
+
+    nb_classes_mod_a = 2
+    proba_mod_a = [None] * nb_targ_mod_a
+    lab_mod_a = [None] * nb_targ_mod_a
+
+    for i in range(nb_targ_mod_a):
+        proba_mod_a[i] = np.random.rand(nb_samples, nb_classes_mod_a)
+
+    lab_mod_a = [lab_res[idx][0:nb_classes_mod_a] for idx in mutual_targets_a]
+
+    # np.ndarray (single-target sklearn)
+    mutual_targets_b = [4]
+    nb_targ_mod_b = 1
+    assert len(mutual_targets_b) == nb_targ_mod_b
+
+    nb_classes_mod_b = 2
+
+    proba_mod_b = np.random.rand(nb_samples, nb_classes_mod_b)
+
+    lab_mod_b = [lab_res[idx][-nb_classes_mod_b:] for idx in mutual_targets_b]
+
+    # Actual Test
+    t_idx_mod = 0
+    t_idx_res = mutual_targets_a[t_idx_mod]
+    print(t_idx_res)
+    obs = merge_proba(proba_res, proba_mod_a, lab_res, lab_mod_a, t_idx_res, t_idx_mod)
+
+    for x in obs:
+        assert isinstance(x, np.ndarray)
+        assert x.shape == (nb_samples, nb_classes)
+
+    t_idx_mod = 0
+    t_idx_res = mutual_targets_b[t_idx_mod]
+    print(t_idx_res)
+    obs = merge_proba(proba_res, proba_mod_b, lab_res, lab_mod_b, t_idx_res, t_idx_mod)
+
+    for x in obs:
+        assert isinstance(x, np.ndarray)
+        assert x.shape == (nb_samples, nb_classes)
 
     return
 

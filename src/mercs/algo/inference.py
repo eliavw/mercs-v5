@@ -56,15 +56,16 @@ def merge_proba(proba_res, proba_mod, lab_res, lab_mod, t_idx_res, t_idx_mod):
     ----------
     proba_res: list, shape (nb_targets, (nb_samples, nb_labels))
         Contains the result (proba)
-    proba_mod: {list, np.ndarray}, shape
+    proba_mod: {list, np.ndarray}, shape    (nb_targets, (nb_samples, nb_labels))
+                                            (nb_samples, nb_labels)
         Contains the result of the current model (proba)
     lab_res
         Classlabels of the result
     lab_mod
         Classlabels of the model
-    t_idx_res
+    t_idx_res: int
         Index of current target attr in result
-    t_idx_mod
+    t_idx_mod: int
         Index of current target attr in  current model
 
     Returns
@@ -260,11 +261,19 @@ def _get_mask(lab_res, lab_mod, t_idx_res, t_idx_mod):
 
     This is easily achieved with the np.isin which yields a boolean mask.
 
-    :param lab_res:         Classlabels of the result
-    :param lab_mod:         Classlabels of the model
-    :param t_idx_res:       Index of the current target in result
-    :param t_idx_mod:       Index of the current target in current model
-    :return:
+    Parameters
+    ----------
+    lab_res:
+        Classlabels of the result
+    lab_mod:
+        Classlabels of the model
+    t_idx_res: int
+        Index of the current target in result
+    t_idx_mod: int
+        Index of the current target in current model
+    Returns
+    -------
+
     """
 
     mask = np.isin(lab_res[t_idx_res], lab_mod[t_idx_mod], assume_unique=True)
