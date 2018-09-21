@@ -1,6 +1,6 @@
 from ..utils.encoding import codes_to_query
 from ..utils.classlabels import collect_and_verify_clf_classlabels
-from ..utils.metadata import collect_FI
+from ..utils.metadata import collect_feature_importances
 
 
 # Main methods
@@ -63,7 +63,7 @@ def update_meta_data(s, m_list, m_codes):
     """
 
     s['clf_labels'] = collect_and_verify_clf_classlabels(m_list, m_codes)
-    s['FI'] = collect_FI(m_list, m_codes)
+    s['FI'] = collect_feature_importances(m_list, m_codes)
 
     return s
 

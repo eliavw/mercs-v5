@@ -5,6 +5,9 @@ from sklearn.ensemble import *
 
 from ..utils.keywords import *
 
+from ..utils.debug import debug_print
+VERBOSITY = 1
+
 
 # Algorithms
 def base_ind_algo(metadata, settings, m_targ):
@@ -39,6 +42,9 @@ def base_ind_algo(metadata, settings, m_targ):
     assert nb_mod > 0
 
     is_nominal = metadata['is_nominal']
+
+    msg="is_nominal in this model is: {}".format(is_nominal)
+    debug_print(msg, V=VERBOSITY)
 
     m_list = [induce_model(settings, is_nominal, m_targ[i])
               for i in range(nb_mod)]

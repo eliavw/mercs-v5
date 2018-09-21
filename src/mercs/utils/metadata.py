@@ -35,18 +35,15 @@ def get_metadata_df(df):
 
     nb_tuples = df.shape[0]
     nb_atts = df.shape[1]
-
-    # Initialize arrays (-1/False are no arbitrary choices!)
     nb_uvalues = df.nunique().values
-    is_nominal = np.full(nb_atts, 0)
-    tr_nominal = 20 # Our threshold of nb classes to call a column 'nominal'
+    types = df.dtypes.values
 
-    # Fill when necessary
-    for col_idx, col in enumerate(df.columns):
-        if pd.api.types.is_integer_dtype(df[col]):
-            is_nominal[col_idx] = 1 if nb_uvalues[col_idx] < tr_nominal else 0
+    is_nominal = [check_nominal_att(t, v)
+                  for t,v in zip(types, nb_uvalues)]
+    is_nominal = np.array(is_nominal).astype(int)
 
-    metadata = {'is_nominal':   is_nominal,
+    metadata = {'types':        types,
+                'is_nominal':   is_nominal,
                 'nb_atts':      nb_atts,
                 'nb_tuples':    nb_tuples,
                 'nb_values':    nb_uvalues}
@@ -54,7 +51,43 @@ def get_metadata_df(df):
     return metadata
 
 
-def collect_FI(m_list, m_codes):
+def check_nominal_att(attribute_type,
+                      attribute_unique_values,
+                      nominal_attribute_unique_values_threshold = 20):
+    """
+    Check if an attribute is nominal, according to our definition.
+
+    Def:
+        A nominal attribute is an attribute which is of an integer type and
+        has fewer than nominal_attribute_unique_values_threshold distinct values.
+
+    Parameters
+    ----------
+    attribute_type: numpy.dtype
+        Type of the attribute, as extracted from the DataFrame
+    attribute_unique_values: np.ndarray
+        Unique values of the attribute under consideration
+    nominal_attribute_unique_values_threshold: int
+        When the number of distinct values is equal to or exceeds this value,
+        we no longer regard it as a nominal attribute.
+
+        Default = 20
+
+    Returns
+    -------
+
+    """
+
+    check_type = pd.api.types.is_integer_dtype(attribute_type)
+    check_uvalues = attribute_unique_values < nominal_attribute_unique_values_threshold
+
+    if check_type and check_uvalues:
+        return True
+    else:
+        return False
+
+
+def collect_feature_importances(m_list, m_codes):
     """
     Collect the feature importance of the models.
 
@@ -63,11 +96,11 @@ def collect_FI(m_list, m_codes):
     :return:
     """
 
-    FI = np.zeros(m_codes.shape)
+    feature_importances = np.zeros(m_codes.shape)
     m_desc, _, _ = codes_to_query(m_codes)
 
     for mod_i in range(len(m_list)):
         for desc_i, attr_i in enumerate(m_desc[mod_i]):
-            FI[mod_i, attr_i] = m_list[mod_i].feature_importances_[desc_i]
+            feature_importances[mod_i, attr_i] = m_list[mod_i].feature_importances_[desc_i]
 
-    return FI
+    return feature_importances
