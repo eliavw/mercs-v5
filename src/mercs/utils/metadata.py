@@ -35,14 +35,17 @@ def get_metadata_df(df):
 
     nb_tuples = df.shape[0]
     nb_atts = df.shape[1]
+
     nb_uvalues = df.nunique().values
+    has_nan = df.isnull().any().values
     types = df.dtypes.values
 
-    is_nominal = [check_nominal_att(t, v)
-                  for t,v in zip(types, nb_uvalues)]
+    is_nominal = [check_nominal_att(t, v, n)
+                  for t, v, n in zip(types, nb_uvalues, has_nan)]
     is_nominal = np.array(is_nominal).astype(int)
 
     metadata = {'types':        types,
+                'has_nan':      has_nan,
                 'is_nominal':   is_nominal,
                 'nb_atts':      nb_atts,
                 'nb_tuples':    nb_tuples,
@@ -53,7 +56,8 @@ def get_metadata_df(df):
 
 def check_nominal_att(attribute_type,
                       attribute_unique_values,
-                      nominal_attribute_unique_values_threshold = 20):
+                      check_nan,
+                      nominal_attribute_unique_values_threshold=20):
     """
     Check if an attribute is nominal, according to our definition.
 
@@ -67,6 +71,8 @@ def check_nominal_att(attribute_type,
         Type of the attribute, as extracted from the DataFrame
     attribute_unique_values: np.ndarray
         Unique values of the attribute under consideration
+    check_nan: boolean
+        Whether or not the attribute has some np.nan values
     nominal_attribute_unique_values_threshold: int
         When the number of distinct values is equal to or exceeds this value,
         we no longer regard it as a nominal attribute.
@@ -78,10 +84,16 @@ def check_nominal_att(attribute_type,
 
     """
 
-    check_type = pd.api.types.is_integer_dtype(attribute_type)
     check_uvalues = attribute_unique_values < nominal_attribute_unique_values_threshold
+    check_integer_type = pd.api.types.is_integer_dtype(attribute_type)
+    check_float_type = pd.api.types.is_float_dtype(attribute_type)
 
-    if check_type and check_uvalues:
+    check_case_one = check_integer_type and check_uvalues
+    check_case_two = check_float_type and check_nan and check_uvalues
+
+    if check_case_one:
+        return True
+    elif check_case_two:
         return True
     else:
         return False
