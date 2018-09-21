@@ -373,10 +373,10 @@ class MERCS(object):
         """
 
         m_desc, m_targ, _ = codes_to_query(m_codes)
-        nb_models = len(m_targ)
 
         # Build m_list (unfitted)
         m_list = base_ind_algo(metadata, settings, m_targ)
+        nb_models = len(m_list)
 
         # Fit all the component models
         for i in range(nb_models):
