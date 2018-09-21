@@ -1,11 +1,10 @@
 import numpy as np
 import warnings
 
-from .debug import debug_print
-VERBOSITY = 0
 from .encoding import codes_to_query
 
-
+from .debug import debug_print
+VERBOSITY = 0
 
 
 def collect_and_verify_clf_classlabels(m_list, m_codes):
@@ -14,7 +13,7 @@ def collect_and_verify_clf_classlabels(m_list, m_codes):
 
     Parameters
     ----------
-    m_list: list, shape (nb_models)
+    m_list: list, shape (nb_models,)
         List of all the component models
     m_codes:
         List of all the codes of the MERCS model

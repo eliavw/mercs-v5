@@ -1,8 +1,8 @@
-# Python scripts to handle some example datasets
 import os
 import sys
-from os.path import dirname
 import pandas as pd
+
+from os.path import dirname
 
 # Custom import (Add src to the path)
 root_directory = dirname(dirname(dirname(__file__)))
@@ -138,4 +138,3 @@ def load_slump(full=False):
         test = load_example_dataset('slump', 'test')
 
         return train, test
-

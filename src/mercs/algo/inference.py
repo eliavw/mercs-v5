@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-from src.mercs.utils.encoding import encode_attribute
-from ..utils.debug import debug_print
 
-# Debugger verbosity
+from ..utils.encoding import encode_attribute
+
+from ..utils.debug import debug_print
 VERBOSITY = 0
 
 

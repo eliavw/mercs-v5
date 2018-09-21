@@ -1,8 +1,7 @@
 import numpy as np
-from sklearn.tree import *
-from sklearn.ensemble import *
+
 from sklearn.cluster.bicluster import SpectralBiclustering
-from sklearn.cluster import KMeans
+from sklearn.ensemble import *
 
 
 def base_selection_algo(metadata, settings, target_atts_list = None):
@@ -126,65 +125,6 @@ def labels_to_codes(cluster_labels, target_atts_list):
     return codes
 
 
-# def random_selection_algo(metadata, settings, target_atts_list = None):
-#     """
-#     A random selection algorithm, to evaluate the performance of both the prediction algorithms.
-#
-#     """
-#
-#
-#     # Total number of attributes
-#     nb_atts = metadata['nb_atts']
-#
-#     # If not specified, all attributes can appear as targets.
-#     # Otherwise, use only indicated attributes
-#     if (target_atts_list is None):
-#         target_atts_list = list(range(nb_atts))
-#
-#     # Number of possible targets
-#     nb_target_atts = len(target_atts_list)
-#     sel_param, sel_its = settings['param'], settings['its']
-#
-#     # Number of output attributes per model
-#     if sel_param >= 0.4:
-#         nb_out_atts = int(np.ceil(sel_param))
-#     else:
-#         perc_targ_atts = sel_param
-#         nb_out_atts = int(np.ceil(perc_targ_atts * nb_target_atts))
-#
-#     # Number of models
-#     nb_models = int(np.ceil(nb_target_atts / nb_out_atts)) * sel_its
-#     # One code per model
-#     codes = [[]] * nb_models
-#
-#     for model in range(nb_models):
-#         # Setting missing attributess
-#         code = [-1] * nb_atts
-#         # Setting target attributes
-#         for att in target_atts_list:
-#             if (np.random.rand()<(1./nb_models)):
-#                 code[att] = 1
-#         # Setting descriptive attributes
-#         for att in range(nb_atts):
-#             if ((np.random.rand()<(1./nb_models))&(code[att]<0)):
-#                 code[att] = 0
-#         codes[model] = code
-#
-#     codes = np.array(codes)
-#     # Now we repair after possible deficiencies
-#     # Counts of 'being target'
-#     occ_as_targ = [np.count_nonzero(codes[:, i] == 1) for i in range(codes.shape[1])]
-#     mean_occ_as_target = int(np.ceil(np.mean(occ_as_targ)))
-#
-#     for att, count in enumerate(occ_as_targ):
-#         # If an attribute never appears as a target,
-#         # but must be predicted by a model
-#         if ((count == 0)&(att in target_atts_list)):
-#             models_to_alter = np.random.randint(1, codes.shape[0], size=mean_occ_as_target)
-#             for m in models_to_alter: codes[m, att] = 1
-#     return codes
-
-
 def random_selection_algo(metadata, settings, target_atts_list = None):
     """
     A random selection algorithm, to evaluate the performance of both the prediction algorithms.
@@ -241,6 +181,3 @@ def random_selection_algo(metadata, settings, target_atts_list = None):
             for m in models_to_alter: codes[m, i] = 1
 
     return codes
-
-
-

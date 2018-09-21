@@ -1,8 +1,9 @@
-from ..utils.keywords import *
 import numpy as np
 
 from sklearn.tree import *
 from sklearn.ensemble import *
+
+from ..utils.keywords import *
 
 
 # Algorithms

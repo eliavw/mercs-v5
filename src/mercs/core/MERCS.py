@@ -1,4 +1,5 @@
 import json
+
 from sklearn.preprocessing import Imputer
 from timeit import default_timer
 
@@ -12,7 +13,7 @@ from ..utils.keywords import *
 from ..utils.metadata import get_metadata_df
 
 from ..utils.debug import debug_print
-VERBOSITY = 1
+VERBOSITY = 0
 
 
 class MERCS(object):

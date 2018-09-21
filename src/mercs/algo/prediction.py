@@ -1,11 +1,12 @@
-from src.mercs import codes_to_query, encode_attribute
 import numpy as np
 
-# Debugger verbosity
+from ..utils.encoding import codes_to_query, encode_attribute
+
 from ..utils.debug import debug_print
 VERBOSITY = 0
 
-# Main Functionalities
+
+# Core
 def mi_pred_algo(m_codes, q_codes):
     # Preliminaries
     nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = pred_prelims(m_codes,
@@ -405,7 +406,7 @@ def generate_chain(m_codes, q_desc, q_targ, settings):
     return mas, aas
 
 
-## Utillities
+# Helpers
 def pred_prelims(m_codes, q_codes):
     """
     Some things that every prediction strategy needs.
