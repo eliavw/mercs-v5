@@ -356,11 +356,11 @@ class MERCS(object):
             m_codes = random_selection_algo(metadata,
                                             self.s['selection'])
         else:
-            warnings.warn("Did not recognize selection algorithm {}"
-                          "Available algorithms are {}".format(sel_type, keywords.keys()))
-            m_codes = base_selection_algo(metadata,
-                                          self.s['selection'],
-                                          target_atts_list=metadata['att_types']['nominal'])
+            warnings.warn("Did not recognize selection algorithm {}\n"
+                          "Available algorithms are {}\n"
+                          "Assuming base selection instead".format(sel_type, keywords.keys()))
+            self.s['selection']['type'] = next(iter(keywords['base']))
+            m_codes = self.perform_selection(metadata)
 
         return m_codes
 
