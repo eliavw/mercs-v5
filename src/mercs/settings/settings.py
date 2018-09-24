@@ -229,6 +229,6 @@ def _check_all_lengths(codes, nb_atts):
 
     errors = [1 for code in codes
               if len(code) != nb_atts]
-    check = len(errors) > 1
+    check = len(errors) > 0
 
     return check
