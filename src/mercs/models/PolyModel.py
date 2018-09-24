@@ -31,6 +31,7 @@ class PolyModel(object):
         targ
         metadata
         """
+
         con = (targ, m_targ, m_desc, m_list)
         msg = "This PolyModel has\n" \
               "targ: {}\n" \
@@ -45,33 +46,35 @@ class PolyModel(object):
         # Attributes
         assert len(self.m_list) == len(m_desc)
         assert len(self.m_list) == len(m_targ)
-
         if not set(targ) <= set(np.concatenate(m_targ)):
-            con = (targ, m_targ, m_desc, m_list)
-            msg = "This assertions will FAIL!\n" \
-                  "This PolyModel has\n" \
-                  "targ: {}\n" \
-                  "m_targ: {}\n" \
-                  "m_desc: {}\n" \
-                  "m_list: {}\n".format(*con)
-            debug_print(msg, level=1, V=VERBOSITY, warn=True)
-        assert set(targ) <= set(np.concatenate(m_targ))  # targ is subset of all possible targets?
+            contents = (targ, m_targ, m_desc, m_list)
+            msg = """
+            This Polymodel has:
+            \t targ: {}\n
+            \t m_targ: {}\n
+            \t m_desc: {}\n
+            \t m_list: {}\n\n
+            And this is a problem since we need
+            targ to be a subset of the union of all m_targ.
+            """.format(*contents)
+            raise ValueError(msg)
+
         self.m_desc = m_desc
         self.m_targ = m_targ
         self.targ = targ
 
         # is_nominal
-        self.is_attr_nominal = metadata['is_nominal']  # Get each attr nominal (1/0)
-        self.is_targ_nominal = [self.is_attr_nominal[t] for t in self.targ]  # Get targ attr nominal (1/0)
+        self.is_attr_nominal = metadata['is_nominal']                           # Get each attr nominal (1/0)
+        self.is_targ_nominal = [self.is_attr_nominal[t] for t in self.targ]     # Get targ attr nominal (1/0)
 
-        # Active attribute (nominal/numeric)
+        # Separate two classes of target attributes
         self.targ_att_nominal = [v for i, v in enumerate(self.targ) if self.is_targ_nominal[i]]
         self.targ_att_numeric = [v for i, v in enumerate(self.targ) if not self.is_targ_nominal[i]]
         assert len(self.targ) == (len(self.targ_att_nominal) + len(self.targ_att_numeric))
 
         # Labels
-        self.attr_lab = metadata['clf_labels']  # Get each attr label
-        self.targ_lab = [self.attr_lab[t] for t in self.targ]  # Get targ attr labels
+        self.attr_lab = metadata['clf_labels']                                  # Get each attr label
+        self.targ_lab = [self.attr_lab[t] for t in self.targ]                   # Get targ attr labels
         assert len(self.targ_lab) == len(self.targ)
 
         # TODO(elia): This needs to be done better. ALL the classes count! (also numeric ones)
@@ -86,8 +89,7 @@ class PolyModel(object):
         self.mod_idx_numeric = [i for i, v in enumerate(self.m_targ)
                                 if (set(v) & set(self.targ_att_numeric))]
 
-        # TODO(elia): Improve
-        self.atts = list(range(len(self.is_attr_nominal)))  # Just make a list [0, ..., nb_atts-1]
+        self.atts = list(range(metadata['nb_atts']))
 
         self.n_outputs_ = len(targ)
 
@@ -147,6 +149,19 @@ class PolyModel(object):
                        for i in range(nb_targ_att_numeric)]
 
         return res_numeric
+
+    def _generate_introspection_str(self):
+        contents = (self.targ, self.m_targ, self.m_desc, self.m_list)
+        msg = """
+                    This Polymodel has:
+                    \t targ: {}\n
+                    \t m_targ: {}\n
+                    \t m_desc: {}\n
+                    \t m_list: {}\n\n
+                    And this is a problem since we need
+                    targ to be a subset of the union of all m_targ.
+                    """.format(*contents)
+        return msg
 
 
 class EnsembleModel(PolyModel):

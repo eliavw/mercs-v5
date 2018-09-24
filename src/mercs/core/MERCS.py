@@ -57,7 +57,7 @@ class MERCS(object):
 
         return
 
-    def fit(self, df, **kwargs):
+    def fit(self, X, **kwargs):
         """
         Fit the MERCS model to a dataset X.
 
@@ -83,7 +83,7 @@ class MERCS(object):
 
         Parameters
         ----------
-        df: pd.DataFrame, shape (nb_samples, nb_attributes)
+        X: pd.DataFrame, shape (nb_samples, nb_attributes)
             DataFrame of our dataset
         kwargs: dict
             Keyword arguments that can modify specific settings
@@ -95,7 +95,7 @@ class MERCS(object):
 
         # 1. Prelims
         tick = default_timer()
-        self.s['metadata'] = get_metadata_df(df)
+        self.s['metadata'] = get_metadata_df(X)
 
         msg = """
         metadata of our model is: {}
@@ -103,13 +103,13 @@ class MERCS(object):
         debug_print(msg,V=VERBOSITY)
 
         self.update_settings(mode='fit', **kwargs)
-        self.fit_imputator(df)
+        self.fit_imputator(X)
 
         # 2. Selection = Prepare Induction
         self.m_codes = self.perform_selection(self.s['metadata'])
 
         # 3. Induction
-        self.m_codes, self.m_list = self.perform_induction(df,
+        self.m_codes, self.m_list = self.perform_induction(X,
                                                            self.m_codes,
                                                            self.s['induction'],
                                                            self.s['metadata'])
@@ -120,7 +120,7 @@ class MERCS(object):
 
         return
 
-    def predict(self, df, q_idx=0, **kwargs):
+    def predict(self, X, q_idx=0, **kwargs):
         """
         Predict Y from X.
 
@@ -128,7 +128,7 @@ class MERCS(object):
 
         :param q_idx:       Optional keyword identifying which of the already
                             loaded queries you want to predict.
-        :param df:           Test dataset. (Pandas DataFrame)
+        :param X:           Test dataset. (Pandas DataFrame)
         :param kwargs:      Optional keyword arguments.
                             Used in updating the settings of the MERCSClassifier.
         :return:
@@ -152,7 +152,7 @@ class MERCS(object):
         debug_print(msg, V=VERBOSITY)
 
         # 3. Inference
-        X_query = perform_imputation(df,
+        X_query = perform_imputation(X,
                                      self.s['queries']['codes'][q_idx],
                                      self.imputator)  # Generate X data_csv.
 
@@ -166,7 +166,7 @@ class MERCS(object):
 
         return Y
 
-    def predict_proba(self, df, q_idx=0, **kwargs):
+    def predict_proba(self, X, q_idx=0, **kwargs):
         """
         Predict Y from X_test.
 
@@ -174,7 +174,7 @@ class MERCS(object):
 
         :param q_idx:       Optional keyword identifying which of the already
                             loaded queries you want to predict.
-        :param df:           Test dataset. (Pandas DataFrame)
+        :param X:           Test dataset. (Pandas DataFrame)
         :param kwargs:      Optional keyword arguments.
                             Used in updating the settings of the MERCSClassifier.
         :return:
@@ -191,7 +191,7 @@ class MERCS(object):
                                             self.s['metadata'],
                                             q_code=self.s['queries']['codes'][q_idx])
         # 2. Inference
-        X_query = perform_imputation(df,
+        X_query = perform_imputation(X,
                                      self.s['queries']['codes'][q_idx],
                                      self.imputator)  # Generate X data_csv.
 
@@ -203,7 +203,7 @@ class MERCS(object):
 
         return Y_proba
 
-    def batch_predict(self, df, fnames, **kwargs):
+    def batch_predict(self, X, fnames, **kwargs):
 
         # 1. Preliminaries
         tick = default_timer()
@@ -222,7 +222,7 @@ class MERCS(object):
         # 2. Inference
         for q_idx in range(nb_queries):
             # Generate X data_csv for queries with index q_idx
-            X_query = perform_imputation(df,
+            X_query = perform_imputation(X,
                                          self.s['queries']['codes'][q_idx],
                                          self.imputator)
 
