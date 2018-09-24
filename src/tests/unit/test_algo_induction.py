@@ -1,8 +1,8 @@
 # Standard imports
+import numpy as np
 import os
 import sys
 from os.path import dirname
-
 
 # Custom imports
 root_directory = dirname(dirname(dirname(dirname(__file__))))
