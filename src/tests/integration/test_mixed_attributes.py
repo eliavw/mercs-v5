@@ -5,16 +5,15 @@ import sys
 
 from os.path import dirname
 
-from ..utils.eval import verify_nominal_prediction, verify_numeric_prediction
-
 # Custom import (Add src to the path)
 root_directory = dirname(dirname(dirname(dirname(__file__))))
 for dname in {'src'}:
     sys.path.insert(0, os.path.join(root_directory, dname))
 
+import datasets as datasets
 from mercs.core import MERCS
 from mercs.utils.encoding import encode_attribute
-import datasets as datasets
+from tests.utils.eval import verify_nominal_prediction, verify_numeric_prediction
 
 
 def setup():
