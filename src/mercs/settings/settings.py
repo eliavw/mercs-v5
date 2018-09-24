@@ -40,8 +40,8 @@ def create_settings():
 
 def filter_kwargs_update_settings(s, prefix=None, delimiter='_', **kwargs):
 
-    param_map = compile_param_map(prefix=prefix, delimiter=delimiter, **kwargs)
-    return update_settings_dict(s, param_map, **kwargs)
+    param_map = _compile_param_map(prefix=prefix, delimiter=delimiter, **kwargs)
+    return _update_settings_dict(s, param_map, **kwargs)
 
 
 def update_meta_data(s, m_list, m_codes):
@@ -74,7 +74,7 @@ def update_meta_data(s, m_list, m_codes):
 
 def update_query_settings(s, nb_atts, delimiter='_', **kwargs):
 
-    param_map = compile_param_map(prefix='qry', delimiter=delimiter, **kwargs)
+    param_map = _compile_param_map(prefix='qry', delimiter=delimiter, **kwargs)
     relevant_kwargs = {v: kwargs[k] for k, v in param_map.items()}
 
     if 'codes' in relevant_kwargs:
@@ -84,50 +84,30 @@ def update_query_settings(s, nb_atts, delimiter='_', **kwargs):
         if _verify_decent_query_codes(codes, nb_atts):
             s['codes'] = codes
         else:
-            s['codes'] = generate_default_query_code(nb_atts)
+            s['codes'] = _generate_default_query_code(nb_atts)
 
         s['q_desc'], s['q_targ'], s['q_miss'] = codes_to_query(s['codes'])
 
     elif 'code' in relevant_kwargs:
         # Wrap single code in extra array for consistency
-        codes = [relevant_kwargs['code']]
-
         msg = """
-        In file:\t\t\t{}\n
-        I am reading a single query code, i.e.:\t{}\n
-        """.format(__file__, relevant_kwargs['code'])
+                In file:\t\t\t{}\n
+                I am reading a single query code, i.e.:\t{}\n
+                """.format(__file__, relevant_kwargs['code'])
         debug_print(msg, V=VERBOSITY)
 
-        s = update_query_settings(s, nb_atts, qry_codes=codes)  # N.B.: Do NOT pass the delimiter here!
+        codes = [relevant_kwargs['code']]
+        update_query_settings(s, nb_atts, qry_codes=codes)  # N.B.: Do NOT pass the delimiter here!
     else:
         # Nothing provided in kwargs, we check what is already present.
         codes = s.get('codes', None)
-
-        s = update_query_settings(s, nb_atts, qry_codes=codes) # N.B.: Do NOT pass the delimiter here!
+        update_query_settings(s, nb_atts, qry_codes=codes) # N.B.: Do NOT pass the delimiter here!
 
     return s
 
 
-def _verify_decent_query_codes(codes, nb_atts):
-
-    if codes is None:
-        result = False
-    else:
-        result = _check_all_lengths(codes, nb_atts)
-
-    return result
-
-
-def _check_all_lengths(codes, nb_atts):
-
-    errors = [1 for code in codes
-              if len(code) != nb_atts]
-    check = len(errors) > 1
-
-    return check
-
-    # Helpers
-def update_settings_dict(settings, param_map, **kwargs):
+# Helpers
+def _update_settings_dict(settings, param_map, **kwargs):
     """
     Update settings dictionary through a parameter map.
 
@@ -157,7 +137,7 @@ def update_settings_dict(settings, param_map, **kwargs):
     return settings
 
 
-def compile_param_map(prefix=None, delimiter='_', **kwargs):
+def _compile_param_map(prefix=None, delimiter='_', **kwargs):
     """
     Automatically compile parameter map.
 
@@ -167,7 +147,7 @@ def compile_param_map(prefix=None, delimiter='_', **kwargs):
               'character_status':       'jedi-master',
               'movie_title':            'a new hope'}
 
-        out = compile_param_map(prefix='character', **in)
+        out = _compile_param_map(prefix='character', **in)
 
         out = {'character_name':    'name',
                'character_status':  'status'}
@@ -199,7 +179,7 @@ def compile_param_map(prefix=None, delimiter='_', **kwargs):
     return param_map
 
 
-def generate_default_query_code(nb_atts):
+def _generate_default_query_code(nb_atts):
     """
     Generate default query-code array.
 
@@ -233,3 +213,22 @@ def generate_default_query_code(nb_atts):
     q_codes = [q]               # Wrap in list for uniformity
 
     return q_codes
+
+
+def _verify_decent_query_codes(codes, nb_atts):
+
+    if codes is None:
+        result = False
+    else:
+        result = _check_all_lengths(codes, nb_atts)
+
+    return result
+
+
+def _check_all_lengths(codes, nb_atts):
+
+    errors = [1 for code in codes
+              if len(code) != nb_atts]
+    check = len(errors) > 1
+
+    return check
