@@ -226,9 +226,20 @@ def _generate_default_query_code(nb_atts):
 def _verify_decent_query_codes(codes, nb_atts):
 
     if codes is None:
+        msg = """
+        Provided query codes:\t{}\n
+        Failed decency test: check for NoneType.
+        """.format(codes)
+        warnings.warn(msg)
         result = False
     else:
-        assert isinstance(codes, (list, np.ndarray))
+        assert isinstance(codes, list)
+        msg = """
+        Provided query codes:\t{}\n
+        Failed decency test: check all lengths.
+        """.format(codes)
+        warnings.warn(msg)
+
         result = _check_all_lengths(codes, nb_atts)
 
     return result
@@ -236,9 +247,10 @@ def _verify_decent_query_codes(codes, nb_atts):
 
 def _check_all_lengths(codes, nb_atts):
 
-    assert isinstance(codes, (list, np.ndarray))
+    assert isinstance(codes, list)
     errors = [1 for code in codes
-              if len(code) != nb_atts]
-    check = len(errors) > 0
+              if len(code) != nb_atts
+              if not isinstance(code, list)]
+    check = len(errors) == 0
 
     return check
