@@ -97,4 +97,3 @@ def encode_attribute(att, desc, targ):
     code_int = check_targ * 2 + check_desc - 1
 
     return code_int
-

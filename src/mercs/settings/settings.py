@@ -1,3 +1,6 @@
+import numpy as np
+import warnings
+
 from ..utils.encoding import codes_to_query, encode_attribute
 from ..utils.classlabels import collect_and_verify_clf_classlabels
 from ..utils.metadata import collect_feature_importances
@@ -84,6 +87,11 @@ def update_query_settings(s, nb_atts, delimiter='_', **kwargs):
         if _verify_decent_query_codes(codes, nb_atts):
             s['codes'] = codes
         else:
+            msg = """
+            Provided query codes:\t{}\n
+            Failed decency tests and are therefore replaced by default codes.
+            """.format(codes)
+            warnings.warn(msg)
             s['codes'] = _generate_default_query_code(nb_atts)
 
         s['q_desc'], s['q_targ'], s['q_miss'] = codes_to_query(s['codes'])
@@ -181,7 +189,7 @@ def _compile_param_map(prefix=None, delimiter='_', **kwargs):
 
 def _generate_default_query_code(nb_atts):
     """
-    Generate default query-code array.
+    Generate default query code array.
 
     This generating a q_codes array, which contains a single
     q_code array. Concretely, this means;
@@ -220,6 +228,7 @@ def _verify_decent_query_codes(codes, nb_atts):
     if codes is None:
         result = False
     else:
+        assert isinstance(codes, (list, np.ndarray))
         result = _check_all_lengths(codes, nb_atts)
 
     return result
@@ -227,6 +236,7 @@ def _verify_decent_query_codes(codes, nb_atts):
 
 def _check_all_lengths(codes, nb_atts):
 
+    assert isinstance(codes, (list, np.ndarray))
     errors = [1 for code in codes
               if len(code) != nb_atts]
     check = len(errors) > 0
