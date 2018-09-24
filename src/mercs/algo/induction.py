@@ -56,10 +56,18 @@ def induce_model(settings, is_nominal, m_targ):
     """
     Initialize classifier/regressor with correct settings
 
-    :param settings:
-    :param is_nominal:
-    :param m_targ:
-    :return:
+    Parameters
+    ----------
+    settings: dict
+        Dictionary of settings
+    is_nominal: list, shape (nb_attributes, )
+        Boolean array that indicates whether or not attribute is nominal
+    m_targ: list, shape (nb_target_attributes, )
+        List that contains the indices of all the target attributes of the
+        model that is being initialized
+    Returns
+    -------
+
     """
 
     if only_nominal_targ(is_nominal, m_targ):
@@ -81,15 +89,15 @@ def induce_clf(s):
     Initializes the actual model
     """
 
-    type = s['type']
+    mod_type = s['type']
     params = {k:v for k,v in s.items() if not k in {'type', 'flatten'}}
 
-    if type in kw_ind_trees():
+    if mod_type in kw_ind_trees():
         clf = DecisionTreeClassifier(**params)
-    elif type in kw_ind_forests():
+    elif mod_type in kw_ind_forests():
         clf = RandomForestClassifier(**params)
     else:
-        msg = "Did nog recognize classifier type: {}".format(type)
+        msg = "Did nog recognize classifier type: {}".format(mod_type)
         raise TypeError(msg)
 
     return clf
@@ -103,15 +111,15 @@ def induce_rgr(s):
     Initializes the actual model
     """
 
-    type = s['type']
+    mod_type = s['type']
     params = {k:v for k, v in s.items() if not {'type', 'flatten'}}
 
-    if type in kw_ind_trees():
+    if mod_type in kw_ind_trees():
         rgr = DecisionTreeRegressor(**params)
-    elif type in kw_ind_forests():
+    elif mod_type in kw_ind_forests():
         rgr = RandomForestRegressor(**params)
     else:
-        msg = "Did nog recognize regressor type: {}".format(type)
+        msg = "Did nog recognize regressor type: {}".format(mod_type)
         raise TypeError(msg)
 
     return rgr

@@ -26,11 +26,10 @@ def collect_and_verify_clf_classlabels(m_list, m_codes):
     _, m_targ, _ = codes_to_query(m_codes)
 
     nb_atts = len(m_codes[0])
-    clf_labels = initialize_classlabels(nb_atts)
+    clf_labels = initialize_classlabels(nb_atts, mode='default')
 
     for m_idx, m in enumerate(m_list):
         # Collect the classlabels of one model
-
         m_classlabels = collect_classlabels(m)
 
         # Verify all the classlabels
@@ -42,6 +41,24 @@ def collect_and_verify_clf_classlabels(m_list, m_codes):
 def collect_classlabels(m):
     """
     Collect all the classlabels of a given model m.
+
+    A given model m can be a composite model, or a sklearn model. There are
+    four scenarios that we can encounter:
+        1. No classes_ attribute.
+            This happens when a sklearn model is fully numeric.
+            We assume a fully numeric model.
+        2. Classes_ attribute is None
+            This also happens when a sklearn model is fully numeric. Sklearn is
+            slightly inconsistent in this regard.
+            We assume a fully numeric model
+        3. m.classes_ is numpy array
+            This is the output of a single-target sklearn model. We wrap this in
+            a regular python array, to achieve consistency with multi-target
+            models.
+        4. m.classes_ is a list
+            This happens in multi-target sklearn models, but also in our own
+            composite models. This is the consistent form that we are looking form
+            Here, we do nothing because this is what we require.
 
     Parameters
     ----------
@@ -59,13 +76,14 @@ def collect_classlabels(m):
     elif m.classes_ is None:
         # If no classlabels are present, assume a fully numerical model
         m_classlabels = initialize_classlabels(m.n_outputs_, mode='numeric')
+    elif isinstance(m.classes_, np.ndarray):
+        # Single-target sklearn output; wrap in array
+        m_classlabels = [m.classes_]
+    elif isinstance(m.classes_, list):
+        m_classlabels = m.classes_
     else:
-        if isinstance(m.classes_, np.ndarray):
-            # Single-target sklearn output
-            m_classlabels = [m.classes_]
-        else:
-            assert isinstance(m.classes_, list)
-            m_classlabels = m.classes_
+        msg = "Did not recognize the classlabels: {} of this model: {}".format(m.classes_, m)
+        raise TypeError(msg)
 
     return m_classlabels
 
@@ -91,7 +109,6 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
     -------
 
     """
-    # TODO: Deal with numeric in a smoother way
 
     for t_idx, t in enumerate(m_targ):
 
@@ -101,7 +118,6 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
         msg = "New_labels are: {}\n" \
               "Type new_labels is: {}\n".format(new_labels, type(new_labels))
         debug_print(msg, V=VERBOSITY, warn=True)
-
         msg = "Old_labels are: {}\n" \
               "Type old_labels is: {}\n".format(old_labels, type(old_labels))
         debug_print(msg, V=VERBOSITY, warn=True)
@@ -111,15 +127,20 @@ def update_clf_labels(clf_labels, m_classlabels, m_targ):
 
         if isinstance(old_labels, list):
             if old_labels == initialize_classlabels(1, mode='default')[0]:
-                # If the default value is there
+                # Replace default value
                 clf_labels[t] = new_labels
             elif old_labels == initialize_classlabels(1, mode='numeric')[0]:
-                # If MERCS thought attribute t was numeric, the new model must agree!
-                assert new_labels == ['numeric']
+                # Both old and new labels must agree on being numeric
+                assert new_labels == initialize_classlabels(1, mode='numeric')[0]
             else:
-                msg = "type(old_labels) is list, but not the default value nor the default value for a numeric attribute.\n" \
-                      "These are the only two allowed cases for an entry in clf_labels to be a list and not np.ndarray," \
-                      "so something is wrong."
+                msg = """
+                type(old_labels): \t{} is list\n
+                However, not the default value, nor the default value for a numeric
+                attribute. \n
+                These are the only two cases in which we expect an entry of clf_labels
+                to be a list and not a np.ndarray.\n
+                Something must be wrong.
+                """.format(type(old_labels))
                 raise TypeError(msg)
         elif isinstance(old_labels, np.ndarray):
             # Join current m_classlabels with those already present
@@ -145,12 +166,10 @@ def join_classlabels(classlabels_list):
     data_csv, and have other ideas about what the classlabels are.
     """
 
-    all_classes = np.concatenate(classlabels_list)
+    all_unique_classes = np.unique(np.concatenate(classlabels_list))
+    all_unique_classes.sort()
 
-    result = np.array(list(set(all_classes)))
-    result.sort()
-
-    return result
+    return all_unique_classes
 
 
 def initialize_classlabels(nb_atts, mode='default'):
