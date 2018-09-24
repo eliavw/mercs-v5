@@ -1,8 +1,7 @@
-import numpy as np
-
 from sklearn.tree import *
 from sklearn.ensemble import *
 
+from ..utils.metadata import only_nominal_targ, only_numeric_targ
 from ..utils.keywords import *
 
 from ..utils.debug import debug_print
@@ -63,9 +62,9 @@ def induce_model(settings, is_nominal, m_targ):
     :return:
     """
 
-    if _only_nominal_targ(is_nominal, m_targ):
+    if only_nominal_targ(is_nominal, m_targ):
         model = induce_clf(settings)
-    elif _only_numeric_targ(is_nominal, m_targ):
+    elif only_numeric_targ(is_nominal, m_targ):
         model = induce_rgr(settings)
     else:
         msg = "Model with mixed targets {}".format(m_targ)
@@ -118,26 +117,3 @@ def induce_rgr(s):
     return rgr
 
 
-# Helpers
-def _only_nominal_targ(is_nominal, m_targ):
-    """
-    Check whether given set of targ only contains nominal attributes.
-
-    :param is_nominal:  Boolean array indicating if attribute is nominal
-    :param m_targ:      [[idx of targ atts model 0], [idx of targ atts model 1]]
-    :return:
-    """
-    return np.sum(is_nominal[m_targ]) == len(m_targ)
-
-
-def _only_numeric_targ(is_nominal, m_targ):
-    """
-    Check whether given set of targ only contains numeric attributes.
-
-    :param is_nominal:  Boolean array indicating if attribute is nominal
-    :param m_targ:      [[idx of targ atts model 0], [idx of targ atts model 1]]
-    :return:
-    """
-
-    return np.sum(is_nominal[m_targ]) == 0
- 

@@ -10,7 +10,10 @@ from ..io.io import save_output_data
 from ..models.PolyModel import *
 from ..settings import *
 from ..utils.keywords import *
-from ..utils.metadata import get_metadata_df
+from ..utils.metadata import (get_metadata_df,
+                              extract_nominal_numeric_attributes,
+                              only_nominal_targ,
+                              only_numeric_targ)
 
 from ..utils.debug import debug_print
 VERBOSITY = 0
@@ -68,7 +71,7 @@ class MERCS(object):
         tick = default_timer()
         self.s['metadata'] = get_metadata_df(X)
 
-        msg="""
+        msg = """
         metadata of our model is: {}
         """.format(self.s['metadata'])
         debug_print(msg,V=VERBOSITY)
@@ -339,6 +342,24 @@ class MERCS(object):
 
     # 1. Selection = Prepare Induction
     def perform_selection(self, metadata):
+
+        if only_nominal_targ(metadata['is_nominal']):
+            m_codes = self.perform_selection_algorithm(metadata)
+        elif only_numeric_targ(metadata['is_nominal']):
+            m_codes = self.perform_selection_algorithm(metadata)
+        else:
+            nominal_atts, numeric_atts = extract_nominal_numeric_attributes(self.s['metadata'])
+
+            nominal_m_codes = self.perform_selection_algorithm(self.s['metadata'],
+                                                               target_atts_list=nominal_atts)
+
+            numeric_m_codes = self.perform_selection_algorithm(self.s['metadata'],
+                                                               target_atts_list=numeric_atts)
+            m_codes = np.concatenate((nominal_m_codes, numeric_m_codes))
+
+        return m_codes
+
+    def perform_selection_algorithm(self, metadata, target_atts_list=None):
         """
         Generate m_codes by a selection algorithm
 
@@ -351,16 +372,19 @@ class MERCS(object):
 
         if sel_type in keywords['base']:
             m_codes = base_selection_algo(metadata,
-                                          self.s['selection'])
+                                          self.s['selection'],
+                                          target_atts_list=target_atts_list)
         elif sel_type in keywords['random']:
             m_codes = random_selection_algo(metadata,
-                                            self.s['selection'])
+                                            self.s['selection'],
+                                            target_atts_list=target_atts_list)
         else:
             warnings.warn("Did not recognize selection algorithm {}\n"
                           "Available algorithms are {}\n"
                           "Assuming base selection instead".format(sel_type, keywords.keys()))
             self.s['selection']['type'] = next(iter(keywords['base']))
-            m_codes = self.perform_selection(metadata)
+            m_codes = self.perform_selection_algorithm(metadata,
+                                                       target_atts_list=target_atts_list)
 
         return m_codes
 

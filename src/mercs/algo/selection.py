@@ -1,10 +1,11 @@
 import numpy as np
+import warnings
 
 from sklearn.cluster.bicluster import SpectralBiclustering
 from sklearn.ensemble import *
 
 
-def base_selection_algo(metadata, settings, target_atts_list = None):
+def base_selection_algo(metadata, settings, target_atts_list=None):
     """
     Base selection strategy.
 
@@ -16,6 +17,19 @@ def base_selection_algo(metadata, settings, target_atts_list = None):
 
     For each selection iteration (sel_its parameter), each attribute appears exactly once in the target set.
     For each model, all the attributes that are not in the target set constitute the descriptive set.
+
+    Parameters
+    ----------
+    metadata: dict
+        Dictionary that contains metadata of the training set
+    settings: dict
+        Dictionary of the settings of MERCS. Relevant settings are:
+            1. settings['param']
+            2. settings['its']
+    target_atts_list
+
+    Returns
+    -------
 
     """
 
@@ -35,7 +49,13 @@ def base_selection_algo(metadata, settings, target_atts_list = None):
     elif (param >= 1) & (param < nb_atts):
         nb_out_atts = int(param)
     else:
-        print("Impossible number of output attributes per model required. Re-adjusted to one model per attribute.")
+        msg = """
+        Impossible number of output attributes per model: {}\n
+        This means the value of settings['selection']['param'] was set
+        incorrectly.\n
+        Re-adjusted to default; one model per attribute.
+        """.format(param)
+        warnings.warn(msg)
         nb_out_atts = 1
 
     # Number of models per partition
@@ -56,11 +76,11 @@ def base_selection_algo(metadata, settings, target_atts_list = None):
             random_model = np.random.randint(nb_models_part)
             iter = 0
             # Move to the first model that can still have additional target attribute
-            while (np.sum(codes[partition * nb_models_part + random_model]) >= nb_out_atts):
+            while np.sum(codes[partition * nb_models_part + random_model]) >= nb_out_atts:
                 random_model = np.mod(random_model + 1, nb_models_part)
                 iter = iter + 1
                 # Avoiding infinite loop
-                if (iter > nb_models_part):
+                if iter > nb_models_part:
                     break
             codes[partition*nb_models_part + random_model][attribute] = 1
 
@@ -136,7 +156,7 @@ def random_selection_algo(metadata, settings, target_atts_list = None):
 
     # If not specified, all attributes can appear as targets.
     # Otherwise, use only indicated attributes
-    if (target_atts_list is None):
+    if target_atts_list is None:
         target_atts_list = list(range(nb_atts))
 
     # Number of possible targets

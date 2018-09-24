@@ -65,6 +65,10 @@ def check_nominal_att(attribute_type,
         A nominal attribute is an attribute which is of an integer type and
         has fewer than nominal_attribute_unique_values_threshold distinct values.
 
+    The look at np.nan is crucial, because whenever a np.nan is in a column in
+    Pandas, the type necessarily needs to be a float, regardless of it actually
+    being a float.
+
     Parameters
     ----------
     attribute_type: numpy.dtype
@@ -116,3 +120,74 @@ def collect_feature_importances(m_list, m_codes):
             feature_importances[mod_i, attr_i] = m_list[mod_i].feature_importances_[desc_i]
 
     return feature_importances
+
+
+def extract_nominal_numeric_attributes(metadata):
+    """
+    Extract list of nominal and numeric attributes.
+
+    Based on the metadata, acquire two lists of the nominal and
+    numeric attributes respectively.
+    Parameters
+    ----------
+    metadata
+
+    Returns
+    -------
+
+    """
+
+    nominal_attributes = [x for x in range(metadata['nb_atts'])
+                          if metadata['is_nominal'][x] == 1]
+    numeric_attributes = [x for x in range(metadata['nb_atts'])
+                          if metadata['is_nominal'][x] == 0]
+
+    return nominal_attributes, numeric_attributes
+
+
+def only_nominal_targ(is_nominal, m_targ=None):
+    """
+    Check whether a given array contains nominal attributes.
+
+    If the array is not given, we check the existence of any nominal attributes.
+
+    Parameters
+    ----------
+    is_nominal: list, shape (nb_atts, )
+        Boolean array (1/0) indicating if attribute is nominal
+    m_targ: list, shape (nb_target_attributes_of_model, )
+        List of ints that refer the target attributes of the model under
+        consideration.
+
+    Returns
+    -------
+
+    """
+    if m_targ is None:
+        m_targ = range(len(is_nominal))
+
+    return np.sum(is_nominal[m_targ]) == len(m_targ)
+
+
+def only_numeric_targ(is_nominal, m_targ=None):
+    """
+    Check whether a given array contains numeric attributes.
+
+    If the array is not given, we check the existence of any numeric attributes.
+
+    Parameters
+    ----------
+    is_nominal: list, shape (nb_atts, )
+        Boolean array (1/0) indicating if attribute is nominal
+    m_targ: list, shape (nb_target_attributes_of_model, )
+        List of ints that refer the target attributes of the model under
+        consideration.
+
+    Returns
+    -------
+
+    """
+    if m_targ is None:
+        m_targ = range(len(is_nominal))
+
+    return np.sum(is_nominal[m_targ]) == 0
