@@ -49,7 +49,7 @@ class PolyModel(object):
         if not set(targ) <= set(np.concatenate(m_targ)):
             contents = (targ, m_targ, m_desc, m_list)
             msg = """
-            This Polymodel has:
+            This PolyModel has:
             \t targ: {}\n
             \t m_targ: {}\n
             \t m_desc: {}\n
@@ -64,10 +64,9 @@ class PolyModel(object):
         self.targ = targ
 
         # is_nominal
-        self.is_attr_nominal = metadata['is_nominal']                           # Get each attr nominal (1/0)
-        self.is_targ_nominal = [self.is_attr_nominal[t] for t in self.targ]     # Get targ attr nominal (1/0)
+        self.is_attr_nominal = metadata['is_nominal']
+        self.is_targ_nominal = [self.is_attr_nominal[t] for t in self.targ]
 
-        # Separate two classes of target attributes
         self.targ_att_nominal = [v for i, v in enumerate(self.targ) if self.is_targ_nominal[i]]
         self.targ_att_numeric = [v for i, v in enumerate(self.targ) if not self.is_targ_nominal[i]]
         assert len(self.targ) == (len(self.targ_att_nominal) + len(self.targ_att_numeric))
@@ -151,22 +150,15 @@ class PolyModel(object):
         return res_numeric
 
     def _generate_introspection_str(self):
-        contents = (self.targ, self.m_targ, self.m_desc, self.m_list)
-        msg = """
-                    This Polymodel has:
-                    \t targ: {}\n
-                    \t m_targ: {}\n
-                    \t m_desc: {}\n
-                    \t m_list: {}\n\n
-                    And this is a problem since we need
-                    targ to be a subset of the union of all m_targ.
-                    """.format(*contents)
-        return msg
+        # TODO(elia): Generate a pretty print of everything in this object.
+        return NotImplementedError
 
 
 class EnsembleModel(PolyModel):
     """
-    Class that implements a single-layered group of models.
+    A single-layer group of models.
+
+    This means an ensemble model.
 
     It is useful because it can cope with nominal, numeric and mixtures.
     """
@@ -191,17 +183,17 @@ class EnsembleModel(PolyModel):
         predictions = init_predictions(nb_samples, nb_targets)
 
         if len(self.targ_att_nominal) > 0:
-            res_nominal = self.predict_proba(X)
-            Y_nominal = predict_values_from_proba(res_nominal, self.classes_)
+            res_proba = self.predict_proba(X)
+            Y_nominal = predict_values_from_proba(res_proba, self.classes_)
             predictions = self.assemble_predictions(predictions,
                                                     Y_nominal,
                                                     mode='nominal')
 
         if len(self.targ_att_numeric) > 0:
             res_numer, counts = self.predict_numer(X)
-            Y_numer = predict_values_from_numer(res_numer, counts)
+            Y_numeric = predict_values_from_numer(res_numer, counts)
             predictions = self.assemble_predictions(predictions,
-                                                    Y_numer,
+                                                    Y_numeric,
                                                     mode='numeric')
 
         return predictions
@@ -333,18 +325,20 @@ class EnsembleModel(PolyModel):
                 t_idx_res = self.targ.index(t)  # Index of current target attr in result
                 predictions[:, [t_idx_res]] = Y[:, [t_idx_mod]]
         else:
-            warnings.warn("Did not recognize mode {}"
-                          "Cannot assemble predictions".format(mode))
+            msg = """
+            Did not recognize mode: {}\n
+            Cannot assemble predictions
+            """.format(mode)
+            raise ValueError(msg)
 
         return predictions
 
 
 class ChainedModel(PolyModel):
     """
-    A chain of models.
+    A multi-layer group of models.
 
-    Each element of the chain is a single model,
-    but it is allowed for it to be a grouped model itself.
+    This means an chained model.
     """
 
     def __init__(self, m_list, m_desc, m_targ, targ, metadata):
