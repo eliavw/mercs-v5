@@ -1,4 +1,3 @@
-import numpy as np
 import warnings
 
 from ..utils.encoding import codes_to_query, encode_attribute
@@ -68,6 +67,7 @@ def update_meta_data(s, m_list, m_codes):
     -------
 
     """
+    # TODO(elia): This is not data about the data (=metadata) but data about component models
 
     s['clf_labels'] = collect_and_verify_clf_classlabels(m_list, m_codes)
     s['FI'] = collect_feature_importances(m_list, m_codes)
@@ -76,6 +76,37 @@ def update_meta_data(s, m_list, m_codes):
 
 
 def update_query_settings(s, nb_atts, delimiter='_', **kwargs):
+    """
+    Update query settings.
+
+    This means ensuring the query codes that are provided (or already present)
+    in the settings dictionary 's' are consistent with all the rest of the
+    information.
+
+    In short, we want to know: `Do these query codes make sense?'
+
+    Parameters
+    ----------
+    s: dict
+        Settings dictionary
+    nb_atts: int
+        Amount of attributes in the MERCS model. This needs to be consistent
+        with the length of the query codes
+    delimiter: str
+        Delimiter used to separate prefixes from actual keywords in the keyword
+        arguments. E.g.;
+            qry_codes:  1. `qry`:   Prefix, means that whatever follows is related
+                                    to the queries
+                        2. `_`:     Delimiter, separates prefix from content
+                        3. `codes`: The actual keyword.
+    kwargs: dict
+        Dictionary of keyword arguments, some relevant, others not. These need
+        to be filtered appropriately first.
+
+    Returns
+    -------
+
+    """
 
     param_map = _compile_param_map(prefix='qry', delimiter=delimiter, **kwargs)
     relevant_kwargs = {v: kwargs[k] for k, v in param_map.items()}
@@ -95,7 +126,6 @@ def update_query_settings(s, nb_atts, delimiter='_', **kwargs):
             s['codes'] = _generate_default_query_code(nb_atts)
 
         s['q_desc'], s['q_targ'], s['q_miss'] = codes_to_query(s['codes'])
-
     elif 'code' in relevant_kwargs:
         # Wrap single code in extra array for consistency
         msg = """
@@ -234,12 +264,6 @@ def _verify_decent_query_codes(codes, nb_atts):
         result = False
     else:
         assert isinstance(codes, list)
-        msg = """
-        Provided query codes:\t{}\n
-        Failed decency test: check all lengths.
-        """.format(codes)
-        warnings.warn(msg)
-
         result = _check_all_lengths(codes, nb_atts)
 
     return result
@@ -251,6 +275,14 @@ def _check_all_lengths(codes, nb_atts):
     errors = [1 for code in codes
               if len(code) != nb_atts
               if not isinstance(code, list)]
+
     check = len(errors) == 0
+
+    if not check:
+        msg = """
+        Provided query codes:\t{}\n
+        Failed decency test: check all lengths.
+        """.format(codes)
+        warnings.warn(msg)
 
     return check
