@@ -19,7 +19,7 @@ def mi_pred_algo(m_codes, q_codes):
         aas[q_idx][q_desc[q_idx]] = 0
 
         # Model activation
-        relevant_models = np.where(m_codes[:, q_targ[q_idx]] == 1)[0] # Models sharing target with queries
+        relevant_models = np.where(m_codes[:, q_targ[q_idx]] == 1)[0]  # Models sharing target with queries
         mas[q_idx][relevant_models] = 1
 
         # Att. activation
@@ -50,19 +50,19 @@ def ma_pred_algo(m_codes, q_codes, settings):
             msg = "This is t, the target which we consider: {}".format(t)
             debug_print(msg, V=VERBOSITY, warn=True)
 
-            aas_target_t,  mas_target_t = _ma_mas_aas(aas[q_idx],
-                                                      mas[q_idx],
-                                                      q_desc[q_idx],
-                                                      [t],
-                                                      m_codes,
-                                                      m_desc,
-                                                      thresholds)
+            aas_target_t, mas_target_t = _ma_mas_aas(aas[q_idx],
+                                                     mas[q_idx],
+                                                     q_desc[q_idx],
+                                                     [t],
+                                                     m_codes,
+                                                     m_desc,
+                                                     thresholds)
 
-            msg="This is mas_target_t: {}".format(mas_target_t)
-            debug_print(msg,V=VERBOSITY, warn=True)
+            msg = "This is mas_target_t: {}".format(mas_target_t)
+            debug_print(msg, V=VERBOSITY, warn=True)
 
-            mas[q_idx][mas_target_t > 0] = 1    # Each target selects some models
-            aas[q_idx] = aas_target_t           # This is unchanged.
+            mas[q_idx][mas_target_t > 0] = 1  # Each target selects some models
+            aas[q_idx] = aas_target_t  # This is unchanged.
 
             msg = "This is mas[q_idx]: {}".format(mas[q_idx])
             debug_print(msg, V=VERBOSITY, warn=True)
@@ -78,11 +78,11 @@ def _ma_mas_aas(aas, mas, q_desc, q_targ, m_codes, m_desc, thresholds):
     relevant_models = np.where(m_codes[:, q_targ] == 1)[0]  # Models that share at least a single target with the query
     mas[relevant_models] = 1
 
-    avl_mods = mas > 0                                      # Available models share a target with queries
+    avl_mods = mas > 0  # Available models share a target with queries
     avl_atts = aas > -1
 
     # Att. activation
-    aas[q_targ] = 1                                         # Does not depend on model activation strategy
+    aas[q_targ] = 1  # Does not depend on model activation strategy
 
     # Model activation
     def appr_score(avl_atts, mod_desc):
@@ -94,7 +94,7 @@ def _ma_mas_aas(aas, mas, q_desc, q_targ, m_codes, m_desc, thresholds):
 
     for thr in thresholds:
         mas = [1 if (mod_appr_scores[m_ind] > thr) else 0
-               for m_ind in range(nb_models)]               # Binary selection of all appropriate enough models
+               for m_ind in range(nb_models)]  # Binary selection of all appropriate enough models
         mas = np.array(mas)
 
         if _ma_mafi_stopping_condition(mas, m_codes, q_targ):
@@ -129,20 +129,18 @@ def mafi_pred_algo(m_codes, q_codes, settings):
             msg = "This is t, the target which we consider: {}".format(t)
             debug_print(msg, V=VERBOSITY, warn=True)
 
-            aas_target_t,  mas_target_t = _mafi_mas_aas(aas[q_idx],
-                                                        mas[q_idx],
-                                                        q_desc[q_idx],
-                                                        [t],
-                                                        m_codes,
-                                                        FI,
-                                                        thresholds)
+            aas_target_t, mas_target_t = _mafi_mas_aas(aas[q_idx],
+                                                       mas[q_idx],
+                                                       q_desc[q_idx],
+                                                       [t],
+                                                       m_codes,
+                                                       FI,
+                                                       thresholds)
 
+            msg = "This is mas_target_t: {}".format(mas_target_t)
+            debug_print(msg, V=VERBOSITY, warn=True)
 
-
-            msg="This is mas_target_t: {}".format(mas_target_t)
-            debug_print(msg,V=VERBOSITY, warn=True)
-
-            mas[q_idx][mas_target_t > 0] = 1    # Each target selects some models
+            mas[q_idx][mas_target_t > 0] = 1  # Each target selects some models
             aas[q_idx] = aas_target_t  # This is unchanged.
 
             msg = "This is mas[q_idx]: {}".format(mas[q_idx])
@@ -184,11 +182,11 @@ def _mafi_mas_aas(aas, mas, q_desc, q_targ, m_codes, FI, thresholds):
     relevant_models = np.where(m_codes[:, q_targ] == 1)[0]  # Models that share at least a single target with the query
     mas[relevant_models] = 1
 
-    avl_mods = mas > 0                                      # Available models share a target with queries
+    avl_mods = mas > 0  # Available models share a target with queries
     avl_atts = aas > -1
 
     # Att. activation
-    aas[q_targ] = 1                                         # Does not depend on model activation strategy
+    aas[q_targ] = 1  # Does not depend on model activation strategy
 
     # Model activation
     def appr_score(avl_atts, mod_FI):
@@ -197,11 +195,11 @@ def _mafi_mas_aas(aas, mas, q_desc, q_targ, m_codes, FI, thresholds):
 
     mod_appr_scores = [appr_score(avl_atts, FI[m_ind])
                        if (avl_mods[m_ind] == 1) else -1
-                       for m_ind in range(nb_models)]       # Only available models get considered here
+                       for m_ind in range(nb_models)]  # Only available models get considered here
 
     for thr in thresholds:
         mas = [1 if (mod_appr_scores[m_ind] > thr) else 0
-               for m_ind in range(nb_models)]               # Binary selection of all appropriate enough models
+               for m_ind in range(nb_models)]  # Binary selection of all appropriate enough models
         mas = np.array(mas)
 
         if _ma_mafi_stopping_condition(mas, m_codes, q_targ):
@@ -230,7 +228,7 @@ def _ma_mafi_stopping_condition(mas, m_codes, q_targ):
     """
     q_targ_attributes_in_selected_models = m_codes[mas == 1, :][:, q_targ]
 
-    target_encoding = encode_attribute(1,[0],[1])
+    target_encoding = encode_attribute(1, [0], [1])
     check = np.where(q_targ_attributes_in_selected_models == target_encoding)
     q_targ_ok = np.unique(check[1])
     return len(q_targ_ok) == len(q_targ)
@@ -274,32 +272,51 @@ def it_pred_algo(m_codes, q_codes, settings):
             mod_progress = False
             while not mod_progress:
                 thr = next(thresholds)
-                # print('Threshold: '+str(thr))
+
+                msg = """
+                Threshold:\t{}\n
+                """.format(thr)
+                debug_print(msg, V=VERBOSITY)
+
                 mas[q_idx] = [step if (mod_appr_scores[m_idx] > thr) else v
-                                        for m_idx, v
-                                        in enumerate(mas[q_idx])]  # Appropriate enough models
+                              for m_idx, v
+                              in enumerate(mas[q_idx])]  # Appropriate enough models
                 mas[q_idx] = np.array(mas[q_idx])
                 mod_progress = np.sum(mas[q_idx] == step) >= 1
 
             # Attr. activation
-            # print('Model act codes: '+str(mas[q_ind]))
+            msg = """
+            Query index:\t{}\n
+            Model act codes:\t{}\n
+            """.format(q_idx, mas[q_idx])
+            debug_print(msg, V=VERBOSITY)
+
             avl_mods = np.array(mas[q_idx]) > 0  # Update required
 
-            # print('Avl mods: '+str(avl_mods))
+            msg = """
+            Available models:\t{}\n
+            """.format(avl_mods)
+            debug_print(msg, V=VERBOSITY)
+
             avl_mod_codes = m_codes[avl_mods]
 
             att_appr_scores = [np.sum(avl_mod_codes[:, a_ind] == 1)
                                if (avl_atts[a_ind] == 0) else -1
                                for a_ind in range(nb_atts)]  # Only score non-available ones!
-            # print('att_appr_scores: '+str(att_appr_scores))
+
+            msg = """
+            att_appr_scores:\t{}\n
+            """.format(att_appr_scores)
+            debug_print(msg, V=VERBOSITY)
+
             aas[q_idx] = [step if (att_appr_scores[a_ind] > 0) else v
-                                    for a_ind, v
-                                    in enumerate(aas[q_idx])]
+                          for a_ind, v
+                          in enumerate(aas[q_idx])]
             aas[q_idx] = np.array(aas[q_idx])
 
             # Loop technics
             att_progress = np.sum(aas[q_idx] == step)
-            if ((att_progress > 0) & (step < max_layers)):
+            if att_progress > 0 and step < max_layers:
                 step += 1
                 thresholds = iter(np.arange(init_threshold, -1, -step_size))  # Reset thresholds
 
@@ -387,17 +404,29 @@ def generate_chain(m_codes, q_desc, q_targ, settings):
 
         aas[relv_targ_idx] = step
 
-
     if not np.max(mas) > 0:
-        print("i, step: {},{}".format(i,step))
-        print("potential targ: {}".format(potential_targ))
-        print("aas: {}".format(aas))
-        print("m_codes:\n {}".format(m_codes))
-        print(type(m_codes))
-        print("steps {}".format(steps))
-        print("chain_size {}".format(chain_size))
-        print("q_desc {}".format(q_desc))
-        print("q_targ {}".format(q_targ))
+        contents = (i,
+                    step,
+                    potential_targ,
+                    aas,
+                    m_codes,
+                    type(m_codes),
+                    steps,
+                    chain_size,
+                    q_desc,
+                    q_targ)
+        msg = """
+        i, step: \t{}, {}\n
+        potential targ: \t {}\n
+        aas: \t{}\n
+        m_codes: \t{}\n
+        type(m_codes): \t {}\n
+        steps: \t{}\n
+        chain_size \t{}\n
+        q_desc \t{}\n
+        q_targ \t{}\n
+        """.format(*contents)
+        debug_print(msg, V=VERBOSITY)
 
     assert np.max(aas) == np.max(mas)
     assert np.max(mas) > 0
@@ -500,7 +529,12 @@ def full_prune_strat(m_codes, q_code, mas, aas):
                             else 0 for i, e in enumerate(aas)])
         else:
             next_act_mods = (mas > step)
-            # print(next_act_mods)
+
+            msg = """
+            Next act mods:\t{}\n
+            """.format(next_act_mods)
+            debug_print(msg, V=VERBOSITY)
+
             aas = np.array(
                 [e if ((e != step) | (np.sum(m_codes[next_act_mods, i] == 0) > 0) | (q_code[i] == 1))
                  else 0 for i, e in enumerate(aas)])
@@ -549,9 +583,9 @@ def get_atts(m_codes, m_idx, role=0):
 def pick_random_models_from_appr_score(mod_appr_scores, n=1):
     norm = np.linalg.norm(mod_appr_scores, 1)
     if norm > 0:
-        mod_appr_scores = mod_appr_scores/norm
+        mod_appr_scores = mod_appr_scores / norm
     else:
         # If you cannot be right, be arbritrary
-        mod_appr_scores = [1/len(mod_appr_scores) for i in mod_appr_scores]
+        mod_appr_scores = [1 / len(mod_appr_scores) for i in mod_appr_scores]
 
     return np.random.multinomial(n, mod_appr_scores, size=1)[0]

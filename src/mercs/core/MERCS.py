@@ -121,7 +121,11 @@ class MERCS(object):
                                             self.s['metadata'],
                                             q_code=self.s['queries']['codes'][q_idx])
 
-        print("Predicting q_code: {}".format(self.s['queries']['codes'][q_idx]))
+        msg = """
+        Predicting query id: \t{}\n
+        Predicting query code: \t{}\n
+        """.format(q_idx, self.s['queries']['codes'][q_idx])
+        debug_print(msg, V=VERBOSITY)
         # 2. Inference
         X_query = perform_imputation(X,
                                      self.s['queries']['codes'][q_idx],
@@ -129,7 +133,6 @@ class MERCS(object):
 
         Y = self.q_models[q_idx].predict(X_query)
         del X_query
-
 
         tock = default_timer()
         self.update_settings(mode='model_data', mod_inf_time=tock-tick)

@@ -61,8 +61,8 @@ class PolyModel(object):
         self.targ = targ
 
         # is_nominal
-        self.is_attr_nominal = metadata['is_nominal']                           # Get each attr nominal (1/0)
-        self.is_targ_nominal = [self.is_attr_nominal[t] for t in self.targ]     # Get targ attr nominal (1/0)
+        self.is_attr_nominal = metadata['is_nominal']  # Get each attr nominal (1/0)
+        self.is_targ_nominal = [self.is_attr_nominal[t] for t in self.targ]  # Get targ attr nominal (1/0)
 
         # Active attribute (nominal/numeric)
         self.targ_att_nominal = [v for i, v in enumerate(self.targ) if self.is_targ_nominal[i]]
@@ -70,15 +70,15 @@ class PolyModel(object):
         assert len(self.targ) == (len(self.targ_att_nominal) + len(self.targ_att_numeric))
 
         # Labels
-        self.attr_lab = metadata['clf_labels']                  # Get each attr label
-        self.targ_lab = [self.attr_lab[t] for t in self.targ]   # Get targ attr labels
+        self.attr_lab = metadata['clf_labels']  # Get each attr label
+        self.targ_lab = [self.attr_lab[t] for t in self.targ]  # Get targ attr labels
         assert len(self.targ_lab) == len(self.targ)
 
         # TODO(elia): This needs to be done better. ALL the classes count! (also numeric ones)
         self.classes_ = [v for i, v in enumerate(self.targ_lab)
                          if self.is_targ_nominal[i]]
         assert np.sum(self.is_targ_nominal) == len(self.classes_)
-        #self.classes_ = self.targ_lab
+        # self.classes_ = self.targ_lab
 
         # Active models (nominal/numeric)
         self.mod_idx_nominal = [i for i, v in enumerate(self.m_targ)
@@ -87,7 +87,7 @@ class PolyModel(object):
                                 if (set(v) & set(self.targ_att_numeric))]
 
         # TODO(elia): Improve
-        self.atts = list(range(len(self.is_attr_nominal))) # Just make a list [0, ..., nb_atts-1]
+        self.atts = list(range(len(self.is_attr_nominal)))  # Just make a list [0, ..., nb_atts-1]
 
         self.n_outputs_ = len(targ)
 
@@ -144,7 +144,7 @@ class PolyModel(object):
 
         nb_targ_att_numeric = len(self.targ_att_numeric)
         res_numeric = [init_predictions(nb_samples, 1)
-                     for i in range(nb_targ_att_numeric)]
+                       for i in range(nb_targ_att_numeric)]
 
         return res_numeric
 
@@ -160,11 +160,11 @@ class EnsembleModel(PolyModel):
         super().__init__(m_list, m_desc, m_targ, targ, metadata)
 
         # MAS
-        self.mas = np.ones(len(self.m_list), dtype=int)     # Default: use all models
+        self.mas = np.ones(len(self.m_list), dtype=int)  # Default: use all models
 
         # AAS
         self.aas = np.zeros(len(self.attr_lab), dtype=int)  # Initialize
-        self.aas[self.targ] = 1                             # Single layer, predict all at once
+        self.aas[self.targ] = 1  # Single layer, predict all at once
 
         return
 
@@ -205,8 +205,8 @@ class EnsembleModel(PolyModel):
         res_proba = self._init_res_nominal(X.shape[0])
 
         # Get active attributes
-        res_atts = self.targ_att_nominal    # Only nominal targets
-        res_labs = self.classes_            # Labels of these attributes
+        res_atts = self.targ_att_nominal  # Only nominal targets
+        res_labs = self.classes_  # Labels of these attributes
 
         # Get active models
         act_mod_idx = self.mod_idx_nominal
@@ -215,8 +215,13 @@ class EnsembleModel(PolyModel):
         for m_idx in act_mod_idx:
             mod, mod_desc, mod_targ = self._get_mod_desc_targ(m_idx)
 
-            print("Model under consideration")
-            print(mod, mod_desc, mod_targ)
+            msg = """
+            Model under consideration: \n
+            model:\t{}\n
+            mod_desc:\t{}\n
+            mod_targ:\t{}\n
+            """.format(mod, mod_desc, mod_targ)
+            debug_print(msg, V=VERBOSITY)
 
             # Filter the nominal targets
             mod_targ_nominal = [self.is_attr_nominal[v] for v in mod_targ]
@@ -224,19 +229,20 @@ class EnsembleModel(PolyModel):
 
             mod_labs = collect_classlabels(mod)  # Collect labels of this model
 
-            msg="""
+            contents = (mod_labs,
+                        mod_targ_nominal,
+                        mod,
+                        mod_targ,
+                        mod_desc,
+                        m_idx)
+            msg = """
             mod_labs as collected by collect_classlabels: {}\n
             mod_targ_nominal: {} \n
             mod: {} \n \n
             mod_targ: {} \n
             mod_desc: {} \n
             m_idx: {} \n
-            """.format(mod_labs,
-                       mod_targ_nominal,
-                       mod,
-                       mod_targ,
-                       mod_desc,
-                       m_idx)
+            """.format(*contents)
             debug_print(msg, V=VERBOSITY, warn=True)
 
             mod_labs = [v for i, v in enumerate(mod_labs) if mod_targ_nominal[i]]
@@ -266,14 +272,14 @@ class EnsembleModel(PolyModel):
         """
 
         # Basic check
-        assert len(self.targ_att_numeric) > 0    # Otherwise nothing to predict
+        assert len(self.targ_att_numeric) > 0  # Otherwise nothing to predict
 
         # Init datastructure
         res_numeric = self._init_res_numeric(X.shape[0])
-        counts = [0] * len(res_numeric)         # Count amount of predictions for a single target
+        counts = [0] * len(res_numeric)  # Count amount of predictions for a single target
 
         # Get active attributes
-        targ_res = self.targ_att_numeric        # Only numeric targets
+        targ_res = self.targ_att_numeric  # Only numeric targets
 
         # Get active models
         act_mod_idx = self.mod_idx_numeric
@@ -330,7 +336,7 @@ class ChainedModel(PolyModel):
         super().__init__(m_list, m_desc, m_targ, targ, metadata)
 
         # MAS (CHANGE HERE)
-        mas = np.array(range(1,len(self.m_list)+1), dtype=int)
+        mas = np.array(range(1, len(self.m_list) + 1), dtype=int)
         assert len(np.unique(mas)) == len(mas)  # One model per layer
         self.mas, _ = recode_strat(mas, [])
         self.max_step = np.max(self.mas)
@@ -368,9 +374,9 @@ class ChainedModel(PolyModel):
 
     def predict_proba(self, X):
         # Basic check
-        assert len(self.targ_att_nominal ) > 0 # Otherwise nothing to predict
+        assert len(self.targ_att_nominal) > 0  # Otherwise nothing to predict
 
-        # Init datastruct
+        # Init datastructure
         res_atts = self.targ_att_nominal
         res_labs = self.classes_
         res_prob = self._init_res_nominal(X.shape[0])

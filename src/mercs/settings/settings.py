@@ -2,6 +2,9 @@ from ..utils.encoding import codes_to_query
 from ..utils.classlabels import collect_and_verify_clf_classlabels
 from ..utils.metadata import collect_feature_importances
 
+from ..utils.debug import debug_print
+VERBOSITY = 0
+
 
 # Main methods
 def create_settings():
@@ -86,7 +89,13 @@ def update_query_settings(s, nb_atts, delimiter='_', **kwargs):
     elif 'code' in relevant_kwargs:
         # Wrap single code is extra array
         codes = [relevant_kwargs['code']]
-        print("SETTINGS.PY: I AM READING A SINGLE QUERY CODE, I.E: {}".format(relevant_kwargs['code']))
+
+        msg = """
+        In file:\t\t\t{}\n
+        I am reading a single query code, i.e.:\t{}\n
+        """.format(__file__, relevant_kwargs['code'])
+        debug_print(msg, V=VERBOSITY)
+
         update_query_settings(s, nb_atts, qry_codes=codes) # Do NOT pass the delimiter here!
     else:
         # Check what is already present

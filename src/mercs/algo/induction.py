@@ -5,7 +5,7 @@ from ..utils.metadata import only_nominal_targ, only_numeric_targ
 from ..utils.keywords import *
 
 from ..utils.debug import debug_print
-VERBOSITY = 1
+VERBOSITY = 0
 
 
 # Algorithms

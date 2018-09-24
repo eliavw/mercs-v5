@@ -56,6 +56,8 @@ def test_MI_classification():
     assert isinstance(obs, (int, float))
     assert 0 <= obs <= 1
 
+    return
+
 
 def test_MA_classification():
     train, test, code, model, y_true = setup_classification()
@@ -72,6 +74,8 @@ def test_MA_classification():
 
     assert isinstance(obs, (int, float))
     assert 0 <= obs <= 1
+
+    return
 
 
 def test_MAFI_classification():
@@ -90,6 +94,8 @@ def test_MAFI_classification():
     assert isinstance(obs, (int, float))
     assert 0 <= obs <= 1
 
+    return
+
 
 def test_IT_classification():
     train, test, code, model, y_true = setup_classification()
@@ -107,6 +113,8 @@ def test_IT_classification():
     assert isinstance(obs, (int, float))
     assert 0 <= obs <= 1
 
+    return
+
 
 def test_RW_classification():
     train, test, code, model, y_true = setup_classification()
@@ -123,3 +131,5 @@ def test_RW_classification():
 
     assert isinstance(obs, (int, float))
     assert 0 <= obs <= 1
+
+    return
