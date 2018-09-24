@@ -36,9 +36,12 @@ class MERCS(object):
     # Main Methods
     def __init__(self, settings_fname=None):
         """
-        Return an initialized MERCS Classifier object.
+        Return an initialized MERCS object.
 
-        :param settings_fname:    Filename of .json file containing settings
+        Parameters
+        ----------
+        settings_fname: string
+            Filename of .json file containing the settings
         """
 
         if settings_fname is None:
@@ -58,18 +61,39 @@ class MERCS(object):
         """
         Fit the MERCS model to a dataset X.
 
-        This happens in 2 steps:
-        1. Selection
-            This is choosing which models will be part of our MERCS ensemble.
-        2. Actual Induction
-            This is training the selected models.
+        There are several steps to this, i.e.;
+            1. Preliminaries
+                1. Collecting metadata on the dataset
+                2. Updating MERCS' settings dict
+                3. Fitting the imputator
+            2. Selection
+                In this step, we decide the {descriptive,target} attributes
+                of the component models. This results in a np.ndarray of
+                shape (nb_models, nb_attributes) in which each row encodes
+                the role of each attribute for a specific model.
+            3. Induction
+                Once it is determined which models compose the MERCS model,
+                we train the individual components.
+            4.  Post-processing
+                1. Update metadata
+                    Feature importances and classlabels are extracted.
+                2. Update model_data
+                    The induction time is saved in the model_data
 
-        :param X:           Pandas DataFrame, training set
-        :param **kwargs:    Keyword arguments that can modify settings.
-        :return:
+
+        Parameters
+        ----------
+        X: pd.DataFrame, shape (nb_samples, nb_attributes)
+            DataFrame of our dataset
+        kwargs: dict
+            Keyword arguments that can modify specific settings
+
+        Returns
+        -------
+
         """
 
-        # 0. Prelims
+        # 1. Prelims
         tick = default_timer()
         self.s['metadata'] = get_metadata_df(X)
 
@@ -81,15 +105,15 @@ class MERCS(object):
         self.update_settings(mode='fit', **kwargs)
         self.fit_imputator(X)
 
-        # 1. Selection = Prepare Induction
+        # 2. Selection = Prepare Induction
         self.m_codes = self.perform_selection(self.s['metadata'])
 
-        # 2. Induction
+        # 3. Induction
         self.m_codes, self.m_list = self.perform_induction(X,
                                                            self.m_codes,
                                                            self.s['induction'],
                                                            self.s['metadata'])
-        # 3. Post processing
+        # 4. Post processing
         tock = default_timer()
         self.update_settings(mode='metadata')   # Save info on learned models
         self.update_settings(mode='model_data', mod_ind_time=tock-tick)
@@ -110,11 +134,11 @@ class MERCS(object):
         :return:
         """
 
+        # 1. Preliminaries
         tick = default_timer()
-        # 0. Settings
         self.update_settings(mode='predict', **kwargs)
 
-        # 1. Prediction = Prepare Inference
+        # 2. Prediction = Prepare Inference
         self.q_models = self.query_to_model(self.m_list,
                                             self.m_codes,
                                             self.s['prediction'],
@@ -126,18 +150,19 @@ class MERCS(object):
         Predicting query code: \t{}\n
         """.format(q_idx, self.s['queries']['codes'][q_idx])
         debug_print(msg, V=VERBOSITY)
-        # 2. Inference
+
+        # 3. Inference
         X_query = perform_imputation(X,
                                      self.s['queries']['codes'][q_idx],
                                      self.imputator)  # Generate X data_csv.
 
         Y = self.q_models[q_idx].predict(X_query)
-        del X_query
 
+        # 4. Post processing
         tock = default_timer()
-        self.update_settings(mode='model_data', mod_inf_time=tock-tick)
+        self.update_settings(mode='model_data', mod_inf_time=tock - tick)
 
-        del self.q_models
+        del X_query, self.q_models
 
         return Y
 
@@ -179,8 +204,9 @@ class MERCS(object):
         return Y_proba
 
     def batch_predict(self, X, fnames, **kwargs):
+
+        # 1. Preliminaries
         tick = default_timer()
-        # 0. Settings
         self.update_settings(mode='batch_predict', **kwargs)
 
         nb_queries = len(self.s['queries']['codes'])
@@ -209,6 +235,7 @@ class MERCS(object):
                              fnames[q_idx])
             del Y
 
+        # 3. Post processing
         tock = default_timer()
         self.update_settings(mode='model_data', mod_inf_time=tock-tick)
 
@@ -526,18 +553,19 @@ class MERCS(object):
             _, q_targ, _ = codes_to_query(q_codes)
             query_models = [build_ensemble_model(all_q_mods[:, i], targ, metadata)
                             for i, targ in enumerate(q_targ)]
-
         else:
-            warnings.warn("\nDid not recognize prediction method: '{}'\n"
-                          "Using MI algorithm instead".format(new_settings['type']))
+            msg = """
+            \nDid not recognize prediction method: '{}'\n
+            Assuming MI algorithm instead.
+            """.format(new_settings['type'])
+            warnings.warn(msg)
 
-            mas, aas = mi_pred_algo(m_codes, q_codes)
-            query_models = self.strat_to_model(m_list,
+            settings['type'] = 'MI'
+            query_models = self.query_to_model(m_list,
                                                m_codes,
-                                               q_codes,
-                                               mas,
-                                               aas,
-                                               metadata)
+                                               settings,
+                                               metadata,
+                                               **kwargs)
 
         return query_models
 
@@ -589,10 +617,22 @@ class MERCS(object):
 
     def flatten_model(self, m_list, m_codes):
         """
-        Method to unravel composite models (i.e. RandomForests) to its
-        fundamental components (i.e. DecisionTrees)
+        Unravel composite models
 
-        :return:
+        Unpack a composite model (e.g.; a RandomForest) to its
+        fundamental components (e.g.; a DecisionTree).
+
+        Parameters
+        ----------
+        m_list: list, shape (nb_models)
+            List where each entry is a model
+        m_codes: np.ndarray, shape (nb_models, nb_atts)
+            Each row corresponds to a code which encodes the function of each
+            attribute in the model the row corresponds to.
+
+        Returns
+        -------
+
         """
 
         if isinstance(m_list[0], (RandomForestClassifier, RandomForestRegressor)):
