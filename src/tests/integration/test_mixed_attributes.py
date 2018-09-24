@@ -132,7 +132,7 @@ def test_IT():
 
     pred_parameters = {'pred_type':     'IT',
                        'pred_param':    0.1,
-                       'pred_its':      0.8}
+                       'pred_its':      8}
 
     y_pred = model.predict(test,
                            **pred_parameters,
