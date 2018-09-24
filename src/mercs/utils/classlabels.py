@@ -30,6 +30,7 @@ def collect_and_verify_clf_classlabels(m_list, m_codes):
 
     for m_idx, m in enumerate(m_list):
         # Collect the classlabels of one model
+
         m_classlabels = collect_classlabels(m)
 
         # Verify all the classlabels
@@ -52,16 +53,19 @@ def collect_classlabels(m):
 
     """
 
-    if hasattr(m, 'classes_'):
+    if not hasattr(m, 'classes_'):
+        # If no classlabels are present, assume a fully numerical model
+        m_classlabels = initialize_classlabels(m.n_outputs_, mode='numeric')
+    elif m.classes_ is None:
+        # If no classlabels are present, assume a fully numerical model
+        m_classlabels = initialize_classlabels(m.n_outputs_, mode='numeric')
+    else:
         if isinstance(m.classes_, np.ndarray):
             # Single-target sklearn output
             m_classlabels = [m.classes_]
         else:
             assert isinstance(m.classes_, list)
             m_classlabels = m.classes_
-    else:
-        # If no classlabels are present, we assume a fully numerical model
-        m_classlabels = initialize_classlabels(m.n_outputs_, mode='numeric')
 
     return m_classlabels
 
