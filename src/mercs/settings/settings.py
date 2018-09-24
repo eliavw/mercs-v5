@@ -81,15 +81,10 @@ def update_query_settings(s, nb_atts, delimiter='_', **kwargs):
         # Check codes and if they do not comply replace by default
         codes = relevant_kwargs['codes']
 
-        if codes is None:
-            # Empty query codes => reset
-            s['codes'] = generate_default_query_code(nb_atts)
-        elif len(codes[0]) != nb_atts:
-            # Wrong query codes => reset
-            s['codes'] = generate_default_query_code(nb_atts)
-        else:
-            # Passed the test
+        if _verify_decent_query_codes(codes, nb_atts):
             s['codes'] = codes
+        else:
+            s['codes'] = generate_default_query_code(nb_atts)
 
         s['q_desc'], s['q_targ'], s['q_miss'] = codes_to_query(s['codes'])
 
@@ -103,17 +98,35 @@ def update_query_settings(s, nb_atts, delimiter='_', **kwargs):
         """.format(__file__, relevant_kwargs['code'])
         debug_print(msg, V=VERBOSITY)
 
-        update_query_settings(s, nb_atts, qry_codes=codes)  # N.B.: Do NOT pass the delimiter here!
+        s = update_query_settings(s, nb_atts, qry_codes=codes)  # N.B.: Do NOT pass the delimiter here!
     else:
         # Nothing provided in kwargs, we check what is already present.
         codes = s.get('codes', None)
 
-        update_query_settings(s, nb_atts, qry_codes=codes) # N.B.: Do NOT pass the delimiter here!
+        s = update_query_settings(s, nb_atts, qry_codes=codes) # N.B.: Do NOT pass the delimiter here!
 
     return s
 
 
-# Helpers
+def _verify_decent_query_codes(codes, nb_atts):
+
+    if codes is None:
+        result = False
+    else:
+        result = _check_all_lengths(codes, nb_atts)
+
+    return result
+
+
+def _check_all_lengths(codes, nb_atts):
+
+    errors = [1 for code in codes
+              if len(code) != nb_atts]
+    check = len(errors) > 1
+
+    return check
+
+    # Helpers
 def update_settings_dict(settings, param_map, **kwargs):
     """
     Update settings dictionary through a parameter map.
