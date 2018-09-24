@@ -42,7 +42,7 @@ def base_ind_algo(metadata, settings, m_targ):
 
     is_nominal = metadata['is_nominal']
 
-    msg="is_nominal in this model is: {}".format(is_nominal)
+    msg = "is_nominal in this model is: {}".format(is_nominal)
     debug_print(msg, V=VERBOSITY)
 
     m_list = [induce_model(settings, is_nominal, m_targ[i])

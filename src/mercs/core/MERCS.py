@@ -52,6 +52,8 @@ class MERCS(object):
         self.q_models = None
         self.imputator = None
 
+        return
+
     def fit(self, X, **kwargs):
         """
         Fit the MERCS model to a dataset X.
