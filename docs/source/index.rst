@@ -2,6 +2,8 @@ Welcome to mercs's documentation!
 =================================
 
 .. automodule:: mercs
+.. automodule:: datasets
+.. automodule:: queries
 
 .. toctree::
    :maxdepth: 2
