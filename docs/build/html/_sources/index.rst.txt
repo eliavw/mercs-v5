@@ -5,7 +5,8 @@ Welcome to mercs's documentation!
    :maxdepth: 3
    
 .. automodule:: mercs
-.. automodule:: mercs.algo
+.. automodule:: mercs.algo.induction
+    :members:
 .. automodule:: mercs.utils
 .. automodule:: mercs.core
 .. automodule:: mercs.models

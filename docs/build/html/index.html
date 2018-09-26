@@ -34,7 +34,68 @@
 <h1>Welcome to mercs’s documentation!<a class="headerlink" href="#welcome-to-mercs-s-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-mercs"></span><span class="target" id="module-mercs.algo"></span><span class="target" id="module-mercs.utils"></span><span class="target" id="module-mercs.core"></span><span class="target" id="module-mercs.models"></span><span class="target" id="module-mercs.settings"></span><span class="target" id="module-mercs.io"></span></div>
+<span class="target" id="module-mercs"></span><span class="target" id="module-mercs.algo.induction"></span><dl class="function">
+<dt id="mercs.algo.induction.base_ind_algo">
+<code class="descclassname">mercs.algo.induction.</code><code class="descname">base_ind_algo</code><span class="sig-paren">(</span><em>metadata</em>, <em>settings</em>, <em>m_targ</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/induction.html#base_ind_algo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.induction.base_ind_algo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize a model.</p>
+<p>This only means initialization, not training.
+So the only thing that happens is deciding which model is going to be
+trained in a next step. E.g.; DT, RF, etc.</p>
+<p>Here, we mainly verify whether the targets are grouped correctly,
+i.e., are they nominal/numeric etc.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>metadata</strong> (<em>dict</em>) – Metadata dictionary of the MERCS model</li>
+<li><strong>settings</strong> (<em>dict</em>) – Settings dictionary of the MERCS model</li>
+<li><strong>m_targ</strong> (<em>list</em><em>, </em><em>shape</em><em> (</em><em>nb_targ</em><em>,</em><em>)</em>) – List of the indices of the attributes that will be targets of the model
+that will be trained afterwards.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mercs.algo.induction.induce_clf">
+<code class="descclassname">mercs.algo.induction.</code><code class="descname">induce_clf</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/induction.html#induce_clf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.induction.induce_clf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Induce a single classifier.</p>
+<p>Filters the parameters
+Initializes the actual model</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mercs.algo.induction.induce_model">
+<code class="descclassname">mercs.algo.induction.</code><code class="descname">induce_model</code><span class="sig-paren">(</span><em>settings</em>, <em>is_nominal</em>, <em>m_targ</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/induction.html#induce_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.induction.induce_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize classifier/regressor with correct settings</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>settings</strong> (<em>dict</em>) – Dictionary of settings</li>
+<li><strong>is_nominal</strong> (<em>list</em><em>, </em><em>shape</em><em> (</em><em>nb_attributes</em><em>, </em><em>)</em>) – Boolean array that indicates whether or not attribute is nominal</li>
+<li><strong>m_targ</strong> (<em>list</em><em>, </em><em>shape</em><em> (</em><em>nb_target_attributes</em><em>, </em><em>)</em>) – List that contains the indices of all the target attributes of the
+model that is being initialized</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mercs.algo.induction.induce_rgr">
+<code class="descclassname">mercs.algo.induction.</code><code class="descname">induce_rgr</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/induction.html#induce_rgr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.induction.induce_rgr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Induce a single regressor.</p>
+<p>Filters the parameters
+Initializes the actual model</p>
+</dd></dl>
+
+<span class="target" id="module-mercs.utils"></span><span class="target" id="module-mercs.core"></span><span class="target" id="module-mercs.models"></span><span class="target" id="module-mercs.settings"></span><span class="target" id="module-mercs.io"></span></div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
