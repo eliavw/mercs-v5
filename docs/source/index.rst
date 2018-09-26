@@ -2,12 +2,15 @@ Welcome to mercs's documentation!
 =================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    
 .. automodule:: mercs
 .. automodule:: mercs.algo
 .. automodule:: mercs.utils
 .. automodule:: mercs.core
+.. automodule:: mercs.models
+.. automodule:: mercs.settings
+.. automodule:: mercs.io
 
 
 
