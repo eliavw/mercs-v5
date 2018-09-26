@@ -5,7 +5,8 @@ Welcome to mercs's documentation!
    :maxdepth: 2
    :caption: Contents:
    
-.. automodule:: mercs
+.. automodule:: mercs.algo
+.. automodule:: mercs.core
 
 .. automodule:: datasets
 
