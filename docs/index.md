@@ -12,7 +12,7 @@ We offer a small collection of tutorials in the form of Jupyter Notebooks for qu
 
 ### Documentation
 
-The documentation can be found here: [docs](build/html/index.html)
+The documentation can be found here: [docs](../doc/build/html/index.html)
 
 ### Code
 
