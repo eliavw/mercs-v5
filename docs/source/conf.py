@@ -15,14 +15,7 @@
 import os
 import sys
 src_dir = os.path.abspath('../../src')
-modules = os.listdir(src_dir)
-print(modules)
-
-for mod in modules:
-    sys.path.insert(0, os.path.join(src_dir,mod))
-
-sys.path.insert(0, os.path.abspath('../../src'))
-print(sys.path)
+sys.path.insert(0,src_dir)
 
 
 # -- Project information -----------------------------------------------------

@@ -1,10 +1,7 @@
-.. mercs documentation master file, created by
-   sphinx-quickstart on Wed Sep 26 13:16:57 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to mercs's documentation!
 =================================
+
+.. automodule:: mercs
 
 .. toctree::
    :maxdepth: 2
