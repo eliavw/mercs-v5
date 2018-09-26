@@ -12,9 +12,17 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+src_dir = os.path.abspath('../../src')
+modules = os.listdir(src_dir)
+print(modules)
+
+for mod in modules:
+    sys.path.insert(0, os.path.join(src_dir,mod))
+
+sys.path.insert(0, os.path.abspath('../../src'))
+print(sys.path)
 
 
 # -- Project information -----------------------------------------------------
@@ -43,6 +51,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
+    'sphinx.ext.napoleon'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
