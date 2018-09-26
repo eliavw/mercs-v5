@@ -15,8 +15,6 @@ Welcome to mercs's documentation!
 .. automodule:: mercs.algo.selection
     :members:
 
-
-
 Indices and tables
 ==================
 
