@@ -14,8 +14,7 @@
 #
 import os
 import sys
-src_dir = os.path.abspath('../../src')
-sys.path.insert(0,src_dir)
+sys.path.append(os.path.abspath('../../src'))
 
 
 # -- Project information -----------------------------------------------------
