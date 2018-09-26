@@ -5,19 +5,12 @@ Welcome to mercs's documentation!
    :maxdepth: 3
    
 .. automodule:: mercs
-    :members:
 .. automodule:: mercs.algo
-    :members:
 .. automodule:: mercs.utils
-    :members:
 .. automodule:: mercs.core
-    :members:
 .. automodule:: mercs.models
-    :members:
 .. automodule:: mercs.settings
-    :members:
 .. automodule:: mercs.io
-    :members:
 
 
 
