@@ -12,10 +12,13 @@ We offer a small collection of tutorials in the form of Jupyter Notebooks for qu
 
 ### Documentation
 
+The documentation can be found here: [docs](build/html/index.html)
+
 ### Code
 
-MERCS is fully open-source.
+MERCS is fully open-source. 
 
 ## Publications
 
-Will gh-pages detect this page. If so, how?
+MERCS is an active research project, and so we try to once in a while publish our work;
+    * [AAAI-18](https://www.aaai.org/ocs/index.php/AAAI/AAAI18/paper/viewFile/16875/16735)
