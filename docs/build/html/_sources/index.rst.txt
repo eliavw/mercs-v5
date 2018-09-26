@@ -7,6 +7,12 @@ Welcome to mercs's documentation!
 .. automodule:: mercs
 .. automodule:: mercs.algo.induction
     :members:
+.. automodule:: mercs.algo.inference
+    :members:
+.. automodule:: mercs.algo.prediction
+    :members:
+.. automodule:: mercs.algo.selection
+    :members:
 .. automodule:: mercs.utils
 .. automodule:: mercs.core
 .. automodule:: mercs.models
