@@ -20,7 +20,7 @@ def codes_to_query(codes, attributes=None):
 
     """
     assert isinstance(codes, np.ndarray)
-    assert isinstance(attributes, np.ndarray)
+    assert isinstance(attributes, (np.ndarray, type(None)))
 
     nb_codes, nb_atts = codes.shape
     if attributes is None:
@@ -57,7 +57,7 @@ def code_to_query(code, attributes=None):
 
     """
     assert isinstance(code, np.ndarray)
-    assert isinstance(attributes, np.ndarray)
+    assert isinstance(attributes, (np.ndarray, type(None)))
 
     nb_atts = code.shape[0]
     if attributes is None:
