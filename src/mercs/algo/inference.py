@@ -240,12 +240,11 @@ def update_X(X, Y, act_att_idx):
     assert Y.shape[1] == act_att_idx.shape[0]
     assert X.shape[1] >= np.max(act_att_idx)
 
-    for y_idx, attr_idx in enumerate(act_att_idx):
-        X[:, attr_idx] = Y[:, y_idx]
+    X[:, act_att_idx] = Y
     return X
 
 
-def init_predictions(nb_rows, nb_cols, type=np.float64):
+def init_predictions(nb_rows, nb_cols, dtype=np.float64):
     """
     Initialize an empty array to contain our results.
 
@@ -254,12 +253,20 @@ def init_predictions(nb_rows, nb_cols, type=np.float64):
 
     We want consistency to easily locate eventual bugs.
 
-    :param type:        Type of entries in the np.ndarray.
-    :param nb_rows:
-    :param nb_cols:
-    :return:
+    Parameters
+    ----------
+    nb_rows: int
+        Number of rows in the initialized array
+    nb_cols: int
+        Number of columns in the initialized array
+    dtype: np.dtype
+        Data type of the entries in the initialized array
+
+    Returns
+    -------
+
     """
-    return np.zeros((nb_rows, nb_cols), dtype=type)
+    return np.zeros((nb_rows, nb_cols), dtype=dtype)
 
 
 # Internal methods
