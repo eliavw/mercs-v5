@@ -243,12 +243,12 @@ def _generate_default_query_code(nb_atts):
     assert isinstance(nb_atts, int)
     assert 2 <= nb_atts
 
-    desc_code = encode_attribute(0,[0],[1])
-    targ_code = encode_attribute(1,[0],[1])
+    desc_encoding = encode_attribute(0,[0],[1])
+    targ_encoding = encode_attribute(1,[0],[1])
 
-    q = [desc_code] * nb_atts   # Mark all attributes as descriptive
-    q[-1] = targ_code           # Mark last attribute as target
-    q_codes = [q]               # Wrap in list for uniformity
+    q = [desc_encoding] * nb_atts   # Mark all attributes as descriptive
+    q[-1] = targ_encoding           # Mark last attribute as target
+    q_codes = [q]                   # Wrap in list for uniformity
 
     return q_codes
 

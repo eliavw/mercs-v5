@@ -8,6 +8,37 @@ VERBOSITY = 0
 
 # Core
 def mi_pred_algo(m_codes, q_codes):
+    """
+    MI-prediction algorithm
+
+    The most basic prediction algorithm, selects all models that share
+    at least a target attribute with the query at hand, and select those,
+    regardless of their descriptive attributes being available or not.
+
+    Parameters
+    ----------
+    m_codes: np.ndarray, shape (nb_models, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a model of the MERCS
+        ensemble.
+    q_codes: np.ndarray, shape (nb_queries, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a query.
+
+    Returns
+    -------
+    mas: np.ndarray, shape (nb_queries, nb_models)
+        Model Activation Strategy. Two-dimensional np.ndarray where row i
+        encodes the model activation strategy for a query i. Each entry in such
+        a row refers to a certain model, and encodes when it may be activated.
+    aas: np.ndarray, shape (nb_queries, nb_atts)
+        Attribute Activation Strategy. Two-dimensional np.ndarray where row i
+        encodes the attribute activation strategy for a query i. Each entry in
+        such a row refers to a certain attribute, and encodes when it may be
+        activated.
+
+    """
+
+    q_codes = np.array(q_codes)
+
     # Preliminaries
     nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = pred_prelims(m_codes,
                                                                                   q_codes)
@@ -29,6 +60,31 @@ def mi_pred_algo(m_codes, q_codes):
 
 
 def ma_pred_algo(m_codes, q_codes, settings):
+    """
+    MA-prediction algorithm
+
+    Parameters
+    ----------
+    m_codes: np.ndarray, shape (nb_models, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a model of the MERCS
+        ensemble.
+    q_codes: np.ndarray, shape (nb_queries, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a query.
+    settings
+
+    Returns
+    -------
+    mas: np.ndarray, shape (nb_queries, nb_models)
+        Model Activation Strategy. Two-dimensional np.ndarray where row i
+        encodes the model activation strategy for a query i. Each entry in such
+        a row refers to a certain model, and encodes when it may be activated.
+    aas: np.ndarray, shape (nb_queries, nb_atts)
+        Attribute Activation Strategy. Two-dimensional np.ndarray where row i
+        encodes the attribute activation strategy for a query i. Each entry in
+        such a row refers to a certain attribute, and encodes when it may be
+        activated.
+    """
+
     # Preliminaries
     initial_threshold = settings['param']
     step_size = settings['its']
@@ -70,40 +126,31 @@ def ma_pred_algo(m_codes, q_codes, settings):
     return np.array(mas), np.array(aas)
 
 
-def _ma_mas_aas(aas, mas, q_desc, q_targ, m_codes, m_desc, thresholds):
-    # Prelims
-    nb_models = mas.shape[0]
-    aas[q_desc] = 0
-
-    relevant_models = np.where(m_codes[:, q_targ] == 1)[0]  # Models that share at least a single target with the query
-    mas[relevant_models] = 1
-
-    avl_mods = mas > 0  # Available models share a target with queries
-    avl_atts = aas > -1
-
-    # Att. activation
-    aas[q_targ] = 1  # Does not depend on model activation strategy
-
-    # Model activation
-    def appr_score(avl_atts, mod_desc):
-        return np.sum(avl_atts.take(mod_desc)) / len(mod_desc)
-
-    mod_appr_scores = [appr_score(avl_atts, m_desc[m_idx])
-                       if (avl_mods[m_idx] == 1) else -1
-                       for m_idx in range(nb_models)]
-
-    for thr in thresholds:
-        mas = [1 if (mod_appr_scores[m_ind] > thr) else 0
-               for m_ind in range(nb_models)]  # Binary selection of all appropriate enough models
-        mas = np.array(mas)
-
-        if _ma_mafi_stopping_condition(mas, m_codes, q_targ):
-            break
-
-    return aas, mas
-
-
 def mafi_pred_algo(m_codes, q_codes, settings):
+    """
+
+    Parameters
+    ----------
+    m_codes: np.ndarray, shape (nb_models, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a model of the MERCS
+        ensemble.
+    q_codes: np.ndarray, shape (nb_queries, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a query.
+
+    Returns
+    -------
+    mas: np.ndarray, shape (nb_queries, nb_models)
+        Model Activation Strategy. Two-dimensional np.ndarray where row i
+        encodes the model activation strategy for a query i. Each entry in such
+        a row refers to a certain model, and encodes when it may be activated.
+    aas: np.ndarray, shape (nb_queries, nb_atts)
+        Attribute Activation Strategy. Two-dimensional np.ndarray where row i
+        encodes the attribute activation strategy for a query i. Each entry in
+        such a row refers to a certain attribute, and encodes when it may be
+        activated.
+
+    """
+
     # Preliminaries
     initial_threshold = settings['param']
     step_size = settings['its']
@@ -149,92 +196,31 @@ def mafi_pred_algo(m_codes, q_codes, settings):
     return np.array(mas), np.array(aas)
 
 
-def _mafi_mas_aas(aas, mas, q_desc, q_targ, m_codes, FI, thresholds):
-    """
-
-
-    Parameters
-    ----------
-    aas: np.ndarray, shape (nb_attributes,)
-        Single aas, initialized
-    mas: np.ndarray, shape (nb_models,)
-        Single mas, initialized
-    q_desc: list, shape (nb_desc_atts_query)
-        Descriptive attributes of query under consideration
-    q_targ: list, shape (nb_desc_atts_query)
-        Target attributes of query under consideration
-    m_codes: np.ndarray, shape (nb_models, nb_attributes)
-        Codes of all the models
-    FI
-        FI of all the models
-
-    Returns
-    -------
-    aas: np.ndarray, shape (nb_attributes,)
-
-    mas: np.ndarray, shape (nb_models,)
-
-    """
-    # Prelims
-    nb_models = mas.shape[0]
-    aas[q_desc] = 0
-
-    relevant_models = np.where(m_codes[:, q_targ] == 1)[0]  # Models that share at least a single target with the query
-    mas[relevant_models] = 1
-
-    avl_mods = mas > 0  # Available models share a target with queries
-    avl_atts = aas > -1
-
-    # Att. activation
-    aas[q_targ] = 1  # Does not depend on model activation strategy
-
-    # Model activation
-    def appr_score(avl_atts, mod_FI):
-        assert avl_atts.shape == mod_FI.shape
-        return np.dot(avl_atts, mod_FI)
-
-    mod_appr_scores = [appr_score(avl_atts, FI[m_ind])
-                       if (avl_mods[m_ind] == 1) else -1
-                       for m_ind in range(nb_models)]  # Only available models get considered here
-
-    for thr in thresholds:
-        mas = [1 if (mod_appr_scores[m_ind] > thr) else 0
-               for m_ind in range(nb_models)]  # Binary selection of all appropriate enough models
-        mas = np.array(mas)
-
-        if _ma_mafi_stopping_condition(mas, m_codes, q_targ):
-            break
-
-    return aas, mas
-
-
-def _ma_mafi_stopping_condition(mas, m_codes, q_targ):
-    """
-
-    First, we generate q_targ_attributes_in_selected_models,
-    which is a subset of m_codes. Containing only those models who are
-    activated, and only the q_targ attributes. The idea is that every column
-    should at least have a target-code!
-
-    Parameters
-    ----------
-    mas
-    m_codes
-    q_targ: list
-
-    Returns
-    -------
-
-    """
-    q_targ_attributes_in_selected_models = m_codes[mas == 1, :][:, q_targ]
-
-    target_encoding = encode_attribute(1, [0], [1])
-    check = np.where(q_targ_attributes_in_selected_models == target_encoding)
-    q_targ_ok = np.unique(check[1])
-    return len(q_targ_ok) == len(q_targ)
-
-
 def it_pred_algo(m_codes, q_codes, settings):
+    """
+
+    Parameters
+    ----------
+    m_codes: np.ndarray, shape (nb_models, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a model of the MERCS
+        ensemble.
+    q_codes: np.ndarray, shape (nb_queries, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a query.
+
+    Returns
+    -------
+    mas: np.ndarray, shape (nb_queries, nb_models)
+        Model Activation Strategy. Two-dimensional np.ndarray where row i
+        encodes the model activation strategy for a query i. Each entry in such
+        a row refers to a certain model, and encodes when it may be activated.
+    aas: np.ndarray, shape (nb_queries, nb_atts)
+        Attribute Activation Strategy. Two-dimensional np.ndarray where row i
+        encodes the attribute activation strategy for a query i. Each entry in
+        such a row refers to a certain attribute, and encodes when it may be
+        activated.
+
+    """
+
     # Preliminaries
     nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = pred_prelims(m_codes,
                                                                                   q_codes)
@@ -331,10 +317,26 @@ def rw_pred_algo(m_codes, q_codes, settings):
 
     Generate one random walk in the random forest.
 
-    :param m_codes:
-    :param q_codes:
-    :param settings:
-    :return:
+    Parameters
+    ----------
+    m_codes: np.ndarray, shape (nb_models, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a model of the MERCS
+        ensemble.
+    q_codes: np.ndarray, shape (nb_queries, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a query.
+
+    Returns
+    -------
+    mas: np.ndarray, shape (nb_queries, nb_models)
+        Model Activation Strategy. Two-dimensional np.ndarray where row i
+        encodes the model activation strategy for a query i. Each entry in such
+        a row refers to a certain model, and encodes when it may be activated.
+    aas: np.ndarray, shape (nb_queries, nb_atts)
+        Attribute Activation Strategy. Two-dimensional np.ndarray where row i
+        encodes the attribute activation strategy for a query i. Each entry in
+        such a row refers to a certain attribute, and encodes when it may be
+        activated.
+
     """
 
     # Preliminaries
@@ -436,6 +438,124 @@ def generate_chain(m_codes, q_desc, q_targ, settings):
 
 
 # Helpers
+def _ma_mas_aas(aas, mas, q_desc, q_targ, m_codes, m_desc, thresholds):
+    # Prelims
+    nb_models = mas.shape[0]
+    aas[q_desc] = 0
+
+    relevant_models = np.where(m_codes[:, q_targ] == 1)[0]  # Models that share at least a single target with the query
+    mas[relevant_models] = 1
+
+    avl_mods = mas > 0  # Available models share a target with queries
+    avl_atts = aas > -1
+
+    # Att. activation
+    aas[q_targ] = 1  # Does not depend on model activation strategy
+
+    # Model activation
+    def appr_score(avl_atts, mod_desc):
+        return np.sum(avl_atts.take(mod_desc)) / len(mod_desc)
+
+    mod_appr_scores = [appr_score(avl_atts, m_desc[m_idx])
+                       if (avl_mods[m_idx] == 1) else -1
+                       for m_idx in range(nb_models)]
+
+    for thr in thresholds:
+        mas = [1 if (mod_appr_scores[m_ind] > thr) else 0
+               for m_ind in range(nb_models)]  # Binary selection of all appropriate enough models
+        mas = np.array(mas)
+
+        if _ma_mafi_stopping_condition(mas, m_codes, q_targ):
+            break
+
+    return aas, mas
+
+
+def _mafi_mas_aas(aas, mas, q_desc, q_targ, m_codes, FI, thresholds):
+    """
+
+
+    Parameters
+    ----------
+    aas: np.ndarray, shape (nb_attributes,)
+        Single aas, initialized
+    mas: np.ndarray, shape (nb_models,)
+        Single mas, initialized
+    q_desc: list, shape (nb_desc_atts_query)
+        Descriptive attributes of query under consideration
+    q_targ: list, shape (nb_desc_atts_query)
+        Target attributes of query under consideration
+    m_codes: np.ndarray, shape (nb_models, nb_attributes)
+        Codes of all the models
+    FI
+        FI of all the models
+
+    Returns
+    -------
+    aas: np.ndarray, shape (nb_attributes,)
+
+    mas: np.ndarray, shape (nb_models,)
+
+    """
+    # Prelims
+    nb_models = mas.shape[0]
+    aas[q_desc] = 0
+
+    relevant_models = np.where(m_codes[:, q_targ] == 1)[0]  # Models that share at least a single target with the query
+    mas[relevant_models] = 1
+
+    avl_mods = mas > 0  # Available models share a target with queries
+    avl_atts = aas > -1
+
+    # Att. activation
+    aas[q_targ] = 1  # Does not depend on model activation strategy
+
+    # Model activation
+    def appr_score(avl_atts, mod_FI):
+        assert avl_atts.shape == mod_FI.shape
+        return np.dot(avl_atts, mod_FI)
+
+    mod_appr_scores = [appr_score(avl_atts, FI[m_ind])
+                       if (avl_mods[m_ind] == 1) else -1
+                       for m_ind in range(nb_models)]  # Only available models get considered here
+
+    for thr in thresholds:
+        mas = [1 if (mod_appr_scores[m_ind] > thr) else 0
+               for m_ind in range(nb_models)]  # Binary selection of all appropriate enough models
+        mas = np.array(mas)
+
+        if _ma_mafi_stopping_condition(mas, m_codes, q_targ):
+            break
+
+    return aas, mas
+
+
+def _ma_mafi_stopping_condition(mas, m_codes, q_targ):
+    """
+
+    First, we generate q_targ_attributes_in_selected_models,
+    which is a subset of m_codes. Containing only those models who are
+    activated, and only the q_targ attributes. The idea is that every column
+    should at least have a target-code!
+
+    Parameters
+    ----------
+    mas
+    m_codes
+    q_targ: list
+
+    Returns
+    -------
+
+    """
+    q_targ_attributes_in_selected_models = m_codes[mas == 1, :][:, q_targ]
+
+    target_encoding = encode_attribute(1, [0], [1])
+    check = np.where(q_targ_attributes_in_selected_models == target_encoding)
+    q_targ_ok = np.unique(check[1])
+    return len(q_targ_ok) == len(q_targ)
+
+
 def pred_prelims(m_codes, q_codes):
     """
     Some things that every prediction strategy needs.

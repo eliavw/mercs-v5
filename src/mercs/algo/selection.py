@@ -32,7 +32,7 @@ def base_selection_algo(metadata, settings, target_atts_list=None):
     Returns
     -------
     codes: np.ndarray, shape (nb_models, nb_atts)
-        Two-dimensional array where each row encodes a single model.
+        Two-dimensional np.ndarray where each row encodes a single model.
     """
 
     nb_atts = metadata['nb_atts']
