@@ -1,3 +1,4 @@
+import numpy as np
 import warnings
 
 from ..utils.encoding import codes_to_query, encode_attribute
@@ -116,7 +117,8 @@ def update_query_settings(s, nb_atts, delimiter='_', **kwargs):
         codes = relevant_kwargs['codes']
 
         if _verify_decent_query_codes(codes, nb_atts):
-            s['codes'] = codes
+            # Our decency check ensures this conversion will work
+            s['codes'] = np.array(codes)
         else:
             msg = """
             Provided query codes:\t{}\n
@@ -134,7 +136,7 @@ def update_query_settings(s, nb_atts, delimiter='_', **kwargs):
                 """.format(__file__, relevant_kwargs['code'])
         debug_print(msg, V=VERBOSITY)
 
-        codes = [relevant_kwargs['code']]
+        codes = np.atleast_2d(relevant_kwargs['code'])
         update_query_settings(s, nb_atts, qry_codes=codes)  # N.B.: Do NOT pass the delimiter here!
     else:
         # Nothing provided in kwargs, we check what is already present.
@@ -240,15 +242,14 @@ def _generate_default_query_code(nb_atts):
     -------
 
     """
-    assert isinstance(nb_atts, int)
-    assert 2 <= nb_atts
+    assert isinstance(nb_atts, int) and nb_atts >= 2
 
     desc_encoding = encode_attribute(0,[0],[1])
     targ_encoding = encode_attribute(1,[0],[1])
 
-    q = [desc_encoding] * nb_atts   # Mark all attributes as descriptive
-    q[-1] = targ_encoding           # Mark last attribute as target
-    q_codes = [q]                   # Wrap in list for uniformity
+    q_code = np.full(nb_atts, desc_encoding)
+    q_code[-1] = targ_encoding
+    q_codes = np.atleast_2d(q_code)
 
     return q_codes
 
@@ -262,16 +263,19 @@ def _verify_decent_query_codes(codes, nb_atts):
         """.format(codes)
         warnings.warn(msg)
         result = False
-    else:
-        assert isinstance(codes, list)
+    elif isinstance(codes, np.ndarray):
+        result = codes.shape[1] == nb_atts
+    elif isinstance(codes, list):
         result = _check_all_lengths(codes, nb_atts)
+    else:
+        result = False
 
     return result
 
 
 def _check_all_lengths(codes, nb_atts):
-
     assert isinstance(codes, list)
+
     errors = [1 for code in codes
               if len(code) != nb_atts
               if not isinstance(code, list)]
