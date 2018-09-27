@@ -19,9 +19,9 @@ from mercs.algo.inference import (init_predictions,
 
 
 def test_init_predictions():
-    nb_rows, nb_cols = 10,10
+    nb_rows, nb_cols = 10, 10
 
-    obs = init_predictions(nb_rows, nb_cols, type=np.float64)
+    obs = init_predictions(nb_rows, nb_cols, dtype=np.float64)
 
     assert obs.shape == (nb_rows, nb_cols)
     assert isinstance(obs[0, 0], np.float64)

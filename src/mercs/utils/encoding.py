@@ -1,26 +1,30 @@
+import numpy as np
 
-def codes_to_query(codes, atts=None):
+
+def codes_to_query(codes, attributes=None):
     """
     Split codes array in three arrays
 
     Parameters
     ----------
-    codes
-    atts
+    codes: np.ndarray, shape (m, nb_attributes)
+        Two-dimensional numpy array
+    attributes
 
     Returns
     -------
 
     """
+    assert isinstance(codes, np.ndarray)
 
-    if atts is None:
-        atts = list(range(len(codes[0])))
-    nb_codes = len(codes)
+    nb_codes = codes.shape[0]
+    if attributes is None:
+        attributes = list(range(nb_codes))
 
     desc, targ, miss = [], [], []
 
     for c_idx in range(nb_codes):
-        c_desc, c_targ, c_miss = code_to_query(codes[c_idx], atts)
+        c_desc, c_targ, c_miss = code_to_query(codes[c_idx], attributes)
 
         desc.append(c_desc)
         targ.append(c_targ)
