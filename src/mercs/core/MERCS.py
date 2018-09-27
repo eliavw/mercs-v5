@@ -153,8 +153,8 @@ class MERCS(object):
 
         # 3. Inference
         X_query = perform_imputation(X,
-                                     self.s['queries']['codes'][[q_idx]],
-                                     self.imputator)  # Generate X data_csv.
+                                     self.s['queries']['codes'][q_idx],
+                                     self.imputator)  # Generate X data
 
         Y = self.q_models[q_idx].predict(X_query)
 
@@ -192,8 +192,8 @@ class MERCS(object):
                                             self.s['queries']['codes'][[q_idx]])
         # 2. Inference
         X_query = perform_imputation(X,
-                                     self.s['queries']['codes'][[q_idx]],
-                                     self.imputator)  # Generate X data_csv.
+                                     self.s['queries']['codes'][q_idx],
+                                     self.imputator)  # Generate X data
 
         Y_proba = self.q_models[q_idx].predict_proba(X_query)
         del X_query
@@ -209,7 +209,7 @@ class MERCS(object):
         tick = default_timer()
         self.update_settings(mode='batch_predict', **kwargs)
 
-        nb_queries = len(self.s['queries']['codes'])
+        nb_queries = self.s['queries']['codes'].shape[0]
         assert nb_queries == len(fnames)
 
         # 1. Prediction = Prepare Inference
@@ -566,7 +566,7 @@ class MERCS(object):
                                                m_codes,
                                                settings,
                                                metadata,
-                                               **kwargs)
+                                               q_codes)
 
         return query_models
 

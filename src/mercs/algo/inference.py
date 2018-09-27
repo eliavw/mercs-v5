@@ -19,8 +19,8 @@ def perform_imputation(test_data_df, query_code, imputator):
     ----------
     test_data_df: DataFrame, shape (nb_samples, nb_attributes)
         Contains the test portion of the dataset. With all attributes.
-    query_code: list, shape (nb_attributes, )
-        Code that conveys the functions of all the attributes.
+    query_code: np.ndarray, shape (nb_attributes, )
+        Code that conveys the functions of all the attributes in the query
     imputator: sklearn.preprocessing.imputation.Imputer
         The thing used to impute, sklearn standard.
 
@@ -30,15 +30,14 @@ def perform_imputation(test_data_df, query_code, imputator):
     """
 
     assert isinstance(test_data_df, pd.DataFrame)
-    assert isinstance(query_code, (np.ndarray, list))
-    assert len(test_data_df.columns.values) == len(query_code)
+    assert isinstance(query_code, np.ndarray)
+    assert len(test_data_df.columns.values) == query_code.shape[0]
 
-    missing_attribute_encoding = encode_attribute(0, [1], [2])
+    miss_encoding = encode_attribute(0, [1], [2])
     query_data_df = test_data_df.copy()
 
-    for i, v in enumerate(query_code):
-        if v == missing_attribute_encoding:
-            query_data_df.iloc[:, i] = np.nan
+    missing_attributes = np.where(query_code == miss_encoding)[0]
+    query_data_df.iloc[:, missing_attributes] = np.nan
 
     query_data = imputator.transform(query_data_df)
     return query_data

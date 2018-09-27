@@ -22,7 +22,7 @@ warnings.filterwarnings(action='ignore', category=UndefinedMetricWarning)
 def test_perform_imputation():
     # Prelims
     train, test = ds.load_nursery()
-    query_code = [0, -1, -1, -1, -1, -1, 0, 0, 1]
+    query_code = np.array([0, -1, -1, -1, -1, -1, 0, 0, 1])
 
     imputator = Imputer(missing_values='NaN',
                         strategy='most_frequent',
