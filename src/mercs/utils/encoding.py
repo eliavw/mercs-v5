@@ -1,6 +1,18 @@
 
 def codes_to_query(codes, atts=None):
     """
+    Split codes array in three arrays
+
+    Parameters
+    ----------
+    codes
+    atts
+
+    Returns
+    -------
+
+    """
+    """
     Change the codes-array to an actual queries, which are three arrays.
 
     :param code:                Array that contains: 0-desc/1-target/-1-missing code for each attribute
@@ -41,12 +53,16 @@ def code_to_query(code, atts=None):
         atts = list(range(len(code)))
     assert len(code) == len(atts)
 
+    desc_encoding = encode_attribute(0,[0],[])
+    targ_encoding = encode_attribute(0,[],[0])
+    miss_encoding = encode_attribute(0,[],[])
+
     desc = [x for i, x in enumerate(atts)
-            if code[i] == encode_attribute(x,[x],[])]
+            if code[i] == desc_encoding]
     targ = [x for i, x in enumerate(atts)
-            if code[i] == encode_attribute(x,[],[x])]
+            if code[i] == targ_encoding]
     miss = [x for i, x in enumerate(atts)
-            if code[i] == encode_attribute(x, [], [])]
+            if code[i] == miss_encoding]
     return desc, targ, miss
 
 

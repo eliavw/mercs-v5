@@ -403,8 +403,8 @@ class MERCS(object):
         ----------
         metadata: dict
             Metadata of the dataset
-        target_atts_list: list
-            List of target attributes.
+        target_atts_list: list, shape (nb_targ_attributes,)
+            List of indices of target attributes.
 
         Returns
         -------

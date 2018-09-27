@@ -26,11 +26,13 @@ def base_selection_algo(metadata, settings, target_atts_list=None):
         Dictionary of the settings of MERCS. Relevant settings are:
             1. settings['param']
             2. settings['its']
-    target_atts_list
+    target_atts_list: list, shape (nb_targ_atts, )
+        List of indices of target attributes.
 
     Returns
     -------
-
+    codes: np.ndarray, shape (nb_models, nb_atts)
+        Two-dimensional array where each row encodes a single model.
     """
 
     nb_atts = metadata['nb_atts']
