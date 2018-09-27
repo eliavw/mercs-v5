@@ -43,21 +43,21 @@ def mi_pred_algo(m_codes, q_codes):
     # Preliminaries
     nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
                                                                                    q_codes)
-    mas, aas = init_mas_aas(nb_models, nb_atts, nb_queries)
+    mas, aas = _init_mas_aas_np(nb_models, nb_atts, nb_queries)
 
     # Building codes
     for q_idx, q_code in enumerate(q_codes):
         # Prelims
-        aas[q_idx][q_desc[q_idx]] = 0
+        aas[q_idx, q_desc[q_idx]] = 0
 
         # Model activation
         relevant_models = np.where(m_codes[:, q_targ[q_idx]] == 1)[0]  # Models sharing target with queries
-        mas[q_idx][relevant_models] = 1
+        mas[q_idx, relevant_models] = 1
 
         # Att. activation
-        aas[q_idx][q_targ[q_idx]] = 1  # Does not depend on model activation strategy
+        aas[q_idx, q_targ[q_idx]] = 1  # Does not depend on model activation strategy
 
-    return np.array(mas), np.array(aas)
+    return mas, aas
 
 
 def ma_pred_algo(m_codes, q_codes, settings):
@@ -96,7 +96,7 @@ def ma_pred_algo(m_codes, q_codes, settings):
 
     nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
                                                                                    q_codes)
-    mas, aas = init_mas_aas(nb_models, nb_atts, nb_queries)
+    mas, aas = _init_mas_aas(nb_models, nb_atts, nb_queries)
 
     thresholds = np.arange(initial_threshold, -1, -step_size)
 
@@ -118,8 +118,8 @@ def ma_pred_algo(m_codes, q_codes, settings):
             msg = "This is mas_target_t: {}".format(mas_target_t)
             debug_print(msg, V=VERBOSITY, warn=True)
 
-            mas[q_idx][mas_target_t > 0] = 1  # Each target selects some models
-            aas[q_idx] = aas_target_t  # This is unchanged.
+            mas[q_idx][mas_target_t > 0] = 1    # Each target selects some models
+            aas[q_idx] = aas_target_t           # This is unchanged.
 
             msg = "This is mas[q_idx]: {}".format(mas[q_idx])
             debug_print(msg, V=VERBOSITY, warn=True)
@@ -162,7 +162,7 @@ def mafi_pred_algo(m_codes, q_codes, settings):
 
     nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
                                                                                    q_codes)
-    mas, aas = init_mas_aas(nb_models, nb_atts, nb_queries)
+    mas, aas = _init_mas_aas(nb_models, nb_atts, nb_queries)
 
     thresholds = np.arange(initial_threshold, -1, -step_size)
     FI = settings['FI']
@@ -225,7 +225,7 @@ def it_pred_algo(m_codes, q_codes, settings):
     # Preliminaries
     nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
                                                                                    q_codes)
-    mas, aas = init_mas_aas(nb_models, nb_atts, nb_queries)
+    mas, aas = _init_mas_aas(nb_models, nb_atts, nb_queries)
 
     # Collecting parameters from s
     init_threshold = 1
@@ -343,7 +343,7 @@ def rw_pred_algo(m_codes, q_codes, settings):
     # Preliminaries
     nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
                                                                                    q_codes)
-    mas, aas = init_mas_aas(nb_models, nb_atts, nb_queries)
+    mas, aas = _init_mas_aas(nb_models, nb_atts, nb_queries)
 
     # Building codes
     for q_idx, q_code in enumerate(q_codes):
@@ -582,7 +582,7 @@ def _ma_mafi_stopping_condition(mas, m_codes, q_targ):
     return len(q_targ_ok) == len(q_targ)
 
 
-def init_mas_aas(nb_models, nb_atts, nb_queries):
+def _init_mas_aas(nb_models, nb_atts, nb_queries):
     """
     Initialize the mas and aas arrays.
 
@@ -612,6 +612,42 @@ def init_mas_aas(nb_models, nb_atts, nb_queries):
 
     mas = [np.full(nb_models, 0, dtype=np.int) for j in range(nb_queries)]
     aas = [np.full(nb_atts, -1, dtype=np.int) for j in range(nb_queries)]
+    return mas, aas
+
+
+def _init_mas_aas_np(nb_models, nb_atts, nb_queries):
+    """
+    Initialize the mas and aas arrays.
+
+    Difference with the above is that this outputs full numpy arrays.
+
+    Parameters
+    ----------
+    nb_models: int
+        Total number of models in the MERCS model
+    nb_atts: int
+        Total number of attributes in the MERCS model
+    nb_queries: int
+        Total number of queries that needs to be answered.
+
+    Returns
+    -------
+    mas: np.ndarray, shape (nb_queries, nb_models)
+        E.g.:
+            np.array([[0,0,0],
+                      [0,0,0]])
+    aas: np.ndarray, shape (nb_queries, nb_atts)
+        E.g.:
+            np.array([[-1,-1,-1,-1],
+                      [-1,-1,-1,-1]])
+    """
+
+    assert isinstance(nb_models, int)
+    assert isinstance(nb_atts, int)
+    assert isinstance(nb_queries, int)
+
+    mas = np.full((nb_queries, nb_models), 0, dtype=np.int)
+    aas = np.full((nb_queries, nb_atts), -1, dtype=np.int)
     return mas, aas
 
 
