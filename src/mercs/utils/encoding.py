@@ -7,19 +7,24 @@ def codes_to_query(codes, attributes=None):
 
     Parameters
     ----------
-    codes: np.ndarray, shape (m, nb_attributes)
-        Two-dimensional numpy array
-    attributes
+    codes: np.ndarray, shape (nb_codes, nb_attributes)
+        Two-dimensional numpy array of codes. Each code encodes the function
+        of the attributes.
+    attributes: np.ndarray, shape (nb_attributes, ), default=None
+        Numpy array that contains the indices of the attributes whose function
+        is encoded in the codes. If None, we assume that the attributes indices
+        are simply np.arange(nb_attributes)
 
     Returns
     -------
 
     """
     assert isinstance(codes, np.ndarray)
+    assert isinstance(attributes, np.ndarray)
 
-    nb_codes = codes.shape[0]
+    nb_codes, nb_atts = codes.shape
     if attributes is None:
-        attributes = list(range(nb_codes))
+        attributes = np.arange(nb_atts)
 
     desc, targ, miss = [], [], []
 
@@ -33,32 +38,41 @@ def codes_to_query(codes, attributes=None):
     return desc, targ, miss
 
 
-def code_to_query(code, atts=None):
+def code_to_query(code, attributes=None):
     """
-    Change the code-array to an actual queries, which are three arrays.
+    Split the code array into three arrays of attributes of distinct function.
 
-    :param code:                Array that contains:
-                                     0 for desc attribute
-                                     1 for target attribute
-                                    -1 for missing attribute
-    :param atts:                Array that contains the attributes (indices)
-    :return: Three arrays.      One for desc atts indices, one for targets,
-                                one for missing
+    Parameters
+    ----------
+    code: np.ndarray, shape (nb_attributes, )
+        One-dimensional numpy array that encodes a query. Each entry encodes
+        the function of the associated attribute
+    attributes: np.ndarray, shape (nb_attributes, ), default=None
+        Numpy array that contains the indices of the attributes whose function
+        is encoded in the codes. If None, we assume that the attributes indices
+        are simply np.arange(nb_attributes)
+
+    Returns
+    -------
+
     """
+    assert isinstance(code, np.ndarray)
+    assert isinstance(attributes, np.ndarray)
 
-    if atts is None:
-        atts = list(range(len(code)))
-    assert len(code) == len(atts)
+    nb_atts = code.shape[0]
+    if attributes is None:
+        attributes = np.arange(nb_atts)
+    assert code.shape == attributes.shape
 
     desc_encoding = encode_attribute(0,[0],[1])
     targ_encoding = encode_attribute(1,[0],[1])
     miss_encoding = encode_attribute(2,[0],[1])
 
-    desc = [x for i, x in enumerate(atts)
+    desc = [x for i, x in enumerate(attributes)
             if code[i] == desc_encoding]
-    targ = [x for i, x in enumerate(atts)
+    targ = [x for i, x in enumerate(attributes)
             if code[i] == targ_encoding]
-    miss = [x for i, x in enumerate(atts)
+    miss = [x for i, x in enumerate(attributes)
             if code[i] == miss_encoding]
     return desc, targ, miss
 
