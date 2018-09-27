@@ -41,8 +41,8 @@ def mi_pred_algo(m_codes, q_codes):
     assert isinstance(q_codes, np.ndarray)
 
     # Preliminaries
-    nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = pred_prelims(m_codes,
-                                                                                  q_codes)
+    nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
+                                                                                   q_codes)
     mas, aas = init_mas_aas(nb_models, nb_atts, nb_queries)
 
     # Building codes
@@ -94,8 +94,8 @@ def ma_pred_algo(m_codes, q_codes, settings):
     assert isinstance(step_size, float)
     assert 0.0 < step_size < 1.0
 
-    nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = pred_prelims(m_codes,
-                                                                                  q_codes)
+    nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
+                                                                                   q_codes)
     mas, aas = init_mas_aas(nb_models, nb_atts, nb_queries)
 
     thresholds = np.arange(initial_threshold, -1, -step_size)
@@ -160,8 +160,8 @@ def mafi_pred_algo(m_codes, q_codes, settings):
     assert isinstance(step_size, float)
     assert 0.0 < step_size < 1.0
 
-    nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = pred_prelims(m_codes,
-                                                                                  q_codes)
+    nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
+                                                                                   q_codes)
     mas, aas = init_mas_aas(nb_models, nb_atts, nb_queries)
 
     thresholds = np.arange(initial_threshold, -1, -step_size)
@@ -223,8 +223,8 @@ def it_pred_algo(m_codes, q_codes, settings):
     """
 
     # Preliminaries
-    nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = pred_prelims(m_codes,
-                                                                                  q_codes)
+    nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
+                                                                                   q_codes)
     mas, aas = init_mas_aas(nb_models, nb_atts, nb_queries)
 
     # Collecting parameters from s
@@ -341,8 +341,8 @@ def rw_pred_algo(m_codes, q_codes, settings):
     """
 
     # Preliminaries
-    nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = pred_prelims(m_codes,
-                                                                                  q_codes)
+    nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
+                                                                                   q_codes)
     mas, aas = init_mas_aas(nb_models, nb_atts, nb_queries)
 
     # Building codes
@@ -355,6 +355,7 @@ def rw_pred_algo(m_codes, q_codes, settings):
     return np.array(mas), np.array(aas)
 
 
+# Helpers
 def generate_chain(m_codes, q_desc, q_targ, settings):
     # Choose chain length
     assert isinstance(settings['its'], int)
@@ -438,7 +439,6 @@ def generate_chain(m_codes, q_desc, q_targ, settings):
     return mas, aas
 
 
-# Helpers
 def _ma_mas_aas(aas, mas, q_desc, q_targ, m_codes, m_desc, thresholds):
     # Prelims
     nb_models = mas.shape[0]
@@ -557,16 +557,25 @@ def _ma_mafi_stopping_condition(mas, m_codes, q_targ):
     return len(q_targ_ok) == len(q_targ)
 
 
-def pred_prelims(m_codes, q_codes):
+def _pred_prelims(m_codes, q_codes):
     """
-    Some things that every prediction strategy needs.
+    Extract some useful quantities every prediction strategy needs
 
-    :param m_codes:
-    :param q_codes:
-    :return:
+    Parameters
+    ----------
+    m_codes: np.ndarray, shape (nb_models, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a model of the MERCS
+        ensemble.
+    q_codes: np.ndarray, shape (nb_queries, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a query.
+
+    Returns
+    -------
+
     """
+    nb_models, nb_atts = m_codes.shape
+    nb_queries = q_codes.shape[0]
 
-    nb_models, nb_atts, nb_queries = len(m_codes), len(m_codes[0]), len(q_codes)
     m_desc, m_targ, _ = codes_to_query(m_codes)
     q_desc, q_targ, _ = codes_to_query(q_codes)
 
