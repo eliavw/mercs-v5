@@ -37,7 +37,8 @@ def mi_pred_algo(m_codes, q_codes):
 
     """
 
-    q_codes = np.array(q_codes)
+    assert isinstance(m_codes, np.ndarray)
+    assert isinstance(q_codes, np.ndarray)
 
     # Preliminaries
     nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = pred_prelims(m_codes,
