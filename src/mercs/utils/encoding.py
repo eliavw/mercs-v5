@@ -76,11 +76,11 @@ def code_to_query(code, attributes=None):
 
     for i, x in enumerate(attributes):
         if code[i] == desc_encoding:
-            desc.extend(x)
+            desc.append(x)
         elif code[i] == targ_encoding:
-            targ.extend(x)
+            targ.append(x)
         elif code[i] == miss_encoding:
-            miss.extend(x)
+            miss.append(x)
         else:
             msg = """
             Did not recognize encoding: {}\n
