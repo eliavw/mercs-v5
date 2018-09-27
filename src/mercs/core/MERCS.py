@@ -393,10 +393,22 @@ class MERCS(object):
 
     def perform_selection_algorithm(self, metadata, target_atts_list=None):
         """
-        Generate m_codes by a selection algorithm
+        Generate model codes by a selection algorithm
 
-        :param metadata:    Dict with necessary info for selection algo
-        :return:
+        Model codes are arrays which encode the role each attribute of the
+        dataset takes with respect to a certain model. An attribute can be
+        descriptive, target or missing.
+
+        Parameters
+        ----------
+        metadata: dict
+            Metadata of the dataset
+        target_atts_list: list
+            List of target attributes.
+
+        Returns
+        -------
+
         """
 
         sel_type = self.s['selection']['type']
@@ -569,7 +581,8 @@ class MERCS(object):
 
         return query_models
 
-    def strat_to_model(self, m_list, m_codes, q_codes, mas, aas, metadata):
+    @staticmethod
+    def strat_to_model(m_list, m_codes, q_codes, mas, aas, metadata):
         """
         Convert the MAS and AAS to a single, grouped model.
 
@@ -621,7 +634,8 @@ class MERCS(object):
 
         return
 
-    def flatten_model(self, m_list, m_codes):
+    @staticmethod
+    def flatten_model(m_list, m_codes):
         """
         Unravel composite models
 
