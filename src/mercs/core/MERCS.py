@@ -221,7 +221,7 @@ class MERCS(object):
 
         # 2. Inference
         for q_idx in range(nb_queries):
-            # Generate X data_csv for queries with index q_idx
+            # Generate X data for queries with index q_idx
             X_query = perform_imputation(X,
                                          self.s['queries']['codes'][q_idx],
                                          self.imputator)

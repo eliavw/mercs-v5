@@ -70,33 +70,18 @@ def merge_proba(proba_res, proba_mod, lab_res, lab_mod, t_idx_res, t_idx_mod):
     Returns
     -------
 
-    Legacy
-    -------
-    Legacy version, keeping it here for the unlikely case something's off.
-    # Single target case
-    if nb_targ == 1:
-        # This means it comes from a model WE made.
-        if isinstance(proba_mod, list):
-            proba_mod = proba_mod[0]
-
-        proba_res[t_idx_res][:, mask] += proba_mod
-
-    # Multi-target case
-    else:
-        proba_res[t_idx_res][:, mask] += proba_mod[t_idx_mod]
-
     """
 
+    # Preliminaries
     assert isinstance(proba_res, list)
     assert isinstance(proba_mod, (list, np.ndarray))
-
-    mask = _get_mask(lab_res, lab_mod, t_idx_res, t_idx_mod)
-
     if isinstance(proba_mod, np.ndarray):
         # This means a single-target sklearn output
         proba_mod = [proba_mod]
-
     assert isinstance(proba_mod[t_idx_mod], np.ndarray)
+
+    # Actual computation
+    mask = _get_mask(lab_res, lab_mod, t_idx_res, t_idx_mod)
     assert proba_res[t_idx_res][:, mask].shape == proba_mod[t_idx_mod].shape
     proba_res[t_idx_res][:, mask] += proba_mod[t_idx_mod]
 
@@ -132,9 +117,11 @@ def merge_numer(numer_res, numer_mod, t_idx_res, t_idx_mod):
     # TODO(elia): Own models might also better provide np.ndarray...
 
     con_1 = (type(numer_res), type(numer_res[0]), numer_res[0].shape)
-    msg_1 = "Type of numer_res: {} \n" \
-          "And type of numer_res[0]: {}\n" \
-          "And shape of numer_res[0]: {}\n".format(*con_1)
+    msg_1 = """
+    Type of numer_res: {} \n
+    Type of numer_res[0]: {}\n
+    Shape of numer_res[0]: {}\n
+    """.format(*con_1)
     debug_print(msg_1, level=1, V=VERBOSITY)
 
     if isinstance(numer_mod, list):
@@ -194,10 +181,18 @@ def predict_values_from_numer(numer_res, counts):
     """
     Average numeric predictions
 
-    :param numer_res:       Sum of numeric predictions
-    :param counts:          Amount of predictions that was summed
-    :return:
+    Parameters
+    ----------
+    numer_res
+        Sum of numeric predictions
+    counts: int
+        Number that indicates the amount of predictions summed
+
+    Returns
+    -------
+
     """
+
     nb_samples = numer_res[0].shape[0]
     nb_attribs = len(numer_res)
     predictions = init_predictions(nb_samples, nb_attribs)
@@ -219,15 +214,30 @@ def update_X(X, Y, act_att_idx):
     When we enumerate act_att_idx, the index gives us the corresponding
     column in Y, whereas the value tells us the corresponding column in X.
 
-    :param X:               Matrix X
-    :param Y:               Matrix Y
-    :param act_att_idx:     Attributes contained in Y
-    :return:
+    Parameters
+    ----------
+    X: np.ndarray, shape (nb_samples, nb_attributes_X)
+        Two-dimensional np.ndarray containing data
+    Y: np.ndarray, shape (nb_samples, nb_attributes_Y)
+        Two-dimensional np.ndarray containing data. It is crucial for Y to
+        contain less attributes than X
+    act_att_idx: np.ndarray, shape (nb_attributes_Y, )
+        Indices (in X) of the attributes contained in Y. X is assumed to contain
+        all attributes. As such, act_att_idx acts as a mapping of the attributes
+        of Y to the attributes in X.
+
+        E.g.:   act_att_idx = np.array([1,2,5]), this means that the attributes
+                with indices 1,2 and 5 in array X are contained in array Y.
+
+    Returns
+    -------
+
     """
+
     assert len(X.shape) == len(Y.shape) == 2
     assert X.shape[0] == Y.shape[0]
     assert X.shape[1] >= Y.shape[1]
-    assert Y.shape[1] == len(act_att_idx)
+    assert Y.shape[1] == act_att_idx.shape[0]
     assert X.shape[1] >= np.max(act_att_idx)
 
     for y_idx, attr_idx in enumerate(act_att_idx):
