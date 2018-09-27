@@ -6,7 +6,7 @@ from ..utils.classlabels import collect_and_verify_clf_classlabels
 from ..utils.metadata import collect_feature_importances
 
 from ..utils.debug import debug_print
-VERBOSITY = 0
+VERBOSITY = 1
 
 
 # Main methods
@@ -116,6 +116,12 @@ def update_query_settings(s, nb_atts, delimiter='_', **kwargs):
         # Check codes and if they do not comply replace by default
         codes = relevant_kwargs['codes']
 
+        msg = """
+        codes are: {}\n
+        type of codes is: {}\n
+        """.format(codes, type(codes))
+        debug_print(msg, V=VERBOSITY)
+
         if _verify_decent_query_codes(codes, nb_atts):
             # Our decency check ensures this conversion will work
             s['codes'] = np.array(codes)
@@ -133,7 +139,8 @@ def update_query_settings(s, nb_atts, delimiter='_', **kwargs):
         msg = """
                 In file:\t\t\t{}\n
                 I am reading a single query code, i.e.:\t{}\n
-                """.format(__file__, relevant_kwargs['code'])
+                Query code is of type: {}\n
+                """.format(__file__, relevant_kwargs['code'], type(relevant_kwargs['code']))
         debug_print(msg, V=VERBOSITY)
 
         codes = np.atleast_2d(relevant_kwargs['code'])
