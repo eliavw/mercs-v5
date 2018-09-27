@@ -143,17 +143,17 @@ class MERCS(object):
                                             self.m_codes,
                                             self.s['prediction'],
                                             self.s['metadata'],
-                                            self.s['queries']['codes'][q_idx])
+                                            self.s['queries']['codes'][[q_idx]])
 
         msg = """
         Predicting query id: \t{}\n
         Predicting query code: \t{}\n
-        """.format(q_idx, self.s['queries']['codes'][q_idx])
+        """.format(q_idx, self.s['queries']['codes'][[q_idx]])
         debug_print(msg, V=VERBOSITY)
 
         # 3. Inference
         X_query = perform_imputation(X,
-                                     self.s['queries']['codes'][q_idx],
+                                     self.s['queries']['codes'][[q_idx]],
                                      self.imputator)  # Generate X data_csv.
 
         Y = self.q_models[q_idx].predict(X_query)
@@ -189,10 +189,10 @@ class MERCS(object):
                                             self.m_codes,
                                             self.s['prediction'],
                                             self.s['metadata'],
-                                            self.s['queries']['codes'][q_idx])
+                                            self.s['queries']['codes'][[q_idx]])
         # 2. Inference
         X_query = perform_imputation(X,
-                                     self.s['queries']['codes'][q_idx],
+                                     self.s['queries']['codes'][[q_idx]],
                                      self.imputator)  # Generate X data_csv.
 
         Y_proba = self.q_models[q_idx].predict_proba(X_query)
