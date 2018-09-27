@@ -30,7 +30,7 @@ def test_init_predictions():
 def test_update_X():
     X = np.zeros((100, 4), dtype=np.float64)
     Y = np.random.rand(100, 2)
-    act_att_idx = [1, 2]
+    act_att_idx = np.array([1, 2])
 
     obs = update_X(X, Y, act_att_idx)
 
