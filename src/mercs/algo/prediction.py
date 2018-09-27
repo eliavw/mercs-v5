@@ -356,6 +356,31 @@ def rw_pred_algo(m_codes, q_codes, settings):
 
 
 # Helpers
+def _pred_prelims(m_codes, q_codes):
+    """
+    Extract some useful quantities every prediction strategy needs
+
+    Parameters
+    ----------
+    m_codes: np.ndarray, shape (nb_models, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a model of the MERCS
+        ensemble.
+    q_codes: np.ndarray, shape (nb_queries, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a query.
+
+    Returns
+    -------
+
+    """
+    nb_models, nb_atts = m_codes.shape
+    nb_queries = q_codes.shape[0]
+
+    m_desc, m_targ, _ = codes_to_query(m_codes)
+    q_desc, q_targ, _ = codes_to_query(q_codes)
+
+    return nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ
+
+
 def generate_chain(m_codes, q_desc, q_targ, settings):
     # Choose chain length
     assert isinstance(settings['its'], int)
@@ -555,31 +580,6 @@ def _ma_mafi_stopping_condition(mas, m_codes, q_targ):
     check = np.where(q_targ_attributes_in_selected_models == target_encoding)
     q_targ_ok = np.unique(check[1])
     return len(q_targ_ok) == len(q_targ)
-
-
-def _pred_prelims(m_codes, q_codes):
-    """
-    Extract some useful quantities every prediction strategy needs
-
-    Parameters
-    ----------
-    m_codes: np.ndarray, shape (nb_models, nb_atts)
-        Two-dimensional np.ndarray where each row encodes a model of the MERCS
-        ensemble.
-    q_codes: np.ndarray, shape (nb_queries, nb_atts)
-        Two-dimensional np.ndarray where each row encodes a query.
-
-    Returns
-    -------
-
-    """
-    nb_models, nb_atts = m_codes.shape
-    nb_queries = q_codes.shape[0]
-
-    m_desc, m_targ, _ = codes_to_query(m_codes)
-    q_desc, q_targ, _ = codes_to_query(q_codes)
-
-    return nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ
 
 
 def init_mas_aas(nb_models, nb_atts, nb_queries):

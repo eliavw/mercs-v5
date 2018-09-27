@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 
 
 def codes_to_query(codes, attributes=None):
@@ -19,6 +20,7 @@ def codes_to_query(codes, attributes=None):
     -------
 
     """
+
     assert isinstance(codes, np.ndarray)
     assert isinstance(attributes, (np.ndarray, type(None)))
 
@@ -29,7 +31,8 @@ def codes_to_query(codes, attributes=None):
     desc, targ, miss = [], [], []
 
     for c_idx in range(nb_codes):
-        c_desc, c_targ, c_miss = code_to_query(codes[c_idx], attributes)
+        code = codes[c_idx]
+        c_desc, c_targ, c_miss = code_to_query(code, attributes)
 
         desc.append(c_desc)
         targ.append(c_targ)
@@ -56,6 +59,7 @@ def code_to_query(code, attributes=None):
     -------
 
     """
+
     assert isinstance(code, np.ndarray)
     assert isinstance(attributes, (np.ndarray, type(None)))
 
@@ -64,16 +68,27 @@ def code_to_query(code, attributes=None):
         attributes = np.arange(nb_atts)
     assert code.shape == attributes.shape
 
-    desc_encoding = encode_attribute(0,[0],[1])
-    targ_encoding = encode_attribute(1,[0],[1])
-    miss_encoding = encode_attribute(2,[0],[1])
+    desc_encoding = encode_attribute(0, [0], [1])
+    targ_encoding = encode_attribute(1, [0], [1])
+    miss_encoding = encode_attribute(2, [0], [1])
 
-    desc = [x for i, x in enumerate(attributes)
-            if code[i] == desc_encoding]
-    targ = [x for i, x in enumerate(attributes)
-            if code[i] == targ_encoding]
-    miss = [x for i, x in enumerate(attributes)
-            if code[i] == miss_encoding]
+    desc, targ, miss = [], [], []
+
+    for i, x in enumerate(attributes):
+        if code[i] == desc_encoding:
+            desc.extend(x)
+        elif code[i] == targ_encoding:
+            targ.extend(x)
+        elif code[i] == miss_encoding:
+            miss.extend(x)
+        else:
+            msg = """
+            Did not recognize encoding: {}\n
+            This occured in code: {}\n
+            Ignoring this entry.
+            """.format(code[i], code)
+            warnings.warn(msg)
+
     return desc, targ, miss
 
 
