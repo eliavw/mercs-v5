@@ -4,7 +4,6 @@ import numpy as np
 import sys
 from os.path import dirname
 
-
 # Custom imports
 root_directory = dirname(dirname(dirname(dirname(__file__))))
 for dname in {'src'}:
@@ -179,7 +178,3 @@ def test_merge_proba():
         assert x.shape == (nb_samples, nb_classes)
 
     return
-
-
-
-

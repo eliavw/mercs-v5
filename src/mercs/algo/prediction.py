@@ -41,37 +41,21 @@ def mi_pred_algo(m_codes, q_codes):
     assert isinstance(q_codes, np.ndarray)
 
     # Preliminaries
-    nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
-                                                                                   q_codes)
-    mas, aas = _init_mas_aas_np(nb_models, nb_atts, nb_queries)
+    nb_mods, nb_atts, nb_qrys, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
+                                                                              q_codes)
+    mas, aas = _init_mas_aas_np(nb_mods, nb_atts, nb_qrys)
 
-    # Building codes
-    """
-    for q_idx, q_code in enumerate(q_codes):
-        
-        
-        
-        # Prelims
-        aas[q_idx, q_desc[q_idx]] = 0
-
-        # Model activation
-        relevant_models = np.where(m_codes[:, q_targ[q_idx]] == 1)[0]  # Models sharing target with queries
-        mas[q_idx, relevant_models] = 1
-
-        # Att. activation
-        aas[q_idx, q_targ[q_idx]] = 1  # Does not depend on model activation strategy
-    """
-    for q_idx in range(nb_queries):
-        aas[q_idx], mas[q_idx] = _mi_pred_algo_single_query(aas[q_idx],
-                                                            mas[q_idx],
-                                                            q_desc[q_idx],
-                                                            q_targ[q_idx],
-                                                            m_codes)
+    for q_idx in range(nb_qrys):
+        aas[q_idx], mas[q_idx] = _mi_pred_algo_single_qry(aas[q_idx],
+                                                          mas[q_idx],
+                                                          q_desc[q_idx],
+                                                          q_targ[q_idx],
+                                                          m_codes)
 
     return mas, aas
 
 
-def _mi_pred_algo_single_query(aas, mas, q_desc, q_targ, m_codes):
+def _mi_pred_algo_single_qry(aas, mas, q_desc, q_targ, m_codes):
     assert isinstance(aas, np.ndarray)
     assert isinstance(mas, np.ndarray)
 
@@ -400,6 +384,10 @@ def _pred_prelims(m_codes, q_codes):
     -------
 
     """
+
+    assert isinstance(m_codes, np.ndarray)
+    assert isinstance(q_codes, np.ndarray)
+
     nb_models, nb_atts = m_codes.shape
     nb_queries = q_codes.shape[0]
 

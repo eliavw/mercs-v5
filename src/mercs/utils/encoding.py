@@ -61,11 +61,11 @@ def code_to_query(code, attributes=None):
     """
 
     assert isinstance(code, np.ndarray)
-    assert isinstance(attributes, (np.ndarray, type(None)))
 
     nb_atts = code.shape[0]
     if attributes is None:
         attributes = np.arange(nb_atts)
+    assert isinstance(attributes, np.ndarray)
     assert code.shape == attributes.shape
 
     desc_encoding = encode_attribute(0, [0], [1])
@@ -92,15 +92,6 @@ def code_to_query(code, attributes=None):
     return desc, targ, miss
 
 
-def query_to_code(q_desc, q_targ, q_miss, atts=None):
-    if atts is None:
-        atts = determine_atts(q_desc, q_targ, q_miss)
-
-    code = [encode_attribute(a, q_desc, q_targ) for a in atts]
-
-    return code
-
-
 def queries_to_codes(q_desc, q_targ, q_miss, atts=None):
     assert len(q_desc) == len(q_targ) == len(q_miss)
     nb_queries = len(q_desc)
@@ -112,6 +103,15 @@ def queries_to_codes(q_desc, q_targ, q_miss, atts=None):
              for i in range(nb_queries)]
 
     return codes
+
+
+def query_to_code(q_desc, q_targ, q_miss, atts=None):
+    if atts is None:
+        atts = determine_atts(q_desc, q_targ, q_miss)
+
+    code = [encode_attribute(a, q_desc, q_targ) for a in atts]
+
+    return code
 
 
 def determine_atts(desc, targ, miss):
