@@ -137,10 +137,10 @@ def update_query_settings(s, nb_atts, delimiter='_', **kwargs):
     elif 'code' in relevant_kwargs:
         # Wrap single code in extra array for consistency
         msg = """
-                In file:\t\t\t{}\n
-                I am reading a single query code, i.e.:\t{}\n
-                Query code is of type: {}\n
-                """.format(__file__, relevant_kwargs['code'], type(relevant_kwargs['code']))
+        In file:\t\t\t{}\n
+        I am reading a single query code, i.e.:\t{}\n
+        Query code is of type: {}\n
+        """.format(__file__, relevant_kwargs['code'], type(relevant_kwargs['code']))
         debug_print(msg, V=VERBOSITY)
 
         codes = np.atleast_2d(relevant_kwargs['code'])

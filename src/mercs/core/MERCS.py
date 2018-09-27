@@ -143,7 +143,7 @@ class MERCS(object):
                                             self.m_codes,
                                             self.s['prediction'],
                                             self.s['metadata'],
-                                            q_code=self.s['queries']['codes'][q_idx])
+                                            self.s['queries']['codes'][q_idx])
 
         msg = """
         Predicting query id: \t{}\n
@@ -189,7 +189,7 @@ class MERCS(object):
                                             self.m_codes,
                                             self.s['prediction'],
                                             self.s['metadata'],
-                                            q_code=self.s['queries']['codes'][q_idx])
+                                            self.s['queries']['codes'][q_idx])
         # 2. Inference
         X_query = perform_imputation(X,
                                      self.s['queries']['codes'][q_idx],
@@ -217,7 +217,7 @@ class MERCS(object):
                                             self.m_codes,
                                             self.s['prediction'],
                                             self.s['metadata'],
-                                            q_codes=self.s['queries']['codes'])
+                                            self.s['queries']['codes'])
 
         # 2. Inference
         for q_idx in range(nb_queries):
@@ -480,7 +480,7 @@ class MERCS(object):
         return m_codes, m_list
 
     # 3. Prediction = Prepare Inference
-    def query_to_model(self, m_list, m_codes, settings, metadata, **kwargs):
+    def query_to_model(self, m_list, m_codes, settings, metadata, q_codes):
         """
         Convert a given queries to a model that answers exactly that queries.
 
@@ -494,22 +494,11 @@ class MERCS(object):
                 2. Nb_atts, Nb_queries, etc. This is all in the metadata!
         """
 
-        qry_keywords = kw_qry_codes()
-
         # Prelims
         # TODO: Make prediction methods handle settings more elegantly
         new_settings = {**settings,
                         'clf_labels':   metadata['clf_labels'],
                         'FI':           metadata['FI']}
-
-        for k in kwargs:
-            if k in qry_keywords['query_codes']:            # Multiple codes are OK
-                q_codes = kwargs[k]
-            elif k in qry_keywords['query_code']:           # Single code in array
-                q_codes = [kwargs[k]]
-            else:
-                raise ValueError("Did not recognize keyword."
-                                 "Allowed qry_keywords: {}".format(qry_keywords))
 
         # Actual work
         if new_settings['type'] == 'MI':

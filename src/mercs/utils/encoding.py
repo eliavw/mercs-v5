@@ -12,13 +12,6 @@ def codes_to_query(codes, atts=None):
     -------
 
     """
-    """
-    Change the codes-array to an actual queries, which are three arrays.
-
-    :param code:                Array that contains: 0-desc/1-target/-1-missing code for each attribute
-    :param atts:                Array that contains the attributes (indices)
-    :return: Three arrays.      One for desc atts indices, one for targets, one for missing
-    """
 
     if atts is None:
         atts = list(range(len(codes[0])))
@@ -53,9 +46,9 @@ def code_to_query(code, atts=None):
         atts = list(range(len(code)))
     assert len(code) == len(atts)
 
-    desc_encoding = encode_attribute(0,[0],[])
-    targ_encoding = encode_attribute(0,[],[0])
-    miss_encoding = encode_attribute(0,[],[])
+    desc_encoding = encode_attribute(0,[0],[1])
+    targ_encoding = encode_attribute(1,[0],[1])
+    miss_encoding = encode_attribute(2,[0],[1])
 
     desc = [x for i, x in enumerate(atts)
             if code[i] == desc_encoding]
