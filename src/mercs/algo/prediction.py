@@ -99,49 +99,71 @@ def ma_pred_algo(m_codes, q_codes, settings):
         activated.
     """
 
-    # Preliminaries
     initial_threshold = settings['param']
     step_size = settings['its']
     assert isinstance(initial_threshold, (int, float))
-    assert 0.0 < initial_threshold <= 1.0
     assert isinstance(step_size, float)
+    assert 0.0 < initial_threshold <= 1.0
     assert 0.0 < step_size < 1.0
 
-    nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
-                                                                                   q_codes)
-    mas, aas = _init_mas_aas(nb_models, nb_atts, nb_queries)
-
+    # Preliminaries
+    nb_models, nb_atts, nb_qrys, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
+                                                                                q_codes)
+    mas, aas = _init_mas_aas(nb_models, nb_atts, nb_qrys)
     thresholds = np.arange(initial_threshold, -1, -step_size)
 
+    msg = """
+    ma_pred_algo\n
+    initial thresholds:\t{}\n
+    step_size:\t{}\n
+    thresholds:\t {}\n
+    """.format(initial_threshold, step_size, thresholds)
+    debug_print(msg, V=VERBOSITY)
+
     # Building codes
-    for q_idx, q_code in enumerate(q_codes):
+    for q_idx in range(nb_qrys):
+        aas[q_idx], mas[q_idx] = _ma_pred_algo_single_qry(aas[q_idx],
+                                                          mas[q_idx],
+                                                          q_desc[q_idx],
+                                                          q_targ[q_idx],
+                                                          m_codes,
+                                                          m_desc,
+                                                          thresholds)
 
-        for t in q_targ[q_idx]:
-            msg = "This is t, the target which we consider: {}".format(t)
-            debug_print(msg, V=VERBOSITY, warn=True)
-
-            aas_target_t, mas_target_t = _ma_mas_aas(aas[q_idx],
-                                                     mas[q_idx],
-                                                     q_desc[q_idx],
-                                                     [t],
-                                                     m_codes,
-                                                     m_desc,
-                                                     thresholds)
-
-            msg = "This is mas_target_t: {}".format(mas_target_t)
-            debug_print(msg, V=VERBOSITY, warn=True)
-
-            mas[q_idx][mas_target_t > 0] = 1    # Each target selects some models
-            aas[q_idx] = aas_target_t           # This is unchanged.
-
-            msg = "This is mas[q_idx]: {}".format(mas[q_idx])
-            debug_print(msg, V=VERBOSITY, warn=True)
-
-    return np.array(mas), np.array(aas)
+    return mas, aas
 
 
-def _ma_pred_algo_single_qry():
-    return
+def _ma_pred_algo_single_qry(aas,
+                             mas,
+                             q_desc,
+                             q_targ,
+                             m_codes,
+                             m_desc,
+                             thresholds):
+
+    # For every target, we determine which models we need.
+    for t in q_targ:
+        msg = "This is t, the target which we consider: {}".format(t)
+        debug_print(msg, V=VERBOSITY, warn=True)
+
+        aas_target_t, mas_target_t = _ma_mas_aas(aas,
+                                                 mas,
+                                                 q_desc,
+                                                 [t],
+                                                 m_codes,
+                                                 m_desc,
+                                                 thresholds)
+
+        msg = "This is mas_target_t: {}".format(mas_target_t)
+        debug_print(msg, V=VERBOSITY, warn=True)
+
+        mas[mas_target_t > 0] = 1  # Each target selects some models
+        aas = aas_target_t  # This is unchanged.
+
+        msg = "This is mas[q_idx]: {}".format(mas)
+        debug_print(msg, V=VERBOSITY, warn=True)
+
+    return aas, mas
 
 
 def mafi_pred_algo(m_codes, q_codes, settings):
