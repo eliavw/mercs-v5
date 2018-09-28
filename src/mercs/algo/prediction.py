@@ -215,7 +215,7 @@ def _ma_pred_algo_single_qry(aas,
         # Initialization
         targ_encoding = encode_attribute(1,[0],[1])
         avl_atts_idx = q_desc
-        avl_mods_idx = np.where(m_codes[:, q_targ] == targ_encoding)[0]  # Models that share at least a single target with the query
+        avl_mods_idx = np.where(m_codes[:, q_targ] == targ_encoding)[0]  # Models sharing target attribute with query
 
         aas[avl_atts_idx] = 0
 
@@ -236,7 +236,8 @@ def _ma_pred_algo_single_qry(aas,
 
         step = 1
         for thr in thresholds:
-            mas = [step if mod_appr_scores[m_idx] > thr else v
+            mas = [step
+                   if mod_appr_scores[m_idx] > thr else v
                    for m_idx, v in enumerate(mas)]
 
             mas = np.array(mas, dtype=int)
