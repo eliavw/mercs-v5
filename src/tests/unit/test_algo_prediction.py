@@ -13,7 +13,7 @@ from mercs.algo.prediction import (mi_pred_algo,
                                    ma_pred_algo)
 
 
-def setup():
+def mi_setup():
     nb_mods, nb_atts = 3, 5
     nb_qrys = nb_atts # One query per attribute
 
@@ -27,8 +27,17 @@ def setup():
     return nb_mods, nb_atts, nb_qrys, m_codes, q_codes
 
 
+def ma_setup():
+    nb_mods, nb_atts, nb_qrys, m_codes, q_codes = mi_setup()
+
+    settings = {'param':    0.95,
+                'its':      0.1}
+
+    return nb_mods, nb_atts, nb_qrys, m_codes, q_codes, settings
+
+
 def test_mi_pred_algo():
-    nb_mods, nb_atts, nb_qrys, m_codes, q_codes = setup()
+    nb_mods, nb_atts, nb_qrys, m_codes, q_codes = mi_setup()
 
     mas, aas = mi_pred_algo(m_codes, q_codes)
 
@@ -45,9 +54,9 @@ def test_mi_pred_algo():
 
 
 def test_ma_pred_algo():
-    nb_mods, nb_atts, nb_qrys, m_codes, q_codes = setup()
+    nb_mods, nb_atts, nb_qrys, m_codes, q_codes, settings = ma_setup()
 
-    mas, aas = ma_pred_algo(m_codes, q_codes)
+    mas, aas = ma_pred_algo(m_codes, q_codes, settings)
 
     assert isinstance(mas, np.ndarray)
     assert isinstance(aas, np.ndarray)
