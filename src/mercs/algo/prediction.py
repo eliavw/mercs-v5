@@ -138,7 +138,7 @@ def ma_pred_algo(m_codes, q_codes, settings):
     # Preliminaries
     nb_models, nb_atts, nb_qrys, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
                                                                                 q_codes)
-    mas, aas = _init_mas_aas(nb_models, nb_atts, nb_qrys)
+    mas, aas = _init_mas_aas_np(nb_models, nb_atts, nb_qrys)
     thresholds = np.arange(initial_threshold, -1, -step_size)
 
     msg = """
@@ -762,6 +762,9 @@ def _init_mas_aas_np(nb_models, nb_atts, nb_queries):
     mas = np.full((nb_queries, nb_models), 0, dtype=np.int)
     aas = np.full((nb_queries, nb_atts), -1, dtype=np.int)
     return mas, aas
+
+
+
 
 
 def prune_strat(m_codes, q_code, mas, aas):
