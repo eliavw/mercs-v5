@@ -45,7 +45,7 @@ def mi_pred_algo(m_codes, q_codes):
     # Preliminaries
     nb_mods, nb_atts, nb_qrys, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
                                                                               q_codes)
-    mas, aas = _init_mas_aas_np(nb_mods, nb_atts, nb_qrys)
+    mas, aas = _init_mas_aas_new(nb_mods, nb_atts, nb_qrys)
 
     for q_idx in range(nb_qrys):
         aas[q_idx], mas[q_idx] = _mi_pred_algo_single_qry(aas[q_idx],
