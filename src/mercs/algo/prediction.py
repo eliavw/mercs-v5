@@ -39,6 +39,7 @@ def mi_pred_algo(m_codes, q_codes):
 
     assert isinstance(m_codes, np.ndarray)
     assert isinstance(q_codes, np.ndarray)
+    assert m_codes.shape[1] == q_codes.shape[1]
 
     # Preliminaries
     nb_mods, nb_atts, nb_qrys, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
@@ -137,6 +138,10 @@ def ma_pred_algo(m_codes, q_codes, settings):
             debug_print(msg, V=VERBOSITY, warn=True)
 
     return np.array(mas), np.array(aas)
+
+
+def _ma_pred_algo_single_qry():
+    return
 
 
 def mafi_pred_algo(m_codes, q_codes, settings):

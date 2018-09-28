@@ -482,23 +482,47 @@ class MERCS(object):
     # 3. Prediction = Prepare Inference
     def query_to_model(self, m_list, m_codes, settings, metadata, q_codes):
         """
-        Convert a given queries to a model that answers exactly that queries.
+        Convert query codes to query models.
 
-            1. Convert the queries to a Model Activation Strategy (MAS) and a Attribute Activation Strategy (AAS)
-            2. Convert the MAS, AAS to a model
+        A query model is a composite model that exactly answers its
+        corresponding query.
 
-        :return:
+        This happens in two steps:
+            1. From each query, derive a Model Activation Strategy (MAS) and a
+            Attribute Activation Strategy (AAS). The first encodes when to use
+            a particular model, whereas the latter encodes when to predict a
+            particular attribute
 
-        TODO(elia): Optimize this. Both the prediction functions and the model builder to many things the same time, e.g.:
-                1. Converting queries codes and model codes
-                2. Nb_atts, Nb_queries, etc. This is all in the metadata!
+            2. Convert MAS and AAS to a query-specific composite model.
+
+        Parameters
+        ----------
+        m_list: list, shape (nb_models,)
+            List of component models of this MERCS model
+        m_codes: np.ndarray, shape (nb_models, nb_attributes)
+            Two-dimensional numpy array that encodes all the component models.
+            Encoding means that each component model, i, is associated with a
+            code, m_codes[i, :] = code_i. Each entry, j, of that code is
+            associated with an attribute, an tells us which role that attribute
+            plays in model i.
+        settings: dict
+            Dictionary of all the settings of the MERCS model
+        metadata dict
+            Dictionary of all the metadata of the MERCS model
+        q_codes np.ndarray, shape (nb_queries, nb_attributes)
+            Two-dimensional numpy array that encodes all the queries.
+            Each entry encodes the role of an attribute in the query.
+
+        Returns
+        -------
+
         """
+        # TODO: Optimize this! Many things are unnecessarily re-derived
 
         # Prelims
-        # TODO: Make prediction methods handle settings more elegantly
         new_settings = {**settings,
                         'clf_labels':   metadata['clf_labels'],
-                        'FI':           metadata['FI']}
+                        'FI':           metadata['FI']} # TODO(elia): This is crap!
 
         # Actual work
         if new_settings['type'] == 'MI':
