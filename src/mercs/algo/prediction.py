@@ -57,6 +57,34 @@ def mi_pred_algo(m_codes, q_codes):
 
 
 def _mi_pred_algo_single_qry(aas, mas, q_desc, q_targ, m_codes):
+    """
+    MI-prediction algorithm for a single query
+
+    Parameters
+    ----------
+    aas: np.ndarray, shape (nb_attributes,)
+        Attribute Activation Strategy for a single query.
+    aas: np.ndarray, shape (nb_models,)
+        Model Activation Strategy for a single query.
+    q_desc: list, shape (nb_descriptive_atts_query, )
+        List of the indices of the descriptive attributes of this query
+    q_targ: list, shape (nb_target_atts_query)
+        List of the indices of the target attributes of this query
+    m_codes: np.ndarray, shape (nb_models, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a model of the MERCS
+        ensemble.
+
+    Returns
+    -------
+    aas: np.ndarray, shape (nb_atts, )
+        Attribute Activation Strategy for single query.
+        One-dimensional np.ndarray, where an entry i encodes at which step
+        attribute i may be activated.
+    mas: np.ndarray, shape (nb_models)
+        Model Activation Strategy for single query.
+        One-dimensional np.ndarray, where an entry j encodes at which step
+        model j may be activated.
+    """
     assert isinstance(aas, np.ndarray)
     assert isinstance(mas, np.ndarray)
 
@@ -89,14 +117,15 @@ def ma_pred_algo(m_codes, q_codes, settings):
     Returns
     -------
     mas: np.ndarray, shape (nb_queries, nb_models)
-        Model Activation Strategy. Two-dimensional np.ndarray where row i
-        encodes the model activation strategy for a query i. Each entry in such
-        a row refers to a certain model, and encodes when it may be activated.
+        Model Activation Strategy.
+        Two-dimensional np.ndarray where row i encodes the model activation
+        strategy for a query i. Each entry in such a row refers to a certain
+        model, and encodes at which step it may be activated.
     aas: np.ndarray, shape (nb_queries, nb_atts)
-        Attribute Activation Strategy. Two-dimensional np.ndarray where row i
-        encodes the attribute activation strategy for a query i. Each entry in
-        such a row refers to a certain attribute, and encodes when it may be
-        activated.
+        Attribute Activation Strategy.
+        Two-dimensional np.ndarray where row i encodes the attribute activation
+        strategy for a query i. Each entry in such a row refers to a certain
+        attribute, and encodes at which step it may be activated.
     """
 
     initial_threshold = settings['param']
@@ -140,6 +169,39 @@ def _ma_pred_algo_single_qry(aas,
                              m_codes,
                              m_desc,
                              thresholds):
+    """
+    MA-prediction algorithm for a single query
+
+    Parameters
+    ----------
+    aas: np.ndarray, shape (nb_attributes,)
+        Attribute Activation Strategy for a single query.
+    aas: np.ndarray, shape (nb_models,)
+        Model Activation Strategy for a single query.
+    q_desc: list, shape (nb_descriptive_atts_query, )
+        List of the indices of the descriptive attributes of this query
+    q_targ: list, shape (nb_target_atts_query)
+        List of the indices of the target attributes of this query
+    m_codes: np.ndarray, shape (nb_models, nb_atts)
+        Two-dimensional np.ndarray where each row encodes a model of the MERCS
+        ensemble.
+    m_desc: list, shape (nb_models, nb_desc_atts_model)
+        List of lists. An entry i is the list of the indices of descriptive
+        attributes of model i.
+    thresholds: np.ndarray, shape (nb_steps, )
+        Array of all the threshold values we might explore.
+
+    Returns
+    -------
+    aas: np.ndarray, shape (nb_atts, )
+        Attribute Activation Strategy for single query.
+        One-dimensional np.ndarray, where an entry i encodes at which step
+        attribute i may be activated.
+    mas: np.ndarray, shape (nb_models)
+        Model Activation Strategy for single query.
+        One-dimensional np.ndarray, where an entry j encodes at which step
+        model j may be activated.
+    """
 
     # For every target, we determine which models we need.
     for t in q_targ:
@@ -191,14 +253,14 @@ def mafi_pred_algo(m_codes, q_codes, settings):
 
     """
 
-    # Preliminaries
     initial_threshold = settings['param']
     step_size = settings['its']
     assert isinstance(initial_threshold, (int, float))
-    assert 0.0 < initial_threshold <= 1.0
     assert isinstance(step_size, float)
+    assert 0.0 < initial_threshold <= 1.0
     assert 0.0 < step_size < 1.0
 
+    # Preliminaries
     nb_models, nb_atts, nb_queries, m_desc, m_targ, q_desc, q_targ = _pred_prelims(m_codes,
                                                                                    q_codes)
     mas, aas = _init_mas_aas(nb_models, nb_atts, nb_queries)
