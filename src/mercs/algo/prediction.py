@@ -39,6 +39,7 @@ def mi_pred_algo(m_codes, q_codes):
 
     assert isinstance(m_codes, np.ndarray)
     assert isinstance(q_codes, np.ndarray)
+    assert len(m_codes.shape) == len(q_codes.shape) == 2
     assert m_codes.shape[1] == q_codes.shape[1]
 
     # Preliminaries
@@ -88,11 +89,13 @@ def _mi_pred_algo_single_qry(aas, mas, q_desc, q_targ, m_codes):
     assert isinstance(aas, np.ndarray)
     assert isinstance(mas, np.ndarray)
     assert len(mas.shape) == len(aas.shape) == 1
-    # Prelims
+
+    # Initialization
     aas[q_desc] = 0
 
     # Model activation
-    relevant_models = np.where(m_codes[:, q_targ] == 1)[0]  # Models sharing target with queries
+    targ_encoding = encode_attribute(1, [0], [1])
+    relevant_models = np.where(m_codes[:, q_targ] == targ_encoding)[0]  # Models sharing target with queries
     mas[relevant_models] = 1
 
     # Att. activation
@@ -221,6 +224,7 @@ def _ma_pred_algo_single_qry(aas,
 
         # Convert to binary arrays
         avl_atts = aas > -1
+        avl_mods = mas > 0
 
         # Att. activation
         aas[q_targ] = 1
@@ -244,8 +248,7 @@ def _ma_pred_algo_single_qry(aas,
 
             if _ma_mafi_stopping_condition(mas, m_codes, q_targ):
                 break
-
-    # Multi-target case
+    # Multi-target case: recursive call for each target
     elif len(q_targ) > 1:
         for t in q_targ:
             aas_single_t, mas_single_t = _ma_pred_algo_single_qry(aas,
@@ -671,6 +674,7 @@ def _mafi_mas_aas(aas, mas, q_desc, q_targ, m_codes, FI, thresholds):
 
 def _ma_mafi_stopping_condition(mas, m_codes, q_targ):
     """
+    Stopping criterion
 
     First, we generate q_targ_attributes_in_selected_models,
     which is a subset of m_codes. Containing only those models who are
@@ -687,6 +691,7 @@ def _ma_mafi_stopping_condition(mas, m_codes, q_targ):
     -------
 
     """
+
     q_targ_attributes_in_selected_models = m_codes[mas == 1, :][:, q_targ]
 
     target_encoding = encode_attribute(1, [0], [1])
@@ -759,12 +764,9 @@ def _init_mas_aas_np(nb_models, nb_atts, nb_queries):
     assert isinstance(nb_atts, int)
     assert isinstance(nb_queries, int)
 
-    mas = np.full((nb_queries, nb_models), 0, dtype=np.int)
+    mas = np.full((nb_queries, nb_models), -1, dtype=np.int)
     aas = np.full((nb_queries, nb_atts), -1, dtype=np.int)
     return mas, aas
-
-
-
 
 
 def prune_strat(m_codes, q_code, mas, aas):
@@ -871,3 +873,60 @@ def pick_random_models_from_appr_score(mod_appr_scores, n=1):
         mod_appr_scores = [1 / len(mod_appr_scores) for i in mod_appr_scores]
 
     return np.random.multinomial(n, mod_appr_scores, size=1)[0]
+
+# Fresh start
+def mi_pred_new(m_codes, q_codes):
+    assert isinstance(m_codes, np.ndarray)
+    assert isinstance(q_codes, np.ndarray)
+    assert len(m_codes.shape) == len(q_codes.shape) == 2
+    assert m_codes.shape[1] == q_codes.shape[1]
+
+    # Preliminaries
+    nb_mods, nb_atts, nb_qrys = _extract_global_numbers(m_codes, q_codes)
+    q_desc, q_targ, _ = codes_to_query(q_codes)
+
+
+
+    return mas, aas
+
+
+def _extract_global_numbers(m_codes, q_codes):
+    nb_mods, nb_atts = m_codes.shape
+    nb_qrys = q_codes.shape[0]
+    return nb_mods, nb_atts, nb_qrys
+
+
+def _init_mas_aas_new(nb_models, nb_atts, nb_queries):
+    """
+    Initialize the mas and aas arrays.
+
+    Difference with the above is that this outputs full numpy arrays.
+
+    Parameters
+    ----------
+    nb_models: int
+        Total number of models in the MERCS model
+    nb_atts: int
+        Total number of attributes in the MERCS model
+    nb_queries: int
+        Total number of queries that needs to be answered.
+
+    Returns
+    -------
+    mas: np.ndarray, shape (nb_queries, nb_models)
+        E.g.:
+            np.array([[0,0,0],
+                      [0,0,0]])
+    aas: np.ndarray, shape (nb_queries, nb_atts)
+        E.g.:
+            np.array([[-1,-1,-1,-1],
+                      [-1,-1,-1,-1]])
+    """
+
+    assert isinstance(nb_models, int)
+    assert isinstance(nb_atts, int)
+    assert isinstance(nb_queries, int)
+
+    mas = np.full((nb_queries, nb_models), -1, dtype=np.int)
+    aas = np.full((nb_queries, nb_atts), -1, dtype=np.int)
+    return mas, aas
