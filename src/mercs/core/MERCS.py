@@ -4,7 +4,11 @@ from sklearn.preprocessing import Imputer
 from timeit import default_timer
 
 from ..algo.induction import base_ind_algo
-from ..algo.prediction import *
+from ..algo.prediction import (mi_pred_algo,
+                               ma_pred_algo,
+                               mafi_pred_algo,
+                               it_pred_algo,
+                               rw_pred_algo)
 from ..algo.selection import *
 from ..io.io import save_output_data
 from ..models.PolyModel import *

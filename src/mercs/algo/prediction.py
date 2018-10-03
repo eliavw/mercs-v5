@@ -260,8 +260,8 @@ def _ma_pred_algo_single_qry(aas,
                                                                   thresholds)
 
             mas[mas_single_t > 0] = 1   # Each target selects some models
-
-        aas = aas_single_t              # This is the same for each target t
+            # TODO: I DO NOT THINK THIS IS OK
+            aas = aas_single_t          # This is the same for each target t
     else:
         msg = """
         q_targ: {}\n
@@ -874,6 +874,7 @@ def pick_random_models_from_appr_score(mod_appr_scores, n=1):
 
     return np.random.multinomial(n, mod_appr_scores, size=1)[0]
 
+
 # Fresh start
 def mi_pred_new(m_codes, q_codes):
     assert isinstance(m_codes, np.ndarray)
@@ -885,11 +886,99 @@ def mi_pred_new(m_codes, q_codes):
     nb_mods, nb_atts, nb_qrys = _extract_global_numbers(m_codes, q_codes)
     q_desc, q_targ, _ = codes_to_query(q_codes)
 
+    mas, aas = _init_mas_aas_new(nb_mods, nb_atts, nb_qrys)
 
+    for q_idx in range(nb_qrys):
+        mas[q_idx], aas[q_idx] = _mi_pred_qry(mas[q_idx],
+                                              aas[q_idx],
+                                              q_desc[q_idx],
+                                              q_targ[q_idx],
+                                              m_codes)
+        pass
 
     return mas, aas
 
 
+def _mi_pred_qry(mas, aas, q_desc, q_targ, m_codes):
+
+    steps = list(range(1,2))
+
+    # Zero-step
+    aas[q_desc] = 0
+
+    for n in steps:
+        # Collect available atts/mods
+        avl_atts = _available_atts(aas, n)
+        avl_mods = _available_mods(mas)
+
+        avl_m_codes = m_codes[avl_mods]
+
+        # Activate atts/mods
+        act_atts = _active_atts(q_targ)
+        act_mods = _active_mods(avl_atts, act_atts, avl_mods, avl_m_codes)
+
+        aas[act_atts] = 1
+        mas[act_mods] = 1
+
+    return mas, aas
+
+
+def _available_atts(aas, step):
+    """
+    Available attributes were 'active' in a previous step.
+
+    I.e.:
+
+    aas == 0:
+        Attribute was always available, i.e., descriptive attribute
+        of the query.
+    1 <= aas < step:
+        Attribute was activated in a previous step of the prediction
+        algorithm, and thus available
+
+    Parameters
+    ----------
+    aas
+    step
+
+    Returns
+    -------
+
+    """
+    return np.where((0 <= aas) & (aas < step))[0]
+
+
+def _available_mods(mas):
+    """
+    Available models are models that have not been 'active' before
+
+    Parameters
+    ----------
+    mas
+    step
+
+    Returns
+    -------
+
+    """
+    return np.where(mas == -1)[0]
+
+
+def _active_atts(q_targ):
+    return np.array(q_targ)
+
+
+def _active_mods(avl_atts, act_atts, avl_mods, avl_m_codes):
+    assert avl_m_codes.shape[0] == avl_mods.shape[0]
+    targ_encoding = encode_attribute(1, [0], [1])
+
+    act_mods_idx = np.where(avl_m_codes[:, act_atts] == targ_encoding)[0]
+    act_mods = avl_mods[act_mods_idx]
+
+    return act_mods
+
+
+# Initial things
 def _extract_global_numbers(m_codes, q_codes):
     nb_mods, nb_atts = m_codes.shape
     nb_qrys = q_codes.shape[0]
