@@ -46,7 +46,61 @@ def _mi_pred_qry(mas, aas, q_desc, q_targ, m_codes):
 
         # Activate atts/mods
         act_atts = _active_atts(q_targ)
-        act_mods = _active_mods(avl_atts, act_atts, avl_mods, avl_m_codes)
+        act_mods = _active_mods_mi(avl_atts, act_atts, avl_mods, avl_m_codes)
+
+        aas[act_atts] = 1
+        mas[act_mods] = 1
+
+    return mas, aas
+
+
+# MA-pred
+def ma_pred_algo(m_codes, q_codes):
+    assert isinstance(m_codes, np.ndarray)
+    assert isinstance(q_codes, np.ndarray)
+    assert len(m_codes.shape) == len(q_codes.shape) == 2
+    assert m_codes.shape[1] == q_codes.shape[1]
+
+    # Preliminaries
+    nb_mods, nb_atts, nb_qrys = _extract_global_numbers(m_codes, q_codes)
+    q_desc, q_targ, _ = codes_to_query(q_codes)
+    m_desc, m_targ, _ = codes_to_query(q_codes)
+
+    mas, aas = _init_mas_aas(nb_mods, nb_atts, nb_qrys)
+
+    for q_idx in range(nb_qrys):
+        mas[q_idx], aas[q_idx] = _ma_pred_qry(mas[q_idx],
+                                              aas[q_idx],
+                                              q_desc[q_idx],
+                                              q_targ[q_idx],
+                                              m_desc,
+                                              m_codes)
+        pass
+
+    return mas, aas
+
+
+def _ma_pred_qry(mas, aas, q_desc, q_targ, m_desc, m_codes):
+
+    steps = list(range(1,2))
+
+    # Zero-step
+    aas[q_desc] = 0
+
+    mas_mi, _ = _mi_pred_qry(mas, aas, q_desc, q_targ, m_codes)
+    mas[mas_mi == -1] = 0
+    mas[mas_mi == 1] = -1
+
+    for n in steps:
+        # Collect available atts/mods
+        avl_atts = _available_atts(aas, n)
+        avl_mods = _available_mods(mas)
+
+        avl_m_codes = m_codes[avl_mods]
+
+        # Activate atts/mods
+        act_atts = _active_atts(q_targ)
+        act_mods = _active_mods_mi(avl_atts, act_atts, avl_mods, avl_m_codes)
 
         aas[act_atts] = 1
         mas[act_mods] = 1
@@ -100,14 +154,43 @@ def _active_atts(q_targ):
     return np.array(q_targ)
 
 
-def _active_mods(avl_atts, act_atts, avl_mods, avl_m_codes):
+def _active_mods_mi(avl_atts, act_atts, avl_mods, avl_m_codes):
     assert avl_m_codes.shape[0] == avl_mods.shape[0]
     targ_encoding = encode_attribute(1, [0], [1])
 
-    act_mods_idx = np.where(avl_m_codes[:, act_atts] == targ_encoding)[0]
+    avl_mods_appr_scores = np.zeros(avl_mods.shape[0])
+    for m_idx, m_code in avl_m_codes:
+        avl_mods_appr_scores[m_idx] = np.sum(m_code[act_atts] == targ_encoding)
+
+    act_mods_idx = np.where(avl_mods_appr_scores >= 1.0)[0]
     act_mods = avl_mods[act_mods_idx]
 
     return act_mods
+
+
+def _active_mods_ma(avl_atts, act_atts, avl_mods, avl_m_codes):
+    assert avl_m_codes.shape[0] == avl_mods.shape[0]
+    desc_encoding = encode_attribute(0, [0], [1])
+
+    act_mods_idx = np.where(avl_m_codes[:, avl_atts] == desc_encoding)[0]
+    act_mods_idx, act_mods_overlap_avl_desc_atts_count = np.unique(act_mods_idx,
+                                                                   return_counts=True)
+
+    act_m_codes = avl_m_codes[act_mods_idx, :]
+    _, act_mods_desc_atts_count = np.unique(np.where(act_m_codes[:, :] == desc_encoding)[0],
+                                            return_counts=True)
+
+    assert act_mods_overlap_avl_desc_atts_count.shape[0] == act_mods_desc_atts_count.shape[0]
+
+    act_mods_appr_score = act_mods_overlap_avl_desc_atts_count/act_mods_desc_atts_count
+
+
+    act_mods = avl_mods[act_mods_idx]
+
+    return act_mods
+
+
+
 
 
 # Initialize
