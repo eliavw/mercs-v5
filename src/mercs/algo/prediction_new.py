@@ -32,7 +32,7 @@ def mi_pred_algo(m_codes, q_codes):
 
 def _mi_pred_qry(mas, aas, q_desc, q_targ, m_codes):
 
-    steps = list(range(1,2))
+    steps = [1]
 
     # Zero-step
     aas[q_desc] = 0
@@ -48,8 +48,8 @@ def _mi_pred_qry(mas, aas, q_desc, q_targ, m_codes):
         act_atts = _active_atts(q_targ)
         act_mods = _active_mods_mi(avl_atts, act_atts, avl_mods, avl_m_codes)
 
-        aas[act_atts] = 1
-        mas[act_mods] = 1
+        aas[act_atts] = n
+        mas[act_mods] = n
 
     return mas, aas
 
@@ -90,7 +90,7 @@ def ma_pred_algo(m_codes, q_codes, settings):
 
 def _ma_pred_qry(mas, aas, q_desc, q_targ, m_codes, thresholds):
 
-    steps = list(range(1,2))
+    steps = [1]
 
     # Zero-step
     aas[q_desc] = 0
@@ -108,14 +108,16 @@ def _ma_pred_qry(mas, aas, q_desc, q_targ, m_codes, thresholds):
 
         # Activate atts/mods
         act_atts = _active_atts(q_targ)
-        act_mods = _active_mods_ma(avl_atts,
-                                   act_atts,
-                                   avl_mods,
-                                   avl_m_codes,
-                                   thresholds)
+        aas[act_atts] = n
 
-        aas[act_atts] = 1
-        mas[act_mods] = 1
+        for att in act_atts:
+            single_act_att = [att]
+            act_mods = _active_mods_ma(avl_atts,
+                                       single_act_att,
+                                       avl_mods,
+                                       avl_m_codes,
+                                       thresholds)
+            mas[act_mods] = n
 
     return mas, aas
 
@@ -203,13 +205,14 @@ def _active_mods_ma(avl_atts, act_atts, avl_mods, avl_m_codes, thresholds):
         if _assert_all_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
             break
 
-    assert act_mods_idx.shape[0] > 0
     act_mods = avl_mods[act_mods_idx]
 
     return act_mods
 
 
+# Assert solution
 def _assert_all_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
+    assert act_mods_idx.shape[0] > 0
     target_encoding = encode_attribute(1, [0], [1])
 
     filtered_m_codes = avl_m_codes[act_mods_idx, act_atts]
