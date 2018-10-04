@@ -25,7 +25,6 @@ def mi_pred_algo(m_codes, q_codes):
                                               q_desc[q_idx],
                                               q_targ[q_idx],
                                               m_codes)
-        pass
 
     return mas, aas
 
@@ -122,6 +121,78 @@ def _ma_pred_qry(mas, aas, q_desc, q_targ, m_codes, thresholds):
     return mas, aas
 
 
+# MAFI-pred
+def mafi_pred_algo(m_codes, q_codes, settings):
+    assert isinstance(m_codes, np.ndarray)
+    assert isinstance(q_codes, np.ndarray)
+    assert len(m_codes.shape) == len(q_codes.shape) == 2
+    assert m_codes.shape[1] == q_codes.shape[1]
+
+    initial_threshold = settings['param']
+    step_size = settings['its']
+    assert isinstance(initial_threshold, (int, float))
+    assert isinstance(step_size, float)
+    assert 0.0 < initial_threshold <= 1.0
+    assert 0.0 < step_size < 1.0
+
+    feature_importances = settings['FI']
+
+    # Preliminaries
+    nb_mods, nb_atts, nb_qrys = _extract_global_numbers(m_codes, q_codes)
+    q_desc, q_targ, _ = codes_to_query(q_codes)
+
+    thresholds = np.arange(initial_threshold, -1, -step_size)
+
+    mas, aas = _init_mas_aas(nb_mods, nb_atts, nb_qrys)
+
+    for q_idx in range(nb_qrys):
+        mas[q_idx], aas[q_idx] = _mafi_pred_qry(mas[q_idx],
+                                                aas[q_idx],
+                                                q_desc[q_idx],
+                                                q_targ[q_idx],
+                                                m_codes,
+                                                thresholds,
+                                                feature_importances)
+
+    return mas, aas
+
+
+def _mafi_pred_qry(mas, aas, q_desc, q_targ, m_codes, thresholds, feature_importances):
+
+    steps = [1]
+
+    # Zero-step
+    aas[q_desc] = 0
+
+    mas_mi, _ = _mi_pred_qry(mas, aas, q_desc, q_targ, m_codes)
+    mas[mas_mi == -1] = 0
+    mas[mas_mi == 1] = -1
+
+    for n in steps:
+        # Collect available atts/mods
+        avl_atts = _available_atts(aas, n)
+        avl_mods = _available_mods(mas)
+
+        avl_m_codes = m_codes[avl_mods]
+        avl_f_imprt = feature_importances[avl_mods]
+
+        # Activate atts/mods
+        act_atts = _active_atts(q_targ)
+        aas[act_atts] = n
+
+        for att in act_atts:
+            single_act_att = [att]
+            act_mods = _active_mods_mafi(avl_atts,
+                                         single_act_att,
+                                         avl_mods,
+                                         avl_m_codes,
+                                         thresholds,
+                                         avl_f_imprt)
+            mas[act_mods] = n
+
+    return mas, aas
+
+
 # Four steps
 def _available_atts(aas, step):
     """
@@ -197,6 +268,31 @@ def _active_mods_ma(avl_atts, act_atts, avl_mods, avl_m_codes, thresholds):
         total_count_desc_atts = np.sum(m_code[:] == desc_encoding)
 
         avl_mods_appr_scores[m_idx] = overlap_avl_desc_atts/total_count_desc_atts
+
+    # Activate models with sufficiently high appropriateness scores
+    for threshold in thresholds:
+        act_mods_idx = np.where(avl_mods_appr_scores >= threshold)[0]
+
+        if _assert_all_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
+            break
+
+    act_mods = avl_mods[act_mods_idx]
+
+    return act_mods
+
+
+def _active_mods_mafi(avl_atts,
+                      act_atts,
+                      avl_mods,
+                      avl_m_codes,
+                      thresholds,
+                      avl_f_imprt):
+    assert avl_m_codes.shape[0] == avl_f_imprt.shape[0] == avl_mods.shape[0]
+
+    # Calculate appropriateness scores for all available models
+    avl_mods_appr_scores = np.zeros(avl_mods.shape[0])
+    for m_idx, m_code in avl_m_codes:
+        avl_mods_appr_scores[m_idx] = np.sum(avl_f_imprt[avl_atts])
 
     # Activate models with sufficiently high appropriateness scores
     for threshold in thresholds:
