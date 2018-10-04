@@ -55,16 +55,24 @@ def _mi_pred_qry(mas, aas, q_desc, q_targ, m_codes):
 
 
 # MA-pred
-def ma_pred_algo(m_codes, q_codes):
+def ma_pred_algo(m_codes, q_codes, settings):
     assert isinstance(m_codes, np.ndarray)
     assert isinstance(q_codes, np.ndarray)
     assert len(m_codes.shape) == len(q_codes.shape) == 2
     assert m_codes.shape[1] == q_codes.shape[1]
 
+    initial_threshold = settings['param']
+    step_size = settings['its']
+    assert isinstance(initial_threshold, (int, float))
+    assert isinstance(step_size, float)
+    assert 0.0 < initial_threshold <= 1.0
+    assert 0.0 < step_size < 1.0
+
     # Preliminaries
     nb_mods, nb_atts, nb_qrys = _extract_global_numbers(m_codes, q_codes)
     q_desc, q_targ, _ = codes_to_query(q_codes)
-    m_desc, m_targ, _ = codes_to_query(q_codes)
+
+    thresholds = np.arange(initial_threshold, -1, -step_size)
 
     mas, aas = _init_mas_aas(nb_mods, nb_atts, nb_qrys)
 
@@ -73,14 +81,14 @@ def ma_pred_algo(m_codes, q_codes):
                                               aas[q_idx],
                                               q_desc[q_idx],
                                               q_targ[q_idx],
-                                              m_desc,
-                                              m_codes)
+                                              m_codes,
+                                              thresholds)
         pass
 
     return mas, aas
 
 
-def _ma_pred_qry(mas, aas, q_desc, q_targ, m_desc, m_codes):
+def _ma_pred_qry(mas, aas, q_desc, q_targ, m_codes, thresholds):
 
     steps = list(range(1,2))
 
@@ -100,7 +108,11 @@ def _ma_pred_qry(mas, aas, q_desc, q_targ, m_desc, m_codes):
 
         # Activate atts/mods
         act_atts = _active_atts(q_targ)
-        act_mods = _active_mods_mi(avl_atts, act_atts, avl_mods, avl_m_codes)
+        act_mods = _active_mods_ma(avl_atts,
+                                   act_atts,
+                                   avl_mods,
+                                   avl_m_codes,
+                                   thresholds)
 
         aas[act_atts] = 1
         mas[act_mods] = 1
@@ -158,39 +170,53 @@ def _active_mods_mi(avl_atts, act_atts, avl_mods, avl_m_codes):
     assert avl_m_codes.shape[0] == avl_mods.shape[0]
     targ_encoding = encode_attribute(1, [0], [1])
 
+    # Calculate appropriateness scores for all available models
     avl_mods_appr_scores = np.zeros(avl_mods.shape[0])
     for m_idx, m_code in avl_m_codes:
         avl_mods_appr_scores[m_idx] = np.sum(m_code[act_atts] == targ_encoding)
 
+    # Activate models with sufficiently high appropriateness scores
     act_mods_idx = np.where(avl_mods_appr_scores >= 1.0)[0]
+
+    assert _assert_all_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts)
     act_mods = avl_mods[act_mods_idx]
 
     return act_mods
 
 
-def _active_mods_ma(avl_atts, act_atts, avl_mods, avl_m_codes):
+def _active_mods_ma(avl_atts, act_atts, avl_mods, avl_m_codes, thresholds):
     assert avl_m_codes.shape[0] == avl_mods.shape[0]
     desc_encoding = encode_attribute(0, [0], [1])
 
-    act_mods_idx = np.where(avl_m_codes[:, avl_atts] == desc_encoding)[0]
-    act_mods_idx, act_mods_overlap_avl_desc_atts_count = np.unique(act_mods_idx,
-                                                                   return_counts=True)
+    # Calculate appropriateness scores for all available models
+    avl_mods_appr_scores = np.zeros(avl_mods.shape[0])
+    for m_idx, m_code in avl_m_codes:
+        overlap_avl_desc_atts = np.sum(m_code[avl_atts] == desc_encoding)
+        total_count_desc_atts = np.sum(m_code[:] == desc_encoding)
 
-    act_m_codes = avl_m_codes[act_mods_idx, :]
-    _, act_mods_desc_atts_count = np.unique(np.where(act_m_codes[:, :] == desc_encoding)[0],
-                                            return_counts=True)
+        avl_mods_appr_scores[m_idx] = overlap_avl_desc_atts/total_count_desc_atts
 
-    assert act_mods_overlap_avl_desc_atts_count.shape[0] == act_mods_desc_atts_count.shape[0]
+    # Activate models with sufficiently high appropriateness scores
+    for threshold in thresholds:
+        act_mods_idx = np.where(avl_mods_appr_scores >= threshold)[0]
 
-    act_mods_appr_score = act_mods_overlap_avl_desc_atts_count/act_mods_desc_atts_count
+        if _assert_all_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
+            break
 
-
+    assert act_mods_idx.shape[0] > 0
     act_mods = avl_mods[act_mods_idx]
 
     return act_mods
 
 
+def _assert_all_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
+    target_encoding = encode_attribute(1, [0], [1])
 
+    filtered_m_codes = avl_m_codes[act_mods_idx, act_atts]
+    act_atts_as_targ = np.where(filtered_m_codes == target_encoding)[1]
+    check = np.unique(act_atts_as_targ)
+
+    return check.shape[0] == act_atts.shape[0]
 
 
 # Initialize
