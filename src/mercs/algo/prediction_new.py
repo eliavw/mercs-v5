@@ -135,6 +135,7 @@ def mafi_pred_algo(m_codes, q_codes, settings):
     assert 0.0 < initial_threshold <= 1.0
     assert 0.0 < step_size < 1.0
 
+    # TODO: This musn't come packed in 'settings'
     feature_importances = settings['FI']
 
     # Preliminaries
