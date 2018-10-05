@@ -212,7 +212,7 @@ def it_pred_algo(m_codes, q_codes, settings):
     max_layers = settings['its']
     assert isinstance(max_layers, int)
     assert isinstance(step_size, float)
-    assert 0 < max_layers
+    assert 1 <= max_layers
     assert 0.0 < step_size < 1.0
 
     feature_importances = settings['FI'] # TODO: This must not come packed in 'settings'
@@ -252,6 +252,7 @@ def _it_pred_qry(mas,
     # Zero-step
     aas[q_desc] = 0
 
+    done = False
     for n in steps:
         # Collect available atts/mods
         avl_atts = _available_atts(aas, n)
@@ -259,6 +260,15 @@ def _it_pred_qry(mas,
 
         avl_m_codes = m_codes[avl_mods]
         avl_f_imprt = feature_importances[avl_mods]
+
+        msg = """
+        AFTER COLLECTION OF AVAILABLE STUFF
+        step: {}\n
+        avl_atts: {}\n
+        avl_mods: {}\n
+        avl_m_codes: {}\n
+        """.format(n, avl_atts, avl_mods, avl_m_codes)
+        debug_print(msg, V=VERBOSITY)
 
         # Activate models
         unavl_atts = _unavailable_atts(aas)
@@ -271,13 +281,32 @@ def _it_pred_qry(mas,
                                      mode='some')
         mas[act_mods] = n
 
+        msg = """
+        AFTER MODEL ACTIVATION: \n
+        unavl_atts: {}\n
+        act_mods: {}\n
+        mas: {}\n
+        """.format(unavl_atts, act_mods, mas)
+        debug_print(msg, V=VERBOSITY)
+
         # Activate attributes
         act_atts = _active_atts_it(act_mods, m_codes, unavl_atts)
         aas[act_atts] = n
 
+        msg = """
+        AFTER ATTRIBUTE ACTIVATION: \n
+        act_atts: {}\n
+        aas: {}\n
+        """.format(act_atts, aas)
+        debug_print(msg, V=VERBOSITY)
+
         # Assert whether we are done
         done = _assert_activation(aas, q_targ)
         if done:
+            msg = """
+            MAIN LOOP JUDGED DONE
+            """
+            debug_print(msg, V=VERBOSITY)
             break
 
     # If you are not done, repeat the last step until you are.
@@ -611,7 +640,7 @@ def _assert_some_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
         act_atts_as_targ = np.where(filtered_m_codes == target_encoding)[1]
         check = np.unique(act_atts_as_targ)
 
-        return check.shape[0] > 0
+        return check.shape[0] >= 1
 
 
 def _assert_activation(aas, targ):
