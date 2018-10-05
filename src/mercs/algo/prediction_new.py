@@ -232,7 +232,8 @@ def it_pred_algo(m_codes, q_codes, settings):
                                               q_targ[q_idx],
                                               m_codes,
                                               thresholds,
-                                              feature_importances)
+                                              feature_importances,
+                                              max_layers)
 
     return mas, aas
 
@@ -247,6 +248,120 @@ def _it_pred_qry(mas,
                  max_layers):
 
     steps = list(range(1, max_layers+1))
+
+    # Zero-step
+    aas[q_desc] = 0
+
+    for n in steps:
+        # Collect available atts/mods
+        avl_atts = _available_atts(aas, n)
+        avl_mods = _available_mods(mas)
+
+        avl_m_codes = m_codes[avl_mods]
+        avl_f_imprt = feature_importances[avl_mods]
+
+        # Activate models
+        unavl_atts = _unavailable_atts(aas)
+        act_mods = _active_mods_mafi(avl_atts,
+                                     unavl_atts,
+                                     avl_mods,
+                                     avl_m_codes,
+                                     thresholds,
+                                     avl_f_imprt,
+                                     mode='some')
+        mas[act_mods] = n
+
+        # Activate attributes
+        act_atts = _active_atts_it(act_mods, m_codes, unavl_atts)
+        aas[act_atts] = n
+
+        # Assert whether we are done
+        done = _assert_activation(aas, q_targ)
+        if done:
+            break
+
+    # If you are not done, repeat the last step until you are.
+    while not done:
+        n = steps[-1]
+
+        # Collect available atts/mods
+        avl_atts = _available_atts(aas, n)
+        avl_mods = _available_mods(mas)
+
+        avl_m_codes = m_codes[avl_mods]
+        avl_f_imprt = feature_importances[avl_mods]
+
+        # Activate models
+        unavl_atts = _unavailable_atts(aas)
+        act_mods = _active_mods_mafi(avl_atts,
+                                     unavl_atts,
+                                     avl_mods,
+                                     avl_m_codes,
+                                     thresholds,
+                                     avl_f_imprt,
+                                     mode='some')
+        mas[act_mods] = n
+
+        # Activate attributes
+        act_atts = _active_atts_it(act_mods, m_codes, unavl_atts)
+        aas[act_atts] = n
+
+        # Assert whether we are done
+        done = _assert_activation(aas, q_targ)
+
+    return mas, aas
+
+
+# RW-pred
+def rw_pred_algo(m_codes, q_codes, settings):
+    assert isinstance(m_codes, np.ndarray)
+    assert isinstance(q_codes, np.ndarray)
+    assert len(m_codes.shape) == len(q_codes.shape) == 2
+    assert m_codes.shape[1] == q_codes.shape[1]
+
+    initial_threshold = 1.0
+    step_size = settings['param']
+    max_layers = settings['its']
+    assert isinstance(max_layers, int)
+    assert isinstance(step_size, float)
+    assert 0 < max_layers
+    assert 0.0 < step_size < 1.0
+
+    feature_importances = settings['FI'] # TODO: This must not come packed in 'settings'
+
+    # Preliminaries
+    nb_mods, nb_atts, nb_qrys = _extract_global_numbers(m_codes, q_codes)
+    q_desc, q_targ, _ = codes_to_query(q_codes)
+
+    thresholds = np.arange(initial_threshold, -1, -step_size)
+
+    mas, aas = _init_mas_aas(nb_mods, nb_atts, nb_qrys)
+
+    for q_idx in range(nb_qrys):
+        mas[q_idx], aas[q_idx] = _rw_pred_qry(mas[q_idx],
+                                              aas[q_idx],
+                                              q_desc[q_idx],
+                                              q_targ[q_idx],
+                                              m_codes,
+                                              thresholds,
+                                              feature_importances,
+                                              max_layers)
+
+    return mas, aas
+
+
+def _rw_pred_qry(mas,
+                 aas,
+                 q_desc,
+                 q_targ,
+                 m_codes,
+                 thresholds,
+                 feature_importances,
+                 max_layers):
+
+    chain_size = np.random.randint(1, max_layers)
+    steps = list(range(1, max_layers+1))
+    steps.reverse()
 
     # Zero-step
     aas[q_desc] = 0
@@ -313,6 +428,7 @@ def _it_pred_qry(mas,
         done = _assert_activation(aas, q_targ)
 
     return mas, aas
+
 
 
 # Four steps

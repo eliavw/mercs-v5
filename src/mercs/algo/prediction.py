@@ -565,7 +565,7 @@ def generate_chain(m_codes, q_desc, q_targ, settings):
                                    if (e == 0)
                                    if (np.sum(m_codes[m_idx, potential_targ] == 1) > 0)])
 
-        # NEW ADDITION I DONT KNOW IF THIS IS OKAY
+        # NEW ADDITION I DON'T KNOW IF THIS IS OKAY
         if len(potential_mods) == 0: break  # Nothing left to contribute
 
         # Select model
