@@ -546,7 +546,7 @@ def _active_mods_mafi(avl_atts,
     # Calculate appropriateness scores for all available models
     avl_mods_appr_scores = np.zeros(avl_mods.shape[0])
     for m_idx in range(avl_mods.shape[0]):
-        avl_mods_appr_scores[m_idx] = np.sum(avl_f_imprt[avl_atts])
+        avl_mods_appr_scores[m_idx] = np.sum(avl_f_imprt[np.ix_(m_idx, avl_atts)])
 
     # Activate models with sufficiently high appropriateness scores
     if mode in {'all'}:
