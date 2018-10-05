@@ -573,25 +573,29 @@ def _active_mods_mafi(avl_atts,
 
 # Assert solution
 def _assert_all_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
-    assert act_mods_idx.shape[0] > 0
-    target_encoding = encode_attribute(1, [0], [1])
+    if act_mods_idx.shape[0] > 0:
+        return False
+    else:
+        target_encoding = encode_attribute(1, [0], [1])
 
-    filtered_m_codes = avl_m_codes[np.ix_(act_mods_idx, act_atts)]
-    act_atts_as_targ = np.where(filtered_m_codes == target_encoding)[1]
-    check = np.unique(act_atts_as_targ)
+        filtered_m_codes = avl_m_codes[np.ix_(act_mods_idx, act_atts)]
+        act_atts_as_targ = np.where(filtered_m_codes == target_encoding)[1]
+        check = np.unique(act_atts_as_targ)
 
-    return check.shape[0] == act_atts.shape[0]
+        return check.shape[0] == act_atts.shape[0]
 
 
 def _assert_some_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
-    assert act_mods_idx.shape[0] > 0
-    target_encoding = encode_attribute(1, [0], [1])
+    if act_mods_idx.shape[0] > 0:
+        return False
+    else:
+        target_encoding = encode_attribute(1, [0], [1])
 
-    filtered_m_codes = avl_m_codes[np.ix_(act_mods_idx, act_atts)]
-    act_atts_as_targ = np.where(filtered_m_codes == target_encoding)[1]
-    check = np.unique(act_atts_as_targ)
+        filtered_m_codes = avl_m_codes[np.ix_(act_mods_idx, act_atts)]
+        act_atts_as_targ = np.where(filtered_m_codes == target_encoding)[1]
+        check = np.unique(act_atts_as_targ)
 
-    return check.shape[0] > 0
+        return check.shape[0] > 0
 
 
 def _assert_activation(aas, targ):
