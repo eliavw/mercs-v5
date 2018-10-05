@@ -613,6 +613,7 @@ def _active_mods_mafi(avl_atts,
 
     act_mods = avl_mods[act_mods_idx]
 
+    assert act_mods.shape[0] > 0
     return act_mods
 
 
