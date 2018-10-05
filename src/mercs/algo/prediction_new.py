@@ -222,6 +222,7 @@ def it_pred_algo(m_codes, q_codes, settings):
     q_desc, q_targ, _ = codes_to_query(q_codes)
 
     thresholds = np.arange(initial_threshold, -1, -step_size)
+    steps = list(range(1, max_layers + 1))
 
     mas, aas = _init_mas_aas(nb_mods, nb_atts, nb_qrys)
 
@@ -233,7 +234,7 @@ def it_pred_algo(m_codes, q_codes, settings):
                                               m_codes,
                                               thresholds,
                                               feature_importances,
-                                              max_layers)
+                                              steps)
 
     return mas, aas
 
@@ -245,9 +246,7 @@ def _it_pred_qry(mas,
                  m_codes,
                  thresholds,
                  feature_importances,
-                 max_layers):
-
-    steps = list(range(1, max_layers+1))
+                 steps):
 
     # Zero-step
     aas[q_desc] = 0
@@ -290,7 +289,8 @@ def _it_pred_qry(mas,
         debug_print(msg, V=VERBOSITY)
 
         # Activate attributes
-        act_atts = _active_atts_it(act_mods, m_codes, unavl_atts)
+        act_m_codes = m_codes[act_mods]
+        act_atts = _active_atts_it(act_m_codes, unavl_atts)
         aas[act_atts] = n
 
         msg = """
@@ -310,12 +310,12 @@ def _it_pred_qry(mas,
             break
 
     # If you are not done, repeat the last step until you are.
+    n = steps[-1]
     while not done:
         msg = """
         Entering extra step to ensure finishing.
         """
         debug_print(msg, V=VERBOSITY)
-        n = steps[-1]
 
         # Collect available atts/mods
         avl_atts = _available_atts(aas, n)
@@ -342,7 +342,8 @@ def _it_pred_qry(mas,
         debug_print(msg, V=VERBOSITY)
 
         # Activate attributes
-        act_atts = _active_atts_it(act_mods, m_codes, unavl_atts)
+        act_m_codes = m_codes[act_mods]
+        act_atts = _active_atts_it(act_m_codes, unavl_atts)
         aas[act_atts] = n
 
         msg = """
@@ -529,11 +530,16 @@ def _active_atts(q_targ):
     return np.array(q_targ)
 
 
-def _active_atts_it(act_mods, m_codes, unavl_atts):
-    target_encoding = encode_attribute(1, [0], [1])
+def _active_atts_it(act_m_codes, unavl_atts):
+    assert act_m_codes.shape[1] == unavl_atts.shape[1]
+    targ_encoding = encode_attribute(1, [0], [1])
 
-    filtered_m_codes = m_codes[np.ix_(act_mods, unavl_atts)]
-    unavl_atts_as_targ = np.where(filtered_m_codes == target_encoding)[1]
+    for m_idx, m_code in enumerate(act_m_codes):
+
+    filtered_m_codes = act_m_codes[:, unavl_atts]
+    unavl_atts_as_targ = np.where(filtered_m_codes == targ_encoding)[1]
+
+    unavl_atts_as_targ = np.unique(unavl_atts_as_targ)
     return unavl_atts_as_targ
 
 
