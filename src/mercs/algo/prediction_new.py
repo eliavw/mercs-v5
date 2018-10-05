@@ -498,7 +498,7 @@ def _active_mods_mi(avl_atts, act_atts, avl_mods, avl_m_codes):
 
     # Calculate appropriateness scores for all available models
     avl_mods_appr_scores = np.zeros(avl_mods.shape[0])
-    for m_idx, m_code in avl_m_codes:
+    for m_idx, m_code in enumerate(avl_m_codes):
         avl_mods_appr_scores[m_idx] = np.sum(m_code[act_atts] == targ_encoding)
 
     # Activate models with sufficiently high appropriateness scores
@@ -516,7 +516,7 @@ def _active_mods_ma(avl_atts, act_atts, avl_mods, avl_m_codes, thresholds):
 
     # Calculate appropriateness scores for all available models
     avl_mods_appr_scores = np.zeros(avl_mods.shape[0])
-    for m_idx, m_code in avl_m_codes:
+    for m_idx, m_code in enumerate(avl_m_codes):
         overlap_avl_desc_atts = np.sum(m_code[avl_atts] == desc_encoding)
         total_count_desc_atts = np.sum(m_code[:] == desc_encoding)
 
@@ -545,7 +545,7 @@ def _active_mods_mafi(avl_atts,
 
     # Calculate appropriateness scores for all available models
     avl_mods_appr_scores = np.zeros(avl_mods.shape[0])
-    for m_idx, m_code in avl_m_codes:
+    for m_idx, m_code in enumerate(avl_m_codes):
         avl_mods_appr_scores[m_idx] = np.sum(avl_f_imprt[avl_atts])
 
     # Activate models with sufficiently high appropriateness scores
