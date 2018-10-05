@@ -3,7 +3,7 @@ import numpy as np
 from ..utils.encoding import codes_to_query, encode_attribute
 
 from ..utils.debug import debug_print
-VERBOSITY = 0
+VERBOSITY = 1
 
 
 # MI-pred
@@ -282,6 +282,10 @@ def _it_pred_qry(mas,
 
     # If you are not done, repeat the last step until you are.
     while not done:
+        msg = """
+        Entering extra step to ensure finishing.
+        """
+        debug_print(msg, V=VERBOSITY)
         n = steps[-1]
 
         # Collect available atts/mods
@@ -302,9 +306,21 @@ def _it_pred_qry(mas,
                                      mode='some')
         mas[act_mods] = n
 
+        msg = """
+        Active models: {}\n
+        MAS at this point: {}\n
+        """.format(act_mods, mas)
+        debug_print(msg, V=VERBOSITY)
+
         # Activate attributes
         act_atts = _active_atts_it(act_mods, m_codes, unavl_atts)
         aas[act_atts] = n
+
+        msg = """
+        Active atts: {}\n
+        AAS at this point: {}\n
+        """.format(act_atts, aas)
+        debug_print(msg, V=VERBOSITY)
 
         # Assert whether we are done
         done = _assert_activation(aas, q_targ)
