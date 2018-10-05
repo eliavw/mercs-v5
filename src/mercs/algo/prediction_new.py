@@ -573,7 +573,7 @@ def _active_mods_mafi(avl_atts,
 
 # Assert solution
 def _assert_all_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
-    if act_mods_idx.shape[0] > 0:
+    if act_mods_idx.shape[0] == 0:
         return False
     else:
         target_encoding = encode_attribute(1, [0], [1])
@@ -586,7 +586,7 @@ def _assert_all_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
 
 
 def _assert_some_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
-    if act_mods_idx.shape[0] > 0:
+    if act_mods_idx.shape[0] == 0:
         return False
     else:
         target_encoding = encode_attribute(1, [0], [1])
