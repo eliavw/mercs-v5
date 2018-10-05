@@ -135,7 +135,7 @@ def mafi_pred_algo(m_codes, q_codes, settings):
     assert 0.0 < initial_threshold <= 1.0
     assert 0.0 < step_size < 1.0
 
-    # TODO: This musn't come packed in 'settings'
+    # TODO: This must not come packed in 'settings'
     feature_importances = settings['FI']
 
     # Preliminaries
@@ -158,7 +158,13 @@ def mafi_pred_algo(m_codes, q_codes, settings):
     return mas, aas
 
 
-def _mafi_pred_qry(mas, aas, q_desc, q_targ, m_codes, thresholds, feature_importances):
+def _mafi_pred_qry(mas,
+                   aas,
+                   q_desc,
+                   q_targ,
+                   m_codes,
+                   thresholds,
+                   feature_importances):
 
     steps = [1]
 
@@ -194,6 +200,121 @@ def _mafi_pred_qry(mas, aas, q_desc, q_targ, m_codes, thresholds, feature_import
     return mas, aas
 
 
+# IT-pred
+def it_pred_algo(m_codes, q_codes, settings):
+    assert isinstance(m_codes, np.ndarray)
+    assert isinstance(q_codes, np.ndarray)
+    assert len(m_codes.shape) == len(q_codes.shape) == 2
+    assert m_codes.shape[1] == q_codes.shape[1]
+
+    initial_threshold = 1.0
+    step_size = settings['param']
+    max_layers = settings['its']
+    assert isinstance(max_layers, int)
+    assert isinstance(step_size, float)
+    assert 0 < max_layers
+    assert 0.0 < step_size < 1.0
+
+    feature_importances = settings['FI'] # TODO: This must not come packed in 'settings'
+
+    # Preliminaries
+    nb_mods, nb_atts, nb_qrys = _extract_global_numbers(m_codes, q_codes)
+    q_desc, q_targ, _ = codes_to_query(q_codes)
+
+    thresholds = np.arange(initial_threshold, -1, -step_size)
+
+    mas, aas = _init_mas_aas(nb_mods, nb_atts, nb_qrys)
+
+    for q_idx in range(nb_qrys):
+        mas[q_idx], aas[q_idx] = _it_pred_qry(mas[q_idx],
+                                              aas[q_idx],
+                                              q_desc[q_idx],
+                                              q_targ[q_idx],
+                                              m_codes,
+                                              thresholds,
+                                              feature_importances)
+
+    return mas, aas
+
+
+def _it_pred_qry(mas,
+                 aas,
+                 q_desc,
+                 q_targ,
+                 m_codes,
+                 thresholds,
+                 feature_importances,
+                 max_layers):
+
+    steps = list(range(1, max_layers+1))
+
+    # Zero-step
+    aas[q_desc] = 0
+
+    mas_mi, _ = _mi_pred_qry(mas, aas, q_desc, q_targ, m_codes)
+    mas[mas_mi == -1] = 0
+    mas[mas_mi == 1] = -1
+
+    for n in steps:
+        # Collect available atts/mods
+        avl_atts = _available_atts(aas, n)
+        avl_mods = _available_mods(mas)
+
+        avl_m_codes = m_codes[avl_mods]
+        avl_f_imprt = feature_importances[avl_mods]
+
+        # Activate models
+        unavl_atts = _unavailable_atts(aas)
+        act_mods = _active_mods_mafi(avl_atts,
+                                     unavl_atts,
+                                     avl_mods,
+                                     avl_m_codes,
+                                     thresholds,
+                                     avl_f_imprt,
+                                     mode='some')
+        mas[act_mods] = n
+
+        # Activate attributes
+        act_atts = _active_atts_it(act_mods, m_codes, unavl_atts)
+        aas[act_atts] = n
+
+        # Assert whether we are done
+        done = _assert_activation(aas, q_targ)
+        if done:
+            break
+
+    # If you are not done, repeat the last step until you are.
+    while not done:
+        n = steps[-1]
+
+        # Collect available atts/mods
+        avl_atts = _available_atts(aas, n)
+        avl_mods = _available_mods(mas)
+
+        avl_m_codes = m_codes[avl_mods]
+        avl_f_imprt = feature_importances[avl_mods]
+
+        # Activate models
+        unavl_atts = _unavailable_atts(aas)
+        act_mods = _active_mods_mafi(avl_atts,
+                                     unavl_atts,
+                                     avl_mods,
+                                     avl_m_codes,
+                                     thresholds,
+                                     avl_f_imprt,
+                                     mode='some')
+        mas[act_mods] = n
+
+        # Activate attributes
+        act_atts = _active_atts_it(act_mods, m_codes, unavl_atts)
+        aas[act_atts] = n
+
+        # Assert whether we are done
+        done = _assert_activation(aas, q_targ)
+
+    return mas, aas
+
+
 # Four steps
 def _available_atts(aas, step):
     """
@@ -220,6 +341,10 @@ def _available_atts(aas, step):
     return np.where((0 <= aas) & (aas < step))[0]
 
 
+def _unavailable_atts(aas):
+    return np.where(aas == -1)[0]
+
+
 def _available_mods(mas):
     """
     Available models are models that have not been 'active' before
@@ -236,8 +361,19 @@ def _available_mods(mas):
     return np.where(mas == -1)[0]
 
 
+def _unavailable_mods(mas, step):
+    return np.where((0 <= mas) & (mas < step))[0]
+
+
 def _active_atts(q_targ):
     return np.array(q_targ)
+
+
+def _active_atts_it(act_mods, m_codes, unavl_atts):
+    target_encoding = encode_attribute(1, [0], [1])
+    filtered_m_codes = m_codes[act_mods, unavl_atts]
+    unavl_atts_as_targ = np.where(filtered_m_codes == target_encoding)[1]
+    return unavl_atts_as_targ
 
 
 def _active_mods_mi(avl_atts, act_atts, avl_mods, avl_m_codes):
@@ -287,7 +423,8 @@ def _active_mods_mafi(avl_atts,
                       avl_mods,
                       avl_m_codes,
                       thresholds,
-                      avl_f_imprt):
+                      avl_f_imprt,
+                      mode='all'):
     assert avl_m_codes.shape[0] == avl_f_imprt.shape[0] == avl_mods.shape[0]
 
     # Calculate appropriateness scores for all available models
@@ -296,10 +433,21 @@ def _active_mods_mafi(avl_atts,
         avl_mods_appr_scores[m_idx] = np.sum(avl_f_imprt[avl_atts])
 
     # Activate models with sufficiently high appropriateness scores
+    if mode in {'all'}:
+        stopping_criterion = _assert_all_act_atts_as_targ
+    elif mode in {'some'}:
+        stopping_criterion = _assert_some_act_atts_as_targ
+    else:
+        msg = """
+        Did not recognize the mode: {}
+        Choose either 'all' or 'some'.
+        """.format(mode)
+        raise ValueError(msg)
+
     for threshold in thresholds:
         act_mods_idx = np.where(avl_mods_appr_scores >= threshold)[0]
 
-        if _assert_all_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
+        if stopping_criterion(act_mods_idx, avl_m_codes, act_atts):
             break
 
     act_mods = avl_mods[act_mods_idx]
@@ -317,6 +465,22 @@ def _assert_all_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
     check = np.unique(act_atts_as_targ)
 
     return check.shape[0] == act_atts.shape[0]
+
+
+def _assert_some_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
+    assert act_mods_idx.shape[0] > 0
+    target_encoding = encode_attribute(1, [0], [1])
+
+    filtered_m_codes = avl_m_codes[act_mods_idx, act_atts]
+    act_atts_as_targ = np.where(filtered_m_codes == target_encoding)[1]
+    check = np.unique(act_atts_as_targ)
+
+    return check.shape[0] > 0
+
+
+def _assert_activation(aas, targ):
+    unavl_atts = _unavailable_atts(aas)
+    return np.isin(targ, unavl_atts, invert=True).all()
 
 
 # Initialize
