@@ -110,7 +110,7 @@ def _ma_pred_qry(mas, aas, q_desc, q_targ, m_codes, thresholds):
         aas[act_atts] = n
 
         for att in act_atts:
-            single_act_att = [att]
+            single_act_att = np.array([att])
             act_mods = _active_mods_ma(avl_atts,
                                        single_act_att,
                                        avl_mods,
@@ -188,7 +188,7 @@ def _mafi_pred_qry(mas,
         aas[act_atts] = n
 
         for att in act_atts:
-            single_act_att = [att]
+            single_act_att = np.array([att])
             act_mods = _active_mods_mafi(avl_atts,
                                          single_act_att,
                                          avl_mods,
@@ -430,7 +430,6 @@ def _rw_pred_qry(mas,
     return mas, aas
 
 
-
 # Four steps
 def _available_atts(aas, step):
     """
@@ -487,7 +486,8 @@ def _active_atts(q_targ):
 
 def _active_atts_it(act_mods, m_codes, unavl_atts):
     target_encoding = encode_attribute(1, [0], [1])
-    filtered_m_codes = m_codes[act_mods, unavl_atts]
+
+    filtered_m_codes = m_codes[np.ix_(act_mods, unavl_atts)]
     unavl_atts_as_targ = np.where(filtered_m_codes == target_encoding)[1]
     return unavl_atts_as_targ
 
@@ -545,7 +545,7 @@ def _active_mods_mafi(avl_atts,
 
     # Calculate appropriateness scores for all available models
     avl_mods_appr_scores = np.zeros(avl_mods.shape[0])
-    for m_idx, m_code in enumerate(avl_m_codes):
+    for m_idx in range(avl_mods.shape[0]):
         avl_mods_appr_scores[m_idx] = np.sum(avl_f_imprt[avl_atts])
 
     # Activate models with sufficiently high appropriateness scores
@@ -576,7 +576,7 @@ def _assert_all_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
     assert act_mods_idx.shape[0] > 0
     target_encoding = encode_attribute(1, [0], [1])
 
-    filtered_m_codes = avl_m_codes[act_mods_idx, act_atts]
+    filtered_m_codes = avl_m_codes[np.ix_(act_mods_idx, act_atts)]
     act_atts_as_targ = np.where(filtered_m_codes == target_encoding)[1]
     check = np.unique(act_atts_as_targ)
 
@@ -587,7 +587,7 @@ def _assert_some_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
     assert act_mods_idx.shape[0] > 0
     target_encoding = encode_attribute(1, [0], [1])
 
-    filtered_m_codes = avl_m_codes[act_mods_idx, act_atts]
+    filtered_m_codes = avl_m_codes[np.ix_(act_mods_idx, act_atts)]
     act_atts_as_targ = np.where(filtered_m_codes == target_encoding)[1]
     check = np.unique(act_atts_as_targ)
 
