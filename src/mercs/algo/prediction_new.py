@@ -534,12 +534,11 @@ def _active_atts_it(act_m_codes, unavl_atts):
     assert act_m_codes.shape[1] == unavl_atts.shape[1]
     targ_encoding = encode_attribute(1, [0], [1])
 
-    for m_idx, m_code in enumerate(act_m_codes):
+    targ_atts_act_mods = np.where(act_m_codes == targ_encoding)[1]
+    targ_atts_act_mods = np.unique(targ_atts_act_mods)
 
-    filtered_m_codes = act_m_codes[:, unavl_atts]
-    unavl_atts_as_targ = np.where(filtered_m_codes == targ_encoding)[1]
+    unavl_atts_as_targ = np.intersect1d(unavl_atts, targ_atts_act_mods)
 
-    unavl_atts_as_targ = np.unique(unavl_atts_as_targ)
     return unavl_atts_as_targ
 
 
