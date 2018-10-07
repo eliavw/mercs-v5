@@ -531,7 +531,8 @@ def _active_atts(q_targ):
 
 
 def _active_atts_it(act_m_codes, unavl_atts):
-    assert act_m_codes.shape[1] == unavl_atts.shape[1]
+    assert act_m_codes.shape[0] >= 1
+    assert unavl_atts.shape[0] >= 1
     targ_encoding = encode_attribute(1, [0], [1])
 
     targ_atts_act_mods = np.where(act_m_codes == targ_encoding)[1]
