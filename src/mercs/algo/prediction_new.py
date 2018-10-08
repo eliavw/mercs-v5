@@ -368,7 +368,7 @@ def rw_pred_algo(m_codes, q_codes, settings):
 
     max_layers = settings['its']
     assert isinstance(max_layers, int) and 1 <= max_layers
-    chain_size = np.random.randint(1, max_layers + 1)
+    chain_size = np.random.randint(1, max_layers + 1)   # Chain size at least one
 
     feature_importances = settings['FI'] # TODO: This must not come packed in 'settings'
 
@@ -376,7 +376,7 @@ def rw_pred_algo(m_codes, q_codes, settings):
     nb_mods, nb_atts, nb_qrys = _extract_global_numbers(m_codes, q_codes)
     q_desc, q_targ, _ = codes_to_query(q_codes)
 
-    steps = list(range(1, 1 + chain_size))
+    steps = list(range(1, 1 + chain_size))              # Chain size at least one (it is correct that this +1 happens twice!)
     steps.reverse()
 
     mas, aas = _init_mas_aas(nb_mods, nb_atts, nb_qrys)
