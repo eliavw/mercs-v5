@@ -270,9 +270,9 @@ def _it_pred_qry(mas,
         debug_print(msg, V=VERBOSITY)
 
         # Activate models
-        unavl_atts = _unavailable_atts(aas)
+        pot_act_atts = _unavailable_atts(aas)
         act_mods = _active_mods_mafi(avl_atts,
-                                     unavl_atts,
+                                     pot_act_atts,
                                      avl_mods,
                                      avl_m_codes,
                                      thresholds,
@@ -285,12 +285,12 @@ def _it_pred_qry(mas,
         unavl_atts: {}\n
         act_mods: {}\n
         mas: {}\n
-        """.format(unavl_atts, act_mods, mas)
+        """.format(pot_act_atts, act_mods, mas)
         debug_print(msg, V=VERBOSITY)
 
         # Activate attributes
         act_m_codes = m_codes[act_mods]
-        act_atts = _active_atts_it(act_m_codes, unavl_atts)
+        act_atts = _active_atts_it(act_m_codes, pot_act_atts)
         aas[act_atts] = n
 
         msg = """
@@ -325,9 +325,9 @@ def _it_pred_qry(mas,
         avl_f_imprt = feature_importances[avl_mods]
 
         # Activate models
-        unavl_atts = _unavailable_atts(aas)
+        pot_act_atts = _unavailable_atts(aas)
         act_mods = _active_mods_mafi(avl_atts,
-                                     unavl_atts,
+                                     pot_act_atts,
                                      avl_mods,
                                      avl_m_codes,
                                      thresholds,
@@ -343,7 +343,7 @@ def _it_pred_qry(mas,
 
         # Activate attributes
         act_m_codes = m_codes[act_mods]
-        act_atts = _active_atts_it(act_m_codes, unavl_atts)
+        act_atts = _active_atts_it(act_m_codes, pot_act_atts)
         aas[act_atts] = n
 
         msg = """
@@ -365,13 +365,10 @@ def rw_pred_algo(m_codes, q_codes, settings):
     assert len(m_codes.shape) == len(q_codes.shape) == 2
     assert m_codes.shape[1] == q_codes.shape[1]
 
-    initial_threshold = 1.0
-    step_size = settings['param']
     max_layers = settings['its']
     assert isinstance(max_layers, int)
-    assert isinstance(step_size, float)
-    assert 0 < max_layers
-    assert 0.0 < step_size < 1.0
+    assert 1 <= max_layers
+    chain_size = np.random.randint(1, max_layers + 1)
 
     feature_importances = settings['FI'] # TODO: This must not come packed in 'settings'
 
@@ -379,7 +376,8 @@ def rw_pred_algo(m_codes, q_codes, settings):
     nb_mods, nb_atts, nb_qrys = _extract_global_numbers(m_codes, q_codes)
     q_desc, q_targ, _ = codes_to_query(q_codes)
 
-    thresholds = np.arange(initial_threshold, -1, -step_size)
+    steps = list(range(1, chain_size))
+    steps.reverse()
 
     mas, aas = _init_mas_aas(nb_mods, nb_atts, nb_qrys)
 
@@ -389,9 +387,8 @@ def rw_pred_algo(m_codes, q_codes, settings):
                                               q_desc[q_idx],
                                               q_targ[q_idx],
                                               m_codes,
-                                              thresholds,
                                               feature_importances,
-                                              max_layers)
+                                              steps)
 
     return mas, aas
 
@@ -401,22 +398,15 @@ def _rw_pred_qry(mas,
                  q_desc,
                  q_targ,
                  m_codes,
-                 thresholds,
                  feature_importances,
-                 max_layers):
-
-    chain_size = np.random.randint(1, max_layers)
-    steps = list(range(1, max_layers+1))
-    steps.reverse()
+                 steps):
+    desc_encoding = encode_attribute(0, [0], [1])
 
     # Zero-step
     aas[q_desc] = 0
 
-    mas_mi, _ = _mi_pred_qry(mas, aas, q_desc, q_targ, m_codes)
-    mas[mas_mi == -1] = 0
-    mas[mas_mi == 1] = -1
-
-    for n in steps:
+    done = False
+    for i, n in enumerate(steps):
         # Collect available atts/mods
         avl_atts = _available_atts(aas, n)
         avl_mods = _available_mods(mas)
@@ -424,59 +414,63 @@ def _rw_pred_qry(mas,
         avl_m_codes = m_codes[avl_mods]
         avl_f_imprt = feature_importances[avl_mods]
 
-        # Activate models
-        unavl_atts = _unavailable_atts(aas)
-        act_mods = _active_mods_mafi(avl_atts,
-                                     unavl_atts,
-                                     avl_mods,
-                                     avl_m_codes,
-                                     thresholds,
-                                     avl_f_imprt,
-                                     mode='some')
-        mas[act_mods] = n
-
-        # Activate attributes
-        act_atts = _active_atts_it(act_mods, m_codes, unavl_atts)
-        aas[act_atts] = n
-
-        # Assert whether we are done
-        done = _assert_activation(aas, q_targ)
-        if done:
-            break
-
-    # If you are not done, repeat the last step until you are.
-    while not done:
-        n = steps[-1]
-
-        # Collect available atts/mods
-        avl_atts = _available_atts(aas, n)
-        avl_mods = _available_mods(mas)
-
-        avl_m_codes = m_codes[avl_mods]
-        avl_f_imprt = feature_importances[avl_mods]
+        msg = """
+        AFTER COLLECTION OF AVAILABLE STUFF
+        step: {}\n
+        avl_atts: {}\n
+        avl_mods: {}\n
+        avl_m_codes: {}\n
+        """.format(n, avl_atts, avl_mods, avl_m_codes)
+        debug_print(msg, V=VERBOSITY)
 
         # Activate models
-        unavl_atts = _unavailable_atts(aas)
-        act_mods = _active_mods_mafi(avl_atts,
-                                     unavl_atts,
-                                     avl_mods,
-                                     avl_m_codes,
-                                     thresholds,
-                                     avl_f_imprt,
-                                     mode='some')
+        if i == 0:
+            assert q_targ.shape[0] == 1         # TODO: multi-target RW
+            pot_act_atts = _active_atts(q_targ)
+        else:
+            unavailable_atts = _unavailable_atts(aas)
+            next_mods = np.where(mas == n + 1)
+            desc_atts_next_mods = np.where(m_codes[next_mods] == desc_encoding)[1]
+            desc_atts_next_mods = np.unique(desc_atts_next_mods)
+            pot_act_atts = np.intersect1d(unavailable_atts, desc_atts_next_mods)
+
+        if len(pot_act_atts) == 0:
+            break  # Nothing left to contribute
+
+        act_mods = _active_mods_rw(avl_atts,
+                                   pot_act_atts,
+                                   avl_mods,
+                                   avl_m_codes,
+                                   avl_f_imprt)
         mas[act_mods] = n
 
+        msg = """
+        AFTER MODEL ACTIVATION: \n
+        unavl_atts: {}\n
+        act_mods: {}\n
+        mas: {}\n
+        """.format(pot_act_atts, act_mods, mas)
+        debug_print(msg, V=VERBOSITY)
+
         # Activate attributes
-        act_atts = _active_atts_it(act_mods, m_codes, unavl_atts)
+        act_m_codes = m_codes[act_mods]
+        act_atts = _active_atts_it(act_m_codes, pot_act_atts)
         aas[act_atts] = n
 
-        # Assert whether we are done
-        done = _assert_activation(aas, q_targ)
+        msg = """
+        AFTER ATTRIBUTE ACTIVATION: \n
+        act_atts: {}\n
+        aas: {}\n
+        """.format(act_atts, aas)
+        debug_print(msg, V=VERBOSITY)
+
+    assert np.max(aas) == np.max(mas)
+    assert np.max(mas) > 0
 
     return mas, aas
 
 
-# Four steps
+# (Un)available Attributes
 def _available_atts(aas, step):
     """
     Available attributes were 'active' in a previous step.
@@ -506,6 +500,7 @@ def _unavailable_atts(aas):
     return np.where(aas == -1)[0]
 
 
+# (Un)available Models
 def _available_mods(mas):
     """
     Available models are models that have not been 'active' before
@@ -526,6 +521,7 @@ def _unavailable_mods(mas, step):
     return np.where((0 <= mas) & (mas < step))[0]
 
 
+# Activation of Attributes
 def _active_atts(q_targ):
     return np.array(q_targ)
 
@@ -543,6 +539,7 @@ def _active_atts_it(act_m_codes, unavl_atts):
     return unavl_atts_as_targ
 
 
+# Activation of Models
 def _active_mods_mi(avl_atts, act_atts, avl_mods, avl_m_codes):
     assert avl_m_codes.shape[0] == avl_mods.shape[0]
     targ_encoding = encode_attribute(1, [0], [1])
@@ -623,6 +620,32 @@ def _active_mods_mafi(avl_atts,
     return act_mods
 
 
+def _active_mods_rw(avl_atts,
+                    act_atts,
+                    avl_mods,
+                    avl_m_codes,
+                    avl_f_imprt):
+    assert avl_m_codes.shape[0] == avl_f_imprt.shape[0] == avl_mods.shape[0]
+    targ_encoding = encode_attribute(1, [0], [1])
+
+    # Calculate appropriateness scores for all available models
+    avl_mods_appr_scores = np.zeros(avl_mods.shape[0])
+    for m_idx in range(avl_mods.shape[0]):
+        targ_atts_mod = np.where(avl_m_codes[m_idx] == targ_encoding)[0]
+        act_atts_as_targ = np.intersect1d(act_atts, targ_atts_mod)
+        good_model = act_atts_as_targ.shape[0] > 0
+
+        avl_mods_appr_scores[m_idx] = np.sum(avl_f_imprt[np.ix_([m_idx], avl_atts)])
+        avl_mods_appr_scores[m_idx] = avl_mods_appr_scores[m_idx]*good_model
+
+    act_mods_idx = pick_random_models_from_appr_score(avl_mods_appr_scores, n=1)
+
+    act_mods = avl_mods[act_mods_idx]
+
+    assert act_mods.shape[0] > 0 # Important assertion
+    return act_mods
+
+
 # Assert solution
 def _assert_all_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
     if act_mods_idx.shape[0] == 0:
@@ -653,6 +676,32 @@ def _assert_some_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts):
 def _assert_activation(aas, targ):
     unavl_atts = _unavailable_atts(aas)
     return np.isin(targ, unavl_atts, invert=True).all()
+
+
+# Helpers
+def pick_random_models_from_appr_score(mod_appr_scores, n=1):
+    """
+    Interpret an array of appropriateness scores as a multinominal distribution
+    corresponding to the probability of a certain model being selected.
+
+
+    Parameters
+    ----------
+    mod_appr_scores
+    n
+
+    Returns
+    -------
+
+    """
+    norm = np.linalg.norm(mod_appr_scores, 1)
+    if norm > 0:
+        mod_appr_scores = mod_appr_scores / norm
+    else:
+        # If you cannot be right, be arbitrary
+        mod_appr_scores = [1 / len(mod_appr_scores) for i in mod_appr_scores]
+
+    return np.random.multinomial(n, mod_appr_scores, size=1)[0]
 
 
 # Initialize
