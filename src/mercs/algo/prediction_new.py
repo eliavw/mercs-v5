@@ -709,6 +709,47 @@ def pick_random_models_from_appr_score(mod_appr_scores, n=1):
     return picks
 
 
+def full_prune_strat(m_codes, q_code, mas, aas):
+    """
+    Prune the last step of the activation strategies.
+
+    :param m_codes:         model codes
+    :param q_code:          code of the queries
+    :param mas:             Model Activation Strategy
+    :param aas:             Attribute Activation Strategy
+    :return:
+    """
+
+    max_step = np.max(aas)
+
+    for i in range(max_step):
+        step = max_step - i
+
+        if step == max_step:
+            aas = np.array([e if ((e != step) | (q_code[i] == 1))
+                            else 0 for i, e in enumerate(aas)])
+        else:
+            next_act_mods = (mas > step)
+
+            msg = """
+            Next act mods:\t{}\n
+            """.format(next_act_mods)
+            debug_print(msg, V=VERBOSITY)
+
+            aas = np.array(
+                [e if ((e != step) | (np.sum(m_codes[next_act_mods, i] == 0) > 0) | (q_code[i] == 1))
+                 else 0 for i, e in enumerate(aas)])
+
+        act_atts = (aas >= step)
+        mas = [e if ((e != step) | (np.sum(m_codes[i][act_atts] == 1) > 0))
+               else 0 for i, e in enumerate(mas)]
+
+    # Recode strategies
+    mas, aas = recode_strat(mas, aas)
+
+    return mas, aas
+
+
 # Initialize
 def _extract_global_numbers(m_codes, q_codes):
     nb_mods, nb_atts = m_codes.shape
