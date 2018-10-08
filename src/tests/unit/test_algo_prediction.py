@@ -9,9 +9,9 @@ root_directory = dirname(dirname(dirname(dirname(__file__))))
 for dname in {'src'}:
     sys.path.insert(0, os.path.join(root_directory, dname))
 
-from mercs.algo.prediction_new import (mi_pred_algo,
-                                       ma_pred_algo,
-                                       mafi_pred_algo)
+from mercs.algo.prediction import (mi_pred_algo,
+                                   ma_pred_algo,
+                                   mafi_pred_algo)
 
 
 def mi_setup():
