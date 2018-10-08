@@ -447,9 +447,9 @@ def _rw_pred_qry(mas,
 
         msg = """
         AFTER MODEL ACTIVATION: \n
-        unavl_atts: {}\n
-        act_mods: {}\n
-        mas: {}\n
+        pot_act_atts:   {}\n
+        act_mods:       {}\n
+        mas:            {}\n
         """.format(pot_act_atts, act_mods, mas)
         debug_print(msg, V=VERBOSITY)
 
@@ -704,7 +704,9 @@ def pick_random_models_from_appr_score(mod_appr_scores, n=1):
         # If you cannot be right, be arbitrary
         mod_appr_scores = [1 / len(mod_appr_scores) for i in mod_appr_scores]
 
-    return np.random.multinomial(n, mod_appr_scores, size=1)[0]
+    picks = np.where(np.random.multinomial(n, mod_appr_scores, size=1)[0] == 1)
+
+    return picks
 
 
 # Initialize
