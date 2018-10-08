@@ -34,6 +34,19 @@ def ma_setup():
     settings = {'param':    0.95,
                 'its':      0.1}
 
+
+
+    return nb_mods, nb_atts, nb_qrys, m_codes, q_codes, settings
+
+
+def mafi_setup():
+    nb_mods, nb_atts, nb_qrys, m_codes, q_codes, settings = ma_setup()
+
+    fi = np.random.rand(nb_mods, nb_atts)
+    fi[m_codes != 0] = 0
+
+    settings['FI'] = fi
+
     return nb_mods, nb_atts, nb_qrys, m_codes, q_codes, settings
 
 
