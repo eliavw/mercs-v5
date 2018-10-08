@@ -425,8 +425,8 @@ def _rw_pred_qry(mas,
 
         # Activate models
         if i == 0:
-            assert q_targ.shape[0] == 1         # TODO: multi-target RW
             pot_act_atts = _active_atts(q_targ)
+            assert pot_act_atts.shape[0] == 1         # TODO: multi-target RW
         else:
             unavailable_atts = _unavailable_atts(aas)
             next_mods = np.where(mas == n + 1)
