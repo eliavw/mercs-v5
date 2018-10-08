@@ -417,11 +417,11 @@ def _rw_pred_qry(mas,
 
         msg = """
         AFTER COLLECTION OF AVAILABLE STUFF
-        step: {}\n
+        i, step: {}, {}\n
         avl_atts: {}\n
         avl_mods: {}\n
         avl_m_codes: {}\n
-        """.format(n, avl_atts, avl_mods, avl_m_codes)
+        """.format(i, n, avl_atts, avl_mods, avl_m_codes)
         debug_print(msg, V=VERBOSITY)
 
         # Activate models
@@ -456,6 +456,7 @@ def _rw_pred_qry(mas,
         # Activate attributes
         act_m_codes = m_codes[act_mods]
         act_atts = _active_atts_it(act_m_codes, pot_act_atts)
+        assert act_atts.shape[0] > 0
         aas[act_atts] = n
 
         msg = """
@@ -704,6 +705,7 @@ def pick_random_models_from_appr_score(mod_appr_scores, n=1):
         mod_appr_scores = [1 / len(mod_appr_scores) for i in mod_appr_scores]
 
     return np.random.multinomial(n, mod_appr_scores, size=1)[0]
+
 
 # Initialize
 def _extract_global_numbers(m_codes, q_codes):
