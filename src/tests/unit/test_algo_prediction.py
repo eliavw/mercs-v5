@@ -85,7 +85,7 @@ def test_ma_pred_algo():
 
 
 def test_mafi_pred_algo():
-    nb_mods, nb_atts, nb_qrys, m_codes, q_codes, settings = ma_setup()
+    nb_mods, nb_atts, nb_qrys, m_codes, q_codes, settings = mafi_setup()
 
     mas, aas = mafi_pred_algo(m_codes, q_codes, settings)
 
