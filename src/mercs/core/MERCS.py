@@ -573,8 +573,6 @@ class MERCS(object):
             for rw_idx in range(nb_walks):
                 mas, aas = rw_pred_algo(m_codes, q_codes, new_settings)
 
-                mas, aas = recode_strat(mas, aas)
-
                 all_q_mods[rw_idx] = self.strat_to_model(m_list,
                                                          m_codes,
                                                          q_codes,

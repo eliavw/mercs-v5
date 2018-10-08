@@ -1,5 +1,6 @@
 import numpy as np
 
+from .prediction import recode_strat
 from ..utils.encoding import codes_to_query, encode_attribute
 
 from ..utils.debug import debug_print
@@ -467,6 +468,7 @@ def _rw_pred_qry(mas,
     assert np.max(aas) == np.max(mas)
     assert np.max(mas) > 0
 
+    mas, aas = recode_strat(mas, aas)
     return mas, aas
 
 
@@ -702,7 +704,6 @@ def pick_random_models_from_appr_score(mod_appr_scores, n=1):
         mod_appr_scores = [1 / len(mod_appr_scores) for i in mod_appr_scores]
 
     return np.random.multinomial(n, mod_appr_scores, size=1)[0]
-
 
 # Initialize
 def _extract_global_numbers(m_codes, q_codes):
