@@ -367,8 +367,7 @@ def rw_pred_algo(m_codes, q_codes, settings):
     assert m_codes.shape[1] == q_codes.shape[1]
 
     max_layers = settings['its']
-    assert isinstance(max_layers, int)
-    assert 1 <= max_layers
+    assert isinstance(max_layers, int) and 1 <= max_layers
     chain_size = np.random.randint(1, max_layers + 1)
 
     feature_importances = settings['FI'] # TODO: This must not come packed in 'settings'
@@ -377,7 +376,7 @@ def rw_pred_algo(m_codes, q_codes, settings):
     nb_mods, nb_atts, nb_qrys = _extract_global_numbers(m_codes, q_codes)
     q_desc, q_targ, _ = codes_to_query(q_codes)
 
-    steps = list(range(1, chain_size))
+    steps = list(range(1, 1 + chain_size))
     steps.reverse()
 
     mas, aas = _init_mas_aas(nb_mods, nb_atts, nb_qrys)
@@ -406,7 +405,8 @@ def _rw_pred_qry(mas,
     # Zero-step
     aas[q_desc] = 0
 
-    done = False
+    assert isinstance(steps, list)
+    assert len(steps) >= 1
     for i, n in enumerate(steps):
         # Collect available atts/mods
         avl_atts = _available_atts(aas, n)
@@ -467,7 +467,7 @@ def _rw_pred_qry(mas,
         debug_print(msg, V=VERBOSITY)
 
     assert np.max(aas) == np.max(mas)
-    assert np.max(mas) > 0
+    assert np.max(mas) >= 1
 
     mas, aas = recode_strat(mas, aas)
     return mas, aas
