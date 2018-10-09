@@ -1,14 +1,15 @@
 # MERCS
 
-MERCS stands for **m**ulti-directional **e**nsembles of **c**lassification and **r**egression tree**s**. 
+MERCS stands for **m**ulti-directional **e**nsembles of **c**lassification and **r**egression tree**s**. It is a novel ML-paradigm under active development at the [DTAI-lab at KU Leuven](https://dtai.cs.kuleuven.be/).
 
 ## News
+
 
 ## Resources
 
 ### Tutorials
 
-We offer a small collection of tutorials in the form of Jupyter Notebooks (cf. [github-repo](https://github.com/eliavw/mercs-v5/tree/master/note/tutorials) for the actual `ipynb` files) of quick walkthroughs MERCS' most common functionalities. These are intended as the most user-friendly entry point to our system. 
+We offer a small collection of tutorials in the form of Jupyter Notebooks (cf. [github-repo](https://github.com/eliavw/mercs-v5/tree/master/note/tutorials) for the actual `.ipynb` files) of quick walkthroughs MERCS' most common functionalities. These are intended as the most user-friendly entry point to our system. 
 
 **MERCS 101**
 1. [Classification](tutorials/01_mercs_basics_classification.html)
