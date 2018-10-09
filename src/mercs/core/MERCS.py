@@ -385,6 +385,7 @@ class MERCS(object):
         elif only_numeric_targ(metadata['is_nominal']):
             m_codes = self.perform_selection_algorithm(metadata)
         else:
+            # Mixed case requires special treatment
             nominal_atts, numeric_atts = extract_nominal_numeric_attributes(self.s['metadata'])
 
             nominal_m_codes = self.perform_selection_algorithm(self.s['metadata'],
@@ -428,9 +429,13 @@ class MERCS(object):
                                             self.s['selection'],
                                             target_atts_list=target_atts_list)
         else:
-            warnings.warn("Did not recognize selection algorithm {}\n"
-                          "Available algorithms are {}\n"
-                          "Assuming base selection instead".format(sel_type, keywords.keys()))
+            msg = """
+            Did not recognize user-provided selection algorithm {}
+            Available algorithms are {}
+            Assuming `base` selection instead
+            """.format(sel_type, keywords.keys())
+            warnings.warn(msg)
+
             self.s['selection']['type'] = next(iter(keywords['base']))
             m_codes = self.perform_selection_algorithm(metadata,
                                                        target_atts_list=target_atts_list)

@@ -6,7 +6,7 @@ from ..utils.classlabels import collect_and_verify_clf_classlabels
 from ..utils.metadata import collect_feature_importances
 
 from ..utils.debug import debug_print
-VERBOSITY = 1
+VERBOSITY = 0
 
 
 # Main methods
@@ -117,8 +117,8 @@ def update_query_settings(s, nb_atts, delimiter='_', **kwargs):
         codes = relevant_kwargs['codes']
 
         msg = """
-        codes are: {}\n
-        type of codes is: {}\n
+        codes are:          {}\n
+        type of codes is:   {}\n
         """.format(codes, type(codes))
         debug_print(msg, V=VERBOSITY)
 
@@ -137,9 +137,9 @@ def update_query_settings(s, nb_atts, delimiter='_', **kwargs):
     elif 'code' in relevant_kwargs:
         # Wrap single code in extra array for consistency
         msg = """
-        In file:\t\t\t{}\n
-        I am reading a single query code, i.e.:\t{}\n
-        Query code is of type: {}\n
+        In file:                                {}\n
+        I am reading a single query code, i.e.: {}\n
+        Query code is of type:                  {}\n
         """.format(__file__, relevant_kwargs['code'], type(relevant_kwargs['code']))
         debug_print(msg, V=VERBOSITY)
 

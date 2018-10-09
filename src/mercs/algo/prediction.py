@@ -4,7 +4,7 @@ import warnings
 from ..utils.encoding import codes_to_query, encode_attribute
 
 from ..utils.debug import debug_print
-VERBOSITY = 1
+VERBOSITY = 0
 
 
 # MI-pred
@@ -425,7 +425,7 @@ def _rw_pred_qry(mas,
         avl_mods:       {}\n
         avl_m_codes:    {}\n
         """.format(i, n, avl_atts, avl_mods, avl_m_codes)
-        debug_print(msg, V=VERBOSITY)
+        debug_print(msg, level=2 ,V=VERBOSITY)
 
         # 2. Collection of potential active targets
         if i == 0:
@@ -460,7 +460,7 @@ def _rw_pred_qry(mas,
         act_mods:       {}\n
         mas:            {}\n
         """.format(pot_act_atts, act_mods, mas)
-        debug_print(msg, V=VERBOSITY)
+        debug_print(msg, level=2, V=VERBOSITY)
 
         # 3. Activate attributes
         act_m_codes = m_codes[act_mods]
@@ -475,7 +475,7 @@ def _rw_pred_qry(mas,
         act_atts: {}\n
         aas: {}\n
         """.format(act_atts, aas)
-        debug_print(msg, V=VERBOSITY)
+        debug_print(msg, level=2, V=VERBOSITY)
 
     assert np.max(aas) == np.max(mas)
     assert np.max(mas) >= 1
