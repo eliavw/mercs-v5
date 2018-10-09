@@ -17,3 +17,9 @@ Source available on https://github.com/eliavw/mercs-v5.
    modules/algo/inference
    modules/algo/prediction
    
+   modules/core/MERCS
+   
+   modules/io/io
+   
+   modules/models/Model
+   
