@@ -6,6 +6,7 @@ Welcome to mercs's documentation!
    :caption: Contents:
    
 .. toctree::
+   :maxdepth: 3
    :caption: Modules
 
    modules/algo/induction
