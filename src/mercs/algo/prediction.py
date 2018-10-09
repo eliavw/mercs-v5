@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 
 from ..utils.encoding import codes_to_query, encode_attribute
 
@@ -406,8 +407,10 @@ def _rw_pred_qry(mas,
 
     assert isinstance(steps, list)
     assert len(steps) >= 1
+
     for i, n in enumerate(steps):
-        # Collect available atts/mods
+
+        # 1. Collect available atts/mods
         avl_atts = _available_atts(aas, n)
         avl_mods = _available_mods(mas)
 
@@ -415,15 +418,16 @@ def _rw_pred_qry(mas,
         avl_f_imprt = feature_importances[avl_mods]
 
         msg = """
-        AFTER COLLECTION OF AVAILABLE STUFF
-        i, step: {}, {}\n
-        avl_atts: {}\n
-        avl_mods: {}\n
-        avl_m_codes: {}\n
+        After collection of available attributes and models\n
+        --- - --- - --- - --- -- -- - --- - --- - --- - ---\n
+        i, step:        {}, {}\n
+        avl_atts:       {}\n
+        avl_mods:       {}\n
+        avl_m_codes:    {}\n
         """.format(i, n, avl_atts, avl_mods, avl_m_codes)
         debug_print(msg, V=VERBOSITY)
 
-        # Activate models
+        # 2. Collection of potential active targets
         if i == 0:
             pot_act_atts = _active_atts(q_targ)
             assert pot_act_atts.shape[0] == 1         # TODO: multi-target RW
@@ -437,29 +441,37 @@ def _rw_pred_qry(mas,
         if len(pot_act_atts) == 0:
             break  # Nothing left to contribute
 
+        # 3. Model activation
         act_mods = _active_mods_rw(avl_atts,
                                    pot_act_atts,
                                    avl_mods,
                                    avl_m_codes,
                                    avl_f_imprt)
+
+        if len(act_mods) == 0:
+            break  # Nothing left to contribute
+
         mas[act_mods] = n
 
         msg = """
-        AFTER MODEL ACTIVATION: \n
+        After model activation \n
+        --- - --- - --- - --- -\n
         pot_act_atts:   {}\n
         act_mods:       {}\n
         mas:            {}\n
         """.format(pot_act_atts, act_mods, mas)
         debug_print(msg, V=VERBOSITY)
 
-        # Activate attributes
+        # 3. Activate attributes
         act_m_codes = m_codes[act_mods]
         act_atts = _active_atts_it(act_m_codes, pot_act_atts)
+
         assert act_atts.shape[0] > 0
         aas[act_atts] = n
 
         msg = """
-        AFTER ATTRIBUTE ACTIVATION: \n
+        After attribute activation \n
+        --- - --- - --- - --- -\n
         act_atts: {}\n
         aas: {}\n
         """.format(act_atts, aas)
@@ -542,19 +554,35 @@ def _active_atts_it(act_m_codes, unavl_atts):
 
 
 # Activation of Models
-def _active_mods_mi(avl_atts, act_atts, avl_mods, avl_m_codes):
-    assert avl_m_codes.shape[0] == avl_mods.shape[0]
-    targ_encoding = encode_attribute(1, [0], [1])
+def _active_mods_mi(avl_atts, act_atts, avl_mods, avl_m_codes, strict=True):
+    """
+    Activate models corresponding to the MI-strategy.
 
-    # Calculate appropriateness scores for all available models
-    avl_mods_appr_scores = np.zeros(avl_mods.shape[0])
-    for m_idx, m_code in enumerate(avl_m_codes):
-        avl_mods_appr_scores[m_idx] = np.sum(m_code[act_atts] == targ_encoding)
+    This means that of the avl_mods, we pass the entries that correspond
+    to a model that has at least one of the active attributes in its target set.
 
-    # Activate models with sufficiently high appropriateness scores
-    act_mods_idx = np.where(avl_mods_appr_scores >= 1.0)[0]
+    Furthermore, we ensure that any active attribute occurs at least once in a
+    target set of attributes.
 
-    assert _assert_all_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts)
+    Parameters
+    ----------
+    avl_atts
+    act_atts
+    avl_mods
+    avl_m_codes
+
+    Returns
+    -------
+
+    """
+
+    act_mods_idx = _filter_mods_act_atts_as_targ(avl_mods, avl_m_codes, act_atts)
+
+    if strict:
+        assert _assert_all_act_atts_as_targ(act_mods_idx, avl_m_codes, act_atts)
+    else:
+        assert act_mods_idx.shape[0] >= 1
+
     act_mods = avl_mods[act_mods_idx]
 
     return act_mods
@@ -628,17 +656,18 @@ def _active_mods_rw(avl_atts,
                     avl_m_codes,
                     avl_f_imprt):
     assert avl_m_codes.shape[0] == avl_f_imprt.shape[0] == avl_mods.shape[0]
-    targ_encoding = encode_attribute(1, [0], [1])
+
+    act_mods_idx = _filter_mods_act_atts_as_targ(avl_mods, avl_m_codes, act_atts)
+    avl_mods = avl_mods[act_mods_idx]
+    avl_m_codes = avl_m_codes[act_mods_idx]
+    avl_f_imprt = avl_f_imprt[act_mods_idx]
+
+    assert avl_m_codes.shape[0] == avl_f_imprt.shape[0] == avl_mods.shape[0]
 
     # Calculate appropriateness scores for all available models
     avl_mods_appr_scores = np.zeros(avl_mods.shape[0])
     for m_idx in range(avl_mods.shape[0]):
-        targ_atts_mod = np.where(avl_m_codes[m_idx] == targ_encoding)[0]
-        act_atts_as_targ = np.intersect1d(act_atts, targ_atts_mod)
-        good_model = act_atts_as_targ.shape[0] > 0
-
         avl_mods_appr_scores[m_idx] = np.sum(avl_f_imprt[np.ix_([m_idx], avl_atts)])
-        avl_mods_appr_scores[m_idx] = avl_mods_appr_scores[m_idx]*good_model
 
     act_mods_idx = pick_random_models_from_appr_score(avl_mods_appr_scores, n=1)
 
@@ -681,6 +710,21 @@ def _assert_activation(aas, targ):
 
 
 # Helpers
+def _filter_mods_act_atts_as_targ(avl_mods, avl_m_codes, act_atts):
+    assert avl_m_codes.shape[0] == avl_mods.shape[0]
+    targ_encoding = encode_attribute(1, [0], [1])
+
+    # Calculate appropriateness scores for all available models
+    avl_mods_appr_scores = np.zeros(avl_mods.shape[0])
+    for m_idx, m_code in enumerate(avl_m_codes):
+        avl_mods_appr_scores[m_idx] = np.sum(m_code[act_atts] == targ_encoding)
+
+    # Activate models with sufficiently high appropriateness scores
+    act_mods_idx = np.where(avl_mods_appr_scores >= 1.0)[0]
+
+    return act_mods_idx
+
+
 def pick_random_models_from_appr_score(mod_appr_scores, n=1):
     """
     Interpret an array of appropriateness scores as a multinominal distribution
@@ -700,6 +744,11 @@ def pick_random_models_from_appr_score(mod_appr_scores, n=1):
     if norm > 0:
         mod_appr_scores = mod_appr_scores / norm
     else:
+        msg = """
+        Not a single appropriate model was found, therefore
+        making an arbitrary choice.
+        """
+        warnings.warn(msg)
         # If you cannot be right, be arbitrary
         mod_appr_scores = [1 / len(mod_appr_scores) for i in mod_appr_scores]
 
