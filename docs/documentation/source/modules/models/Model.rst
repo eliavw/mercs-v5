@@ -1,7 +1,6 @@
 Model
-*********
-.. automodule:: mercs.model.MonoModel
+*****
+.. automodule:: mercs.models.MonoModel
     :members:
-    
-.. automodule:: mercs.model.PolyModel
+.. automodule:: mercs.models.PolyModel
     :members:

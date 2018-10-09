@@ -28,9 +28,6 @@ class MERCS(object):
     """
     A MERCS model
 
-        |
-        |
-        v
         Multi-directional
         Ensembles of
         Regression and
