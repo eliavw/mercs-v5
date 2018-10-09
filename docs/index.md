@@ -38,3 +38,12 @@ Elia Van Wolputte, Evgeniya Korneva, Hendrik Blockeel
 
 **Open Access**
 A pdf version can be found at [AAAI-publications](https://www.aaai.org/ocs/index.php/AAAI/AAAI18/paper/viewFile/16875/16735)
+
+## People
+
+People involved in this project:
+
+* [Elia Van Wolputte](https://eliavw.github.io/)
+* Evgeniya Korneva
+* [Prof. Hendrik Blockeel](https://people.cs.kuleuven.be/~hendrik.blockeel/)
+
