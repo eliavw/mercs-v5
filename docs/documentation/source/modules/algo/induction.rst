@@ -1,3 +1,4 @@
-.. title: induction
+Induction
+*********
 .. automodule:: mercs.algo.induction
     :members:

@@ -22,4 +22,4 @@ MERCS is fully open-source cf. our [repository](https://github.com/eliavw/mercs-
 
 MERCS is an active research project, hence we periodically publish our findings;
 
-    * [AAAI-18](https://www.aaai.org/ocs/index.php/AAAI/AAAI18/paper/viewFile/16875/16735)
+1. [AAAI-18](https://www.aaai.org/ocs/index.php/AAAI/AAAI18/paper/viewFile/16875/16735)
