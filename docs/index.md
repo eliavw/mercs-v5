@@ -12,8 +12,6 @@ We offer a small collection of tutorials in the form of Jupyter Notebooks of qui
 
 **MERCS 101**
 
-    1. 
-
 ### Documentation
 
 Our documentation can be found at [read the docs](https://mercs.readthedocs.io/en/latest/#)
