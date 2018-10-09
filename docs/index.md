@@ -12,11 +12,11 @@ We offer a small collection of [tutorials](https://github.com/eliavw/mercs-v5/tr
 
 ### Documentation
 
-The documentation can be found here: [docs](https://mercs.readthedocs.io/en/latest/#)
+Our documentation can be found at [read the docs](https://mercs.readthedocs.io/en/latest/#)
 
 ### Code
 
-MERCS is fully open-source cf. our [repository](https://github.com/eliavw/mercs-v5/)
+MERCS is fully open-source cf. our [github-repository](https://github.com/eliavw/mercs-v5/)
 
 ## Publications
 
@@ -31,4 +31,4 @@ Learning a function f(X) that predicts Y from X is the archetypal Machine Learni
 Elia Van Wolputte, Evgeniya Korneva, Hendrik Blockeel
 
 **Open Access**
-A pdf version can be found [here](https://www.aaai.org/ocs/index.php/AAAI/AAAI18/paper/viewFile/16875/16735)
+A pdf version can be found at [AAAI-publications](https://www.aaai.org/ocs/index.php/AAAI/AAAI18/paper/viewFile/16875/16735)
