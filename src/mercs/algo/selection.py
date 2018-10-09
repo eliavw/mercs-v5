@@ -1,3 +1,20 @@
+# -*- coding: UTF-8 -*-
+"""
+mercs.algo.prediction
+--- - --- - --- - ---
+
+This module takes care of selection in MERCS.
+
+The various selection algorithms are implemented in this module.
+
+author:
+    Evgeniya Korneva, Elia Van Wolputte
+copyright:
+    Copyright 2017-2018 KU Leuven, DTAI Research Group.
+license:
+    Apache License, Version 2.0, see LICENSE for details.
+"""
+
 import numpy as np
 import warnings
 

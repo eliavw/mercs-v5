@@ -1,3 +1,22 @@
+# -*- coding: UTF-8 -*-
+"""
+mercs.algo.inference
+--- - --- - --- - ---
+
+This module takes care of inference in MERCS.
+
+This boils down to calling predict functions from the component models and
+bookkeeping which attributes are predicted by which model, as well as
+aggregation of the results in a meaningful way.
+
+author:
+    Elia Van Wolputte
+copyright:
+    Copyright 2017-2018 KU Leuven, DTAI Research Group.
+license:
+    Apache License, Version 2.0, see LICENSE for details.
+"""
+
 import numpy as np
 import pandas as pd
 
