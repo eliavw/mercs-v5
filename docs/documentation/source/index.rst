@@ -1,6 +1,8 @@
 Welcome to mercs's documentation!
 =================================
 
+Source available on https://github.com/eliavw/mercs-v5.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
