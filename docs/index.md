@@ -8,7 +8,11 @@ MERCS stands for **m**ulti-directional **e**nsembles of **c**lassification and *
 
 ### Tutorials
 
-We offer a small collection of [tutorials](https://github.com/eliavw/mercs-v5/tree/master/note/tutorials) in the form of Jupyter Notebooks of quick walkthroughs MERCS' most common functionalities. These are intended as the most user-friendly entry point to our system. 
+We offer a small collection of tutorials in the form of Jupyter Notebooks of quick walkthroughs MERCS' most common functionalities. These are intended as the most user-friendly entry point to our system. 
+
+**MERCS 101**
+
+    1. 
 
 ### Documentation
 
