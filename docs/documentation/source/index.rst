@@ -5,19 +5,11 @@ Welcome to mercs's documentation!
    :maxdepth: 2
    :caption: Contents:
    
-.. automodule:: mercs
-.. automodule:: mercs.algo.induction
-    :members:
-.. automodule:: mercs.algo.inference
-    :members:
-.. automodule:: mercs.algo.prediction
-    :members:
-.. automodule:: mercs.algo.selection
-    :members:
+.. toctree::
+   :caption: Modules
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   modules/algo/induction
+   modules/algo/selection
+   modules/algo/inference
+   modules/algo/prediction
+   
