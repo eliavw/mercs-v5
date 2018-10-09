@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to mercs’s documentation! &mdash; mercs 0.1 documentation</title>
+  <title>Welcome to mercs’s documentation! &mdash; mercs 1.0.0 documentation</title>
   
 
   
@@ -54,6 +54,10 @@
 
           
             
+            
+              <div class="version">
+                1.0
+              </div>
             
           
 
@@ -150,7 +154,7 @@
 </div>
 <span class="target" id="module-mercs"></span><span class="target" id="module-mercs.algo.induction"></span><dl class="function">
 <dt id="mercs.algo.induction.base_ind_algo">
-<code class="descclassname">mercs.algo.induction.</code><code class="descname">base_ind_algo</code><span class="sig-paren">(</span><em>metadata</em>, <em>settings</em>, <em>m_targ</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/induction.html#base_ind_algo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.induction.base_ind_algo" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mercs.algo.induction.</code><code class="descname">base_ind_algo</code><span class="sig-paren">(</span><em>metadata</em>, <em>settings</em>, <em>m_targ</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.induction.base_ind_algo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize a model.</p>
 <p>This only means initialization, not training.
 So the only thing that happens is deciding which model is going to be
@@ -175,7 +179,7 @@ that will be trained afterwards.</li>
 
 <dl class="function">
 <dt id="mercs.algo.induction.induce_clf">
-<code class="descclassname">mercs.algo.induction.</code><code class="descname">induce_clf</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/induction.html#induce_clf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.induction.induce_clf" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mercs.algo.induction.</code><code class="descname">induce_clf</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.induction.induce_clf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Induce a single classifier.</p>
 <p>Filters the parameters
 Initializes the actual model</p>
@@ -183,7 +187,7 @@ Initializes the actual model</p>
 
 <dl class="function">
 <dt id="mercs.algo.induction.induce_model">
-<code class="descclassname">mercs.algo.induction.</code><code class="descname">induce_model</code><span class="sig-paren">(</span><em>settings</em>, <em>is_nominal</em>, <em>m_targ</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/induction.html#induce_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.induction.induce_model" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mercs.algo.induction.</code><code class="descname">induce_model</code><span class="sig-paren">(</span><em>settings</em>, <em>is_nominal</em>, <em>m_targ</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.induction.induce_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize classifier/regressor with correct settings</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -203,7 +207,7 @@ model that is being initialized</li>
 
 <dl class="function">
 <dt id="mercs.algo.induction.induce_rgr">
-<code class="descclassname">mercs.algo.induction.</code><code class="descname">induce_rgr</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/induction.html#induce_rgr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.induction.induce_rgr" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mercs.algo.induction.</code><code class="descname">induce_rgr</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.induction.induce_rgr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Induce a single regressor.</p>
 <p>Filters the parameters
 Initializes the actual model</p>
@@ -211,7 +215,7 @@ Initializes the actual model</p>
 
 <span class="target" id="module-mercs.algo.inference"></span><dl class="function">
 <dt id="mercs.algo.inference.init_predictions">
-<code class="descclassname">mercs.algo.inference.</code><code class="descname">init_predictions</code><span class="sig-paren">(</span><em>nb_rows</em>, <em>nb_cols</em>, <em>type=&lt;class 'numpy.float64'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/inference.html#init_predictions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.inference.init_predictions" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mercs.algo.inference.</code><code class="descname">init_predictions</code><span class="sig-paren">(</span><em>nb_rows</em>, <em>nb_cols</em>, <em>dtype=&lt;class 'numpy.float64'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.inference.init_predictions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize an empty array to contain our results.</p>
 <p>This is in a separate method because it can be influential
 and occurs in multiple places in our code.</p>
@@ -220,14 +224,11 @@ and occurs in multiple places in our code.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>type</strong> – Type of entries in the np.ndarray.</li>
-<li><strong>nb_rows</strong> – </li>
-<li><strong>nb_cols</strong> – </li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nb_rows</strong> (<em>int</em>) – Number of rows in the initialized array</li>
+<li><strong>nb_cols</strong> (<em>int</em>) – Number of columns in the initialized array</li>
+<li><strong>dtype</strong> (<em>np.dtype</em>) – Data type of the entries in the initialized array</li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
 </td>
 </tr>
 </tbody>
@@ -236,7 +237,7 @@ and occurs in multiple places in our code.</p>
 
 <dl class="function">
 <dt id="mercs.algo.inference.merge_numer">
-<code class="descclassname">mercs.algo.inference.</code><code class="descname">merge_numer</code><span class="sig-paren">(</span><em>numer_res</em>, <em>numer_mod</em>, <em>t_idx_res</em>, <em>t_idx_mod</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/inference.html#merge_numer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.inference.merge_numer" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mercs.algo.inference.</code><code class="descname">merge_numer</code><span class="sig-paren">(</span><em>numer_res</em>, <em>numer_mod</em>, <em>t_idx_res</em>, <em>t_idx_mod</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.inference.merge_numer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Merge non-probabilistic predictions.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -263,7 +264,7 @@ the array pred_mod</li>
 
 <dl class="function">
 <dt id="mercs.algo.inference.merge_proba">
-<code class="descclassname">mercs.algo.inference.</code><code class="descname">merge_proba</code><span class="sig-paren">(</span><em>proba_res</em>, <em>proba_mod</em>, <em>lab_res</em>, <em>lab_mod</em>, <em>t_idx_res</em>, <em>t_idx_mod</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/inference.html#merge_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.inference.merge_proba" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mercs.algo.inference.</code><code class="descname">merge_proba</code><span class="sig-paren">(</span><em>proba_res</em>, <em>proba_mod</em>, <em>lab_res</em>, <em>lab_mod</em>, <em>t_idx_res</em>, <em>t_idx_mod</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.inference.merge_proba" title="Permalink to this definition">¶</a></dt>
 <dd><p>Merge probabilistic outcomes from a single model with the current result.</p>
 <p>This based on the indices passed to this function. Also, take into account
 that proba array of a single model possibly relies on other classlabels.</p>
@@ -271,7 +272,7 @@ that proba array of a single model possibly relies on other classlabels.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>proba_res</strong> (<em>list</em><em>, </em><em>shape</em><em> (</em><em>nb_targets</em><em>, </em><em>(</em><em>nb_samples</em><em>, </em><em>nb_labels</em><em>)</em><em>)</em>) – Contains the result (proba)</li>
 <li><strong>proba_mod</strong> (<em>{list</em><em>, </em><em>np.ndarray}</em><em>, </em><em>shape</em><em>    (</em><em>nb_targets</em><em>, </em><em>(</em><em>nb_samples</em><em>, </em><em>nb_labels</em><em>)</em><em>)</em>) – (nb_samples, nb_labels)
 Contains the result of the current model (proba)</li>
@@ -282,37 +283,13 @@ Contains the result of the current model (proba)</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul>
-<li><p class="first"><em>Legacy</em></p>
-</li>
-<li><p class="first"><em>——-</em></p>
-</li>
-<li><p class="first"><em>Legacy version, keeping it here for the unlikely case something’s off.</em></p>
-</li>
-<li><p class="first"><em># Single target case</em></p>
-</li>
-<li><p class="first"><em>if nb_targ == 1</em> – # This means it comes from a model WE made.
-if isinstance(proba_mod, list):</p>
-<blockquote>
-<div><p>proba_mod = proba_mod[0]</p>
-</div></blockquote>
-<p>proba_res[t_idx_res][:, mask] += proba_mod</p>
-</li>
-<li><p class="first"><em># Multi-target case</em></p>
-</li>
-<li><p class="first"><em>else</em> – proba_res[t_idx_res][:, mask] += proba_mod[t_idx_mod]</p>
-</li>
-</ul>
-</p>
-</td>
-</tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="function">
 <dt id="mercs.algo.inference.perform_imputation">
-<code class="descclassname">mercs.algo.inference.</code><code class="descname">perform_imputation</code><span class="sig-paren">(</span><em>test_data_df</em>, <em>query_code</em>, <em>imputator</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/inference.html#perform_imputation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.inference.perform_imputation" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mercs.algo.inference.</code><code class="descname">perform_imputation</code><span class="sig-paren">(</span><em>test_data_df</em>, <em>query_code</em>, <em>imputator</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.inference.perform_imputation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates the test data for a given query.</p>
 <p>This means that it sets the unknown attributes first to NaN and afterwards
 imputes them.</p>
@@ -322,7 +299,7 @@ imputes them.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>test_data_df</strong> (<em>DataFrame</em><em>, </em><em>shape</em><em> (</em><em>nb_samples</em><em>, </em><em>nb_attributes</em><em>)</em>) – Contains the test portion of the dataset. With all attributes.</li>
-<li><strong>query_code</strong> (<em>list</em><em>, </em><em>shape</em><em> (</em><em>nb_attributes</em><em>, </em><em>)</em>) – Code that conveys the functions of all the attributes.</li>
+<li><strong>query_code</strong> (<em>np.ndarray</em><em>, </em><em>shape</em><em> (</em><em>nb_attributes</em><em>, </em><em>)</em>) – Code that conveys the functions of all the attributes in the query</li>
 <li><strong>imputator</strong> (<em>sklearn.preprocessing.imputation.Imputer</em>) – The thing used to impute, sklearn standard.</li>
 </ul>
 </td>
@@ -333,19 +310,16 @@ imputes them.</p>
 
 <dl class="function">
 <dt id="mercs.algo.inference.predict_values_from_numer">
-<code class="descclassname">mercs.algo.inference.</code><code class="descname">predict_values_from_numer</code><span class="sig-paren">(</span><em>numer_res</em>, <em>counts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/inference.html#predict_values_from_numer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.inference.predict_values_from_numer" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mercs.algo.inference.</code><code class="descname">predict_values_from_numer</code><span class="sig-paren">(</span><em>numer_res</em>, <em>counts</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.inference.predict_values_from_numer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Average numeric predictions</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>numer_res</strong> – Sum of numeric predictions</li>
-<li><strong>counts</strong> – Amount of predictions that was summed</li>
+<li><strong>counts</strong> (<em>int</em>) – Number that indicates the amount of predictions summed</li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
 </td>
 </tr>
 </tbody>
@@ -354,7 +328,7 @@ imputes them.</p>
 
 <dl class="function">
 <dt id="mercs.algo.inference.predict_values_from_proba">
-<code class="descclassname">mercs.algo.inference.</code><code class="descname">predict_values_from_proba</code><span class="sig-paren">(</span><em>proba_res</em>, <em>lab_res</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/inference.html#predict_values_from_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.inference.predict_values_from_proba" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mercs.algo.inference.</code><code class="descname">predict_values_from_proba</code><span class="sig-paren">(</span><em>proba_res</em>, <em>lab_res</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.inference.predict_values_from_proba" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert probabilities of outcomes to actual labels.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -373,7 +347,7 @@ the result.</li>
 
 <dl class="function">
 <dt id="mercs.algo.inference.update_X">
-<code class="descclassname">mercs.algo.inference.</code><code class="descname">update_X</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>act_att_idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/inference.html#update_X"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.inference.update_X" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mercs.algo.inference.</code><code class="descname">update_X</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>act_att_idx</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.inference.update_X" title="Permalink to this definition">¶</a></dt>
 <dd><p>Replace values in X with new values given by Y, in the correct places.</p>
 <p>The array act_att_idx tells us what is contained in the Y-array.
 When we enumerate act_att_idx, the index gives us the corresponding
@@ -382,14 +356,19 @@ column in Y, whereas the value tells us the corresponding column in X.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>X</strong> – Matrix X</li>
-<li><strong>Y</strong> – Matrix Y</li>
-<li><strong>act_att_idx</strong> – Attributes contained in Y</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>X</strong> (<em>np.ndarray</em><em>, </em><em>shape</em><em> (</em><em>nb_samples</em><em>, </em><em>nb_attributes_X</em><em>)</em>) – Two-dimensional np.ndarray containing data</li>
+<li><strong>Y</strong> (<em>np.ndarray</em><em>, </em><em>shape</em><em> (</em><em>nb_samples</em><em>, </em><em>nb_attributes_Y</em><em>)</em>) – Two-dimensional np.ndarray containing data. It is crucial for Y to
+contain less attributes than X</li>
+<li><strong>act_att_idx</strong> (<em>np.ndarray</em><em>, </em><em>shape</em><em> (</em><em>nb_attributes_Y</em><em>, </em><em>)</em>) – <p>Indices (in X) of the attributes contained in Y. X is assumed to contain
+all attributes. As such, act_att_idx acts as a mapping of the attributes
+of Y to the attributes in X.</p>
+<dl class="docutils">
+<dt>E.g.:   act_att_idx = np.array([1,2,5]), this means that the attributes</dt>
+<dd>with indices 1,2 and 5 in array X are contained in array Y.</dd>
+</dl>
+</li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
 </td>
 </tr>
 </tbody>
@@ -398,7 +377,7 @@ column in Y, whereas the value tells us the corresponding column in X.</p>
 
 <span class="target" id="module-mercs.algo.prediction"></span><dl class="function">
 <dt id="mercs.algo.prediction.full_prune_strat">
-<code class="descclassname">mercs.algo.prediction.</code><code class="descname">full_prune_strat</code><span class="sig-paren">(</span><em>m_codes</em>, <em>q_code</em>, <em>mas</em>, <em>aas</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/prediction.html#full_prune_strat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.prediction.full_prune_strat" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mercs.algo.prediction.</code><code class="descname">full_prune_strat</code><span class="sig-paren">(</span><em>m_codes</em>, <em>q_code</em>, <em>mas</em>, <em>aas</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.prediction.full_prune_strat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prune the last step of the activation strategies.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -420,96 +399,18 @@ column in Y, whereas the value tells us the corresponding column in X.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="mercs.algo.prediction.get_atts">
-<code class="descclassname">mercs.algo.prediction.</code><code class="descname">get_atts</code><span class="sig-paren">(</span><em>m_codes</em>, <em>m_idx</em>, <em>role=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/prediction.html#get_atts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.prediction.get_atts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the attributes that fulfill a certain role in the selected models.</p>
-<p>The role refers to the m_codes, i.e. 0 = desc, -1 = missing, 1 = target.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="mercs.algo.prediction.init_mas_aas">
-<code class="descclassname">mercs.algo.prediction.</code><code class="descname">init_mas_aas</code><span class="sig-paren">(</span><em>nb_models</em>, <em>nb_atts</em>, <em>nb_queries</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/prediction.html#init_mas_aas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.prediction.init_mas_aas" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize the mas and aas arrays.</p>
+<dt id="mercs.algo.prediction.pick_random_models_from_appr_score">
+<code class="descclassname">mercs.algo.prediction.</code><code class="descname">pick_random_models_from_appr_score</code><span class="sig-paren">(</span><em>mod_appr_scores</em>, <em>n=1</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.prediction.pick_random_models_from_appr_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpret an array of appropriateness scores as a multinominal distribution
+corresponding to the probability of a certain model being selected.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>nb_models</strong> (<em>int</em>) – Total number of models in the MERCS model</li>
-<li><strong>nb_atts</strong> (<em>int</em>) – Total number of attributes in the MERCS model</li>
-<li><strong>nb_queries</strong> (<em>int</em>) – Total number of queries that needs to be answered.</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mod_appr_scores</strong> – </li>
+<li><strong>n</strong> – </li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul>
-<li><p class="first"><strong>mas</strong> (<em>[np.ndarray], shape (nb_queries, (nb_models,))</em>) –</p>
-<dl class="docutils">
-<dt>E.g.:</dt>
-<dd><dl class="first last docutils">
-<dt>[array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),</dt>
-<dd><p class="first last">array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])]</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</li>
-<li><p class="first"><strong>aas</strong> (<em>[np.ndarray], shape (nb_queries, (nb_atts,))</em>) –</p>
-<dl class="docutils">
-<dt>E.g.:</dt>
-<dd><dl class="first last docutils">
-<dt>[array([-1, -1, -1]),</dt>
-<dd><p class="first last">array([-1, -1, -1])]</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</li>
-</ul>
-</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mercs.algo.prediction.pred_prelims">
-<code class="descclassname">mercs.algo.prediction.</code><code class="descname">pred_prelims</code><span class="sig-paren">(</span><em>m_codes</em>, <em>q_codes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/prediction.html#pred_prelims"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.prediction.pred_prelims" title="Permalink to this definition">¶</a></dt>
-<dd><p>Some things that every prediction strategy needs.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>m_codes</strong> – </li>
-<li><strong>q_codes</strong> – </li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="mercs.algo.prediction.prune_strat">
-<code class="descclassname">mercs.algo.prediction.</code><code class="descname">prune_strat</code><span class="sig-paren">(</span><em>m_codes</em>, <em>q_code</em>, <em>mas</em>, <em>aas</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/prediction.html#prune_strat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.prediction.prune_strat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prune the last step of the activation strategies.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>m_codes</strong> – model codes</li>
-<li><strong>q_code</strong> – code of the queries</li>
-<li><strong>mas</strong> – Model Activation Strategy</li>
-<li><strong>aas</strong> – Attribute Activation Strategy</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
 </td>
 </tr>
 </tbody>
@@ -518,7 +419,7 @@ column in Y, whereas the value tells us the corresponding column in X.</p>
 
 <dl class="function">
 <dt id="mercs.algo.prediction.recode_strat">
-<code class="descclassname">mercs.algo.prediction.</code><code class="descname">recode_strat</code><span class="sig-paren">(</span><em>mas</em>, <em>aas</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/prediction.html#recode_strat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.prediction.recode_strat" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mercs.algo.prediction.</code><code class="descname">recode_strat</code><span class="sig-paren">(</span><em>mas</em>, <em>aas</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.prediction.recode_strat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Avoid gaps in strategy, and make sure that it starts from one.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -537,32 +438,9 @@ column in Y, whereas the value tells us the corresponding column in X.</p>
 </table>
 </dd></dl>
 
-<dl class="function">
-<dt id="mercs.algo.prediction.rw_pred_algo">
-<code class="descclassname">mercs.algo.prediction.</code><code class="descname">rw_pred_algo</code><span class="sig-paren">(</span><em>m_codes</em>, <em>q_codes</em>, <em>settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/prediction.html#rw_pred_algo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.prediction.rw_pred_algo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Random Walk prediction algo.</p>
-<p>Generate one random walk in the random forest.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>m_codes</strong> – </li>
-<li><strong>q_codes</strong> – </li>
-<li><strong>settings</strong> – </li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 <span class="target" id="module-mercs.algo.selection"></span><dl class="function">
 <dt id="mercs.algo.selection.base_selection_algo">
-<code class="descclassname">mercs.algo.selection.</code><code class="descname">base_selection_algo</code><span class="sig-paren">(</span><em>metadata</em>, <em>settings</em>, <em>target_atts_list=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/selection.html#base_selection_algo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.selection.base_selection_algo" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mercs.algo.selection.</code><code class="descname">base_selection_algo</code><span class="sig-paren">(</span><em>metadata</em>, <em>settings</em>, <em>target_atts_list=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.selection.base_selection_algo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base selection strategy.</p>
 <p>This method implements the base selection strategy, when attributes are grouped together
 randomly into disjoint target sets. More specifically,</p>
@@ -579,7 +457,7 @@ For each model, all the attributes that are not in the target set constitute the
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>metadata</strong> (<em>dict</em>) – Dictionary that contains metadata of the training set</li>
 <li><strong>settings</strong> (<em>dict</em>) – <dl class="docutils">
 <dt>Dictionary of the settings of MERCS. Relevant settings are:</dt>
@@ -590,8 +468,14 @@ For each model, all the attributes that are not in the target set constitute the
 </dd>
 </dl>
 </li>
-<li><strong>target_atts_list</strong> – </li>
+<li><strong>target_atts_list</strong> (<em>list</em><em>, </em><em>shape</em><em> (</em><em>nb_targ_atts</em><em>, </em><em>)</em>) – List of indices of target attributes.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>codes</strong> – Two-dimensional np.ndarray where each row encodes a single model.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray, shape (nb_models, nb_atts)</p>
 </td>
 </tr>
 </tbody>
@@ -600,7 +484,7 @@ For each model, all the attributes that are not in the target set constitute the
 
 <dl class="function">
 <dt id="mercs.algo.selection.random_selection_algo">
-<code class="descclassname">mercs.algo.selection.</code><code class="descname">random_selection_algo</code><span class="sig-paren">(</span><em>metadata</em>, <em>settings</em>, <em>target_atts_list=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mercs/algo/selection.html#random_selection_algo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mercs.algo.selection.random_selection_algo" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mercs.algo.selection.</code><code class="descname">random_selection_algo</code><span class="sig-paren">(</span><em>metadata</em>, <em>settings</em>, <em>target_atts_list=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mercs.algo.selection.random_selection_algo" title="Permalink to this definition">¶</a></dt>
 <dd><p>A random selection algorithm, to evaluate the performance of both the prediction algorithms.</p>
 </dd></dl>
 
@@ -625,7 +509,7 @@ For each model, all the attributes that are not in the target set constitute the
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, elia van wolputte, evgeniya korneva, hendrik blockeel.
+        &copy; Copyright 2018, elia van wolputte, evgeniya korneva, hendrik blockeel
 
     </p>
   </div>
@@ -644,20 +528,14 @@ For each model, all the attributes that are not in the target set constitute the
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.1',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 

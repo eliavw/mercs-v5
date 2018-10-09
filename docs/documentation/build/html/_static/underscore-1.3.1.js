@@ -8,7 +8,7 @@
 
 (function() {
 
-  // Baseline mi_setup
+  // Baseline setup
   // --------------
 
   // Establish the root object, `window` in the browser, or `global` on the server.
