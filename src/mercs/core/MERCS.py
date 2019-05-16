@@ -459,7 +459,6 @@ class MERCS(object):
             assert isinstance(m_targ[m_idx], list)
 
             m_atts = m_desc[m_idx] + m_targ[m_idx]
-            assert len(m_atts) == len(m_desc[m_idx]) + len(m_targ[m_idx])
 
             X_Y = df.iloc[:, m_atts].dropna().values
             X = X_Y[:, :len(m_desc[m_idx])]
@@ -473,7 +472,7 @@ class MERCS(object):
             assert X.shape[1] == len(m_desc[m_idx])
             assert Y.shape[1] == len(m_targ[m_idx])
 
-            # Convert (m X 1)-dim arrays to (m, )-dim arrays
+            # Convert np.array with shape (m,1) to shape (m,)
             if 1 in list(X.shape): X = X.ravel()
             if 1 in list(Y.shape): Y = Y.ravel()
 

@@ -1,0 +1,12 @@
+name: mercs-v5
+channels:
+  - defaults
+dependencies:
+  - pip:
+    - ipykernel==5.1.1
+    - numpy==1.16.3
+    - pandas==0.24.2
+    - scikit-learn==0.21.1
+    - scipy==1.2.1
+prefix: /home/elia/miniconda/envs/mercs-v5
+
